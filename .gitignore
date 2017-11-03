@@ -1,0 +1,28 @@
+### Contains the authorization token ###
+bot.token
+
+### Scala ###
+*.class
+*.log
+
+### Intellij ###
+*.iml
+*.ipr
+*.iws
+.idea
+out
+
+### SBT ###
+.cache/
+.history/
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+
+### Mac ###
+.DS_Store
