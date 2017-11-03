@@ -9,6 +9,9 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 // Telegram Bot API wrapper for scala
 libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.14"
 
+// Redis as persistency
+libraryDependencies += "net.debasishg" %% "redisclient" % "3.4"
+
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt
