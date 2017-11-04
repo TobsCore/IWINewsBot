@@ -12,6 +12,13 @@ libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.14"
 // Redis as persistence
 libraryDependencies += "net.debasishg" %% "redisclient" % "3.4"
 
+// XML
+resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+
+// ScalaJ-HTTP for accessing feed
+libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0"
+
 // Serialization and Deserialization
 val json4sNative = "org.json4s" %% "json4s-native" % "{latestVersion}"
 val json4sJackson = "org.json4s" %% "json4s-jackson" % "{latestVersion}"

@@ -5,6 +5,7 @@ import org.json4s._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.{read, write}
 import com.typesafe.scalalogging.Logger
+import hska.iwi.telegramBot.news.{Entry, FeedReader}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.SendMessage
@@ -18,6 +19,8 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   override val logger: Logger = Logger[IWINewsBot]
   val redis = new RedisClient("localhost", 6379)
   implicit val formats = Serialization.formats(NoTypeHints)
+
+  val infbReader = new FeedReader("http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/atomfeed/newsbulletinboard/INFB")
 
   onCommand('start) { implicit msg =>
     msg.from.foreach(user => {
@@ -40,8 +43,16 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
         }
       }
     })
-
   }
+
+  onCommand('feed) { implicit msg => {
+    val userIds : Option[Set[Option[String]]]  = redis.smembers("users")
+    if(userIds.isDefined) {
+      val realUserIDs: Set[Long] = userIds.get.filter(_.isDefined).map(_.get).map(_.toLong)
+      val content: List[Entry] = infbReader.getEntries()
+      realUserIDs.foreach(userID => request(SendMessage(userID, content)))
+    }
+  }}
 
   onCommand('stop) { implicit msg =>
     msg.from.foreach(user => {
