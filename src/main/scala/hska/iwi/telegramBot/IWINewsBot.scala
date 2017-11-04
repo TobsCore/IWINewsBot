@@ -16,7 +16,6 @@ import scala.io.Source
 class IWINewsBot() extends TelegramBot with Polling with Commands {
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN").getOrElse(Source.fromFile("bot.token").getLines().mkString)
   override val logger: Logger = Logger[IWINewsBot]
-  val subscribedUsers: scala.collection.mutable.HashSet[User] = new mutable.HashSet[User]()
   val redis = new RedisClient("localhost", 6379)
   implicit val formats = Serialization.formats(NoTypeHints)
 
@@ -33,10 +32,12 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
 
         // Update the user data
         redis.set(s"user:${user.id}", write(user))
-        redis.set(s"chat:${user.id}", msg.source)
       }
       catch {
-        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage);
+        case rte: RuntimeException => {
+          logger.error("Cannot connect to redis server")
+          logger.debug(rte.getMessage)
+        }
       }
     })
 
@@ -52,9 +53,8 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
         }
 
         logger.info(s"Deleting user data for $user")
-        // Remove the user data and chate ID from the database
+        // Remove the user data from the database
         redis.del(s"user:${user.id}")
-        redis.del(s"chat:${user.id}")
       }
       catch {
         case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage);
@@ -69,7 +69,6 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   }
   }
 }
-
 
 
 object IWINewsBot extends App {
