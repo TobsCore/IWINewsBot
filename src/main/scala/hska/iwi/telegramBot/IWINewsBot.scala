@@ -12,13 +12,13 @@ import org.json4s.jackson.Serialization.{read, write}
 import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.news.{Entry, FeedReader, FeedURL}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
-import info.mukel.telegrambot4s.api.declarative.Commands
+import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.methods.SendMessage
 import info.mukel.telegrambot4s.models.User
 
 import scala.io.Source
 
-class IWINewsBot() extends TelegramBot with Polling with Commands {
+class IWINewsBot() extends TelegramBot with Polling with Commands with Callbacks {
   override val logger: Logger = Logger[IWINewsBot]
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent the token from leaking
@@ -63,8 +63,8 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
     }
   }
 
-  onCommand('start) { implicit msg =>
-    msg.from.foreach(user => {
+  onCommand("/start") { implicit msg =>
+    using(_.from) { user => {
       try {
         if (redis.sadd("users", user.id).getOrElse(0l).toInt == 1) {
           reply("You have successfully subscribed to the faculty news.")
@@ -86,23 +86,24 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
           logger.debug(rte.getMessage)
         }
       }
-    })
+    }
+    }
   }
 
-  onCommand('abo) { implicit msg => {
-    msg.from.foreach(user =>
+  onCommand("/abo") { implicit msg => {
+    using(_.from) { user =>
       logger.info(s"User $user is changing settings.")
-    )
+    }
   }
   }
 
-  onCommand('feed) { implicit msg => {
+  onCommand("/feed") { implicit msg => {
     sendPushMessageToSubscribers()
   }
   }
 
-  onCommand('stop) { implicit msg =>
-    msg.from.foreach(user => {
+  onCommand("/stop") { implicit msg =>
+    using(_.from) { user => {
       try {
         if (redis.srem("users", user.id).getOrElse(0l).toInt == 1) {
           reply("You will not receive any notifications.")
@@ -118,10 +119,11 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
       catch {
         case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage);
       }
-    })
+    }
+    }
   }
 
-  onCommand('list) { implicit msg => {
+  onCommand("/list") { implicit msg => {
     val userIDList: Set[Option[String]] = redis.smembers("users").get
     val users: Set[Option[User]] = userIDList.filter(_.isDefined).map(_.get).map(userID => redis.get(s"user:${userID}").map(read[User](_)))
     users.filter(_.isDefined).map(_.get).foreach(user => reply(user.toString))
