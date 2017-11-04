@@ -1,5 +1,6 @@
 package hska.iwi.telegramBot
 
+import akka.actor.ActorSystem
 import com.redis.RedisClient
 import org.json4s._
 import org.json4s.jackson.Serialization
@@ -11,16 +12,25 @@ import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.SendMessage
 import info.mukel.telegrambot4s.models.User
 
-import scala.collection.mutable
 import scala.io.Source
 
 class IWINewsBot() extends TelegramBot with Polling with Commands {
-  lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN").getOrElse(Source.fromFile("bot.token").getLines().mkString)
   override val logger: Logger = Logger[IWINewsBot]
+
+  // Put the token in file 'bot.token' in the root directly of this project. This will prevent the token from leaking
+  lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN").getOrElse(Source.fromFile("bot.token").getLines().mkString)
+
+  // The redis instance
+  // TODO: Put these values in a config file
   val redis = new RedisClient("localhost", 6379)
+
+  // To correctly serialize case classes
   implicit val formats = Serialization.formats(NoTypeHints)
 
+  // Feedreader for INFB news
+  // TODO: Outsource URL
   val infbReader = new FeedReader("http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/atomfeed/newsbulletinboard/INFB")
+
 
   onCommand('start) { implicit msg =>
     msg.from.foreach(user => {
@@ -46,13 +56,14 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   }
 
   onCommand('feed) { implicit msg => {
-    val userIds : Option[Set[Option[String]]]  = redis.smembers("users")
-    if(userIds.isDefined) {
+    val userIds: Option[Set[Option[String]]] = redis.smembers("users")
+    if (userIds.isDefined) {
       val realUserIDs: Set[Long] = userIds.get.filter(_.isDefined).map(_.get).map(_.toLong)
       val content: List[Entry] = infbReader.getEntries()
-      realUserIDs.foreach(userID => request(SendMessage(userID, content)))
+      realUserIDs.foreach(userID => request(SendMessage(userID, content.toString)))
     }
-  }}
+  }
+  }
 
   onCommand('stop) { implicit msg =>
     msg.from.foreach(user => {
