@@ -1,14 +1,13 @@
 package hska.iwi.telegramBot
 
-import java.io.IOException
-import java.net.ConnectException
-
 import com.redis.RedisClient
+import org.json4s._
+import org.json4s.jackson.Serialization
+import org.json4s.jackson.Serialization.{read, write}
 import com.typesafe.scalalogging.Logger
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.api.declarative.Commands
-import info.mukel.telegrambot4s.Implicits._
-import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
+import info.mukel.telegrambot4s.methods.SendMessage
 import info.mukel.telegrambot4s.models.User
 
 import scala.collection.mutable
@@ -19,6 +18,7 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   override val logger: Logger = Logger[IWINewsBot]
   val subscribedUsers: scala.collection.mutable.HashSet[User] = new mutable.HashSet[User]()
   val redis = new RedisClient("localhost", 6379)
+  implicit val formats = Serialization.formats(NoTypeHints)
 
   onCommand('start) { implicit msg =>
     msg.from.foreach(user => {
@@ -32,11 +32,11 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
         }
 
         // Update the user data
-        redis.set(s"user:${user.id}", user)
+        redis.set(s"user:${user.id}", write(user))
         redis.set(s"chat:${user.id}", msg.source)
       }
       catch {
-        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage)
+        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage);
       }
     })
 
@@ -50,20 +50,27 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
         } else {
           reply("You're currently not receiving any notifications.")
         }
+
+        logger.info(s"Deleting user data for $user")
+        // Remove the user data and chate ID from the database
         redis.del(s"user:${user.id}")
         redis.del(s"chat:${user.id}")
       }
       catch {
-        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage)
+        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage);
       }
     })
   }
 
   onCommand('list) { implicit msg => {
-    val chatIDList: Set[Option[String]] = redis.smembers("users").get
+    val userIDList: Set[Option[String]] = redis.smembers("users").get
+    val users: Set[Option[User]] = userIDList.filter(_.isDefined).map(_.get).map(userID => redis.get(s"user:${userID}").map(read[User](_)))
+    users.filter(_.isDefined).map(_.get).foreach(user => reply(user.toString))
   }
   }
 }
+
+
 
 object IWINewsBot extends App {
   new IWINewsBot().run()
