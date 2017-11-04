@@ -1,6 +1,9 @@
 package hska.iwi.telegramBot
 
-import akka.actor.ActorSystem
+import akka.actor._
+import scala.concurrent.duration._
+
+
 import com.redis.RedisClient
 import org.json4s._
 import org.json4s.jackson.Serialization
@@ -32,6 +35,22 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   val infbReader = new FeedReader("http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/atomfeed/newsbulletinboard/INFB")
 
 
+  // Use Actor system to check for news periodically.
+  val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
+  // Start searching 10 seconds after launch and then every 1 minute
+  system.scheduler.schedule(10 seconds, 1 minute) {
+   // sendPushMessageToSubscribers()
+  }
+
+  def sendPushMessageToSubscribers(): Unit = {
+    val userIds: Option[Set[Option[String]]] = redis.smembers("users")
+    if (userIds.isDefined) {
+      val realUserIDs: Set[Long] = userIds.get.filter(_.isDefined).map(_.get).map(_.toLong)
+      val content: List[Entry] = infbReader.getEntries()
+      realUserIDs.foreach(userID => request(SendMessage(userID, "Push Message")))
+    }
+  }
+
   onCommand('start) { implicit msg =>
     msg.from.foreach(user => {
       try {
@@ -56,12 +75,7 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   }
 
   onCommand('feed) { implicit msg => {
-    val userIds: Option[Set[Option[String]]] = redis.smembers("users")
-    if (userIds.isDefined) {
-      val realUserIDs: Set[Long] = userIds.get.filter(_.isDefined).map(_.get).map(_.toLong)
-      val content: List[Entry] = infbReader.getEntries()
-      realUserIDs.foreach(userID => request(SendMessage(userID, content.toString)))
-    }
+    sendPushMessageToSubscribers()
   }
   }
 
