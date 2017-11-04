@@ -41,15 +41,25 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
   // Start searching 10 seconds after launch and then every 1 minute
   system.scheduler.schedule(10 seconds, 1 minute) {
-    // sendPushMessageToSubscribers()
+    sendPushMessageToSubscribers()
   }
 
   def sendPushMessageToSubscribers(): Unit = {
     val userIds: Option[Set[Option[String]]] = redis.smembers("users")
     if (userIds.isDefined) {
       val realUserIDs: Set[Long] = userIds.get.filter(_.isDefined).map(_.get).map(_.toLong)
-      val content: List[Entry] = infbReader.getEntries()
-      realUserIDs.foreach(userID => request(SendMessage(userID, "Push Message")))
+      val content: Option[List[Entry]] = infbReader.getEntries()
+      content match {
+        case Some(entryList) => {
+          if (!entryList.isEmpty) {
+            val contentBuilder = new StringBuilder
+            entryList.foreach(entry => contentBuilder.append(entry.toString).append("\n"))
+            val content = contentBuilder.mkString
+            realUserIDs.foreach(userID => request(SendMessage(userID, content)))
+          }
+        }
+        case None => logger.debug("No entries received")
+      }
     }
   }
 
@@ -77,6 +87,13 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
         }
       }
     })
+  }
+
+  onCommand('abo) { implicit msg => {
+    msg.from.foreach(user =>
+      logger.info(s"User $user is changing settings.")
+    )
+  }
   }
 
   onCommand('feed) { implicit msg => {
