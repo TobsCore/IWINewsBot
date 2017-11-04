@@ -1,9 +1,10 @@
 package hska.iwi.telegramBot
 
+// Is used to write syntax such as '10 seconds' in akka calls. Otherwise warnings would be thrown during compilation.
+import scala.language.postfixOps
+
 import akka.actor._
 import scala.concurrent.duration._
-
-
 import com.redis.RedisClient
 import org.json4s._
 import org.json4s.jackson.Serialization
@@ -39,7 +40,7 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
   // Start searching 10 seconds after launch and then every 1 minute
   system.scheduler.schedule(10 seconds, 1 minute) {
-   // sendPushMessageToSubscribers()
+    // sendPushMessageToSubscribers()
   }
 
   def sendPushMessageToSubscribers(): Unit = {
