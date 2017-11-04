@@ -2,15 +2,15 @@ package hska.iwi.telegramBot
 
 // Is used to write syntax such as '10 seconds' in akka calls. Otherwise warnings would be thrown during compilation.
 import scala.language.postfixOps
-
 import akka.actor._
+
 import scala.concurrent.duration._
 import com.redis.RedisClient
 import org.json4s._
 import org.json4s.jackson.Serialization
 import org.json4s.jackson.Serialization.{read, write}
 import com.typesafe.scalalogging.Logger
-import hska.iwi.telegramBot.news.{Entry, FeedReader}
+import hska.iwi.telegramBot.news.{Entry, FeedReader, FeedURL}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.SendMessage
@@ -32,8 +32,9 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   implicit val formats = Serialization.formats(NoTypeHints)
 
   // Feedreader for INFB news
-  // TODO: Outsource URL
-  val infbReader = new FeedReader("http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/atomfeed/newsbulletinboard/INFB")
+  val infbReader = new FeedReader(FeedURL.INFB)
+  val mkibReader = new FeedReader(FeedURL.MKIB)
+  val infmReader = new FeedReader(FeedURL.INFM)
 
 
   // Use Actor system to check for news periodically.
