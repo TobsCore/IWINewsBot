@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.Logger
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.Implicits._
-import info.mukel.telegrambot4s.methods.ParseMode
+import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.User
 
 import scala.collection.mutable
@@ -23,13 +23,35 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
   onCommand('start) { implicit msg =>
     msg.from.foreach(user => {
       try {
-        if (redis.sadd("users", user).getOrElse(0l).toInt == 1) {
+        if (redis.sadd("users", user.id).getOrElse(0l).toInt == 1) {
           reply("You have successfully subscribed to the faculty news.")
           logger.info(s"User ${user} added to subscriptions.")
         } else {
           reply("You already subscribed to the faculty news.")
           logger.info(s"${user} already subscribed")
         }
+
+        // Update the user data
+        redis.set(s"user:${user.id}", user)
+        redis.set(s"chat:${user.id}", msg.source)
+      }
+      catch {
+        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage)
+      }
+    })
+
+  }
+
+  onCommand('stop) { implicit msg =>
+    msg.from.foreach(user => {
+      try {
+        if (redis.srem("users", user.id).getOrElse(0l).toInt == 1) {
+          reply("You will not receive any notifications.")
+        } else {
+          reply("You're currently not receiving any notifications.")
+        }
+        redis.del(s"user:${user.id}")
+        redis.del(s"chat:${user.id}")
       }
       catch {
         case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage)
@@ -37,20 +59,10 @@ class IWINewsBot() extends TelegramBot with Polling with Commands {
     })
   }
 
-  onCommand('stop) { implicit msg =>
-    msg.from.foreach(user =>
-      try {
-        if (redis.srem("users", user).getOrElse(0l).toInt == 1) {
-          reply("You will not receive any notifications.")
-        } else {
-          reply("You're currently not receiving any notifications.")
-        }
-      }
-      catch {
-        case rte: RuntimeException => logger.error("Cannot connect to redis server"); logger.debug(rte.getMessage)
-      })
+  onCommand('list) { implicit msg => {
+    val chatIDList: Set[Option[String]] = redis.smembers("users").get
   }
-
+  }
 }
 
 object IWINewsBot extends App {
