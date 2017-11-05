@@ -6,7 +6,7 @@ import scalaj.http.{Http, HttpResponse}
 import scala.xml.XML
 
 class FeedReader(address: String) {
-  val logger = Logger[FeedReader]
+  val logger = Logger(getClass)
 
   def getEntries(): Option[List[Entry]] = {
     logger.debug(s"Connecting to $address")

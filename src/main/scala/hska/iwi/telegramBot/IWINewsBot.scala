@@ -19,7 +19,7 @@ import info.mukel.telegrambot4s.models.User
 import scala.io.Source
 
 class IWINewsBot() extends TelegramBot with Polling with Commands with Callbacks {
-  override val logger: Logger = Logger[IWINewsBot]
+  override val logger = Logger(getClass)
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent the token from leaking
   lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN").getOrElse(Source.fromFile("bot.token").getLines().mkString)
@@ -132,5 +132,6 @@ class IWINewsBot() extends TelegramBot with Polling with Commands with Callbacks
 
 
 object IWINewsBot extends App {
-  new IWINewsBot().run()
+  val bot = new IWINewsBot()
+  bot.run()
 }
