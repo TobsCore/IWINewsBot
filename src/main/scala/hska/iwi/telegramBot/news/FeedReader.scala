@@ -1,6 +1,7 @@
 package hska.iwi.telegramBot.news
 
 import com.typesafe.scalalogging.Logger
+import org.apache.commons.lang3.StringEscapeUtils
 
 import scalaj.http.{Http, HttpResponse}
 import scala.xml.XML
@@ -12,9 +13,10 @@ class FeedReader(address: String) {
     logger.debug(s"Connecting to $address")
     // get the xml content using scalaj-http
     val response: HttpResponse[String] = Http(address)
+      .charset("windows-1252")
       .timeout(connTimeoutMs = 2000, readTimeoutMs = 20000)
       .asString
-    val xmlString = response.body
+    val xmlString = StringEscapeUtils.unescapeHtml4(response.body)
 
     logger.debug(s"Request to $address returned HTTP Code ${response.code}")
 
@@ -27,7 +29,7 @@ class FeedReader(address: String) {
       // handle the xml as desired ...
       val entryNodes = xml \\ "entry"
       var entries = new scala.collection.mutable.ListBuffer[Entry]()
-      for(elem <- entryNodes) {
+      for (elem <- entryNodes) {
         val title = (elem \\ "title").text
         val authorName = (elem \\ "author" \\ "name").text
         val authorEmail = (elem \\ "author" \\ "email").text
