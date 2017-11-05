@@ -25,6 +25,9 @@ val json4sJackson = "org.json4s" %% "json4s-jackson" % "{latestVersion}"
 
 libraryDependencies += "org.apache.commons" % "commons-text" % "1.1"
 
+libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.18.0"
+
+
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt
