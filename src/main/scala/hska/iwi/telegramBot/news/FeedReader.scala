@@ -16,7 +16,7 @@ class FeedReader(address: String) {
       .asString
     val xmlString = response.body
 
-    logger.trace(s"Request to $address returned HTTP Code ${response.code}")
+    logger.debug(s"Request to $address returned HTTP Code ${response.code}")
 
     try {
       logger.trace(s"Retrieved the following: $xmlString")

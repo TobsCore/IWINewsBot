@@ -45,9 +45,8 @@ class IWINewsBot() extends TelegramBot with Polling with Commands with Callbacks
   }
 
   def sendPushMessageToSubscribers(): Unit = {
-    val userIds: Option[Set[Option[String]]] = redis.smembers("users")
-    if (userIds.isDefined) {
-      val realUserIDs: Set[Long] = userIds.get.filter(_.isDefined).map(_.get).map(_.toLong)
+    redis.smembers("users").foreach((userIds: Set[Option[String]]) => {
+      val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
       val content: Option[List[Entry]] = infbReader.getEntries()
       content match {
         case Some(entryList) => {
@@ -55,12 +54,12 @@ class IWINewsBot() extends TelegramBot with Polling with Commands with Callbacks
             val contentBuilder = new StringBuilder
             entryList.foreach(entry => contentBuilder.append(entry.toString).append("\n"))
             val content = contentBuilder.mkString
-            realUserIDs.foreach(userID => request(SendMessage(userID, content)))
+            userIdList.foreach(userID => request(SendMessage(userID, content)))
           }
         }
         case None => logger.debug("No entries received")
       }
-    }
+    })
   }
 
   onCommand("/start") { implicit msg =>
@@ -125,8 +124,8 @@ class IWINewsBot() extends TelegramBot with Polling with Commands with Callbacks
 
   onCommand("/list") { implicit msg => {
     val userIDList: Set[Option[String]] = redis.smembers("users").get
-    val users: Set[Option[User]] = userIDList.filter(_.isDefined).map(_.get).map(userID => redis.get(s"user:${userID}").map(read[User](_)))
-    users.filter(_.isDefined).map(_.get).foreach(user => reply(user.toString))
+    val users: Set[User] = userIDList.flatten.map(userID => redis.get(s"user:${userID}").map(read[User](_))).flatten
+    users.foreach(user => reply(user.toString))
   }
   }
 }
