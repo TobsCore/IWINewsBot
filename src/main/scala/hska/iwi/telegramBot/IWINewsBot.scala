@@ -2,7 +2,7 @@ package hska.iwi.telegramBot
 
 // Is used to write syntax such as '10 seconds' in akka calls. Otherwise warnings would be thrown during compilation.
 import akka.actor._
-import hska.iwi.telegramBot.commands.{AboSettings, Admin, Subscription}
+import hska.iwi.telegramBot.commands.{AboSettings, About, Admin, Subscription}
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 
@@ -16,7 +16,8 @@ class IWINewsBot()
     with Callbacks
     with Subscription
     with Admin
-    with AboSettings {
+    with AboSettings
+    with About {
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent the token from leaking
   lazy val token: String = scala.util.Properties
