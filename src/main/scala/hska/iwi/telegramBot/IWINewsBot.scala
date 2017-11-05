@@ -3,12 +3,9 @@ package hska.iwi.telegramBot
 // Is used to write syntax such as '10 seconds' in akka calls. Otherwise warnings would be thrown during compilation.
 import akka.actor._
 import hska.iwi.telegramBot.commands.{AboSettings, Admin, Subscription}
-import hska.iwi.telegramBot.news.{Entry, EntryFormatter, FeedReader, FeedURL}
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
-import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 
-import scala.concurrent.duration._
 import scala.io.Source
 import scala.language.postfixOps
 
@@ -26,36 +23,7 @@ class IWINewsBot()
     .envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromFile("bot.token").getLines().mkString)
 
-  // Feedreader for INFB news
-  val infbReader = new FeedReader(FeedURL.INFB)
-  val mkibReader = new FeedReader(FeedURL.MKIB)
-  val infmReader = new FeedReader(FeedURL.INFM)
-
-  // Use Actor system to check for news periodically.
-  val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
-  // Start searching 10 seconds after launch and then every 1 minute
-  system.scheduler.schedule(1 seconds, 1 minute) {
-    sendPushMessageToSubscribers()
-  }
-
-  def sendPushMessageToSubscribers(): Unit = {
-    redis
-      .smembers("users")
-      .foreach((userIds: Set[Option[String]]) => {
-        val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
-        val content: Option[List[Entry]] = infbReader.receiveEntryList()
-        content match {
-          case Some(entryList) =>
-            if (entryList.nonEmpty) {
-              val content: List[String] = entryList.map(entry => EntryFormatter.format(entry))
-              userIdList.foreach(userID =>
-                request(SendMessage(userID, content(0), parseMode = Some(ParseMode.Markdown))))
-            }
-          case None => logger.debug("No entries received")
-        }
-      })
-  }
-
+  BackgroundFeedSync(token).start()
 }
 
 object IWINewsBot extends App {
