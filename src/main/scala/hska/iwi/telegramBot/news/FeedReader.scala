@@ -2,7 +2,6 @@ package hska.iwi.telegramBot.news
 
 import com.typesafe.scalalogging.Logger
 
-import scala.collection.immutable
 import scalaj.http.{Http, HttpResponse}
 import scala.xml.XML
 
@@ -26,7 +25,7 @@ class FeedReader(address: String) {
       logger.debug("XML successfully parsed")
 
       // handle the xml as desired ...
-      val entryNodes = (xml \\ "entry")
+      val entryNodes = xml \\ "entry"
       var entries = new scala.collection.mutable.ListBuffer[Entry]()
       for(elem <- entryNodes) {
         val title = (elem \\ "title").text
@@ -36,16 +35,15 @@ class FeedReader(address: String) {
         val updated = (elem \\ "updated").text
         val content = (elem \\ "content").text
         val summary = (elem \\ "summary").text
-        val newEntry = Entry(title, Author(authorName, authorName), id, updated, content, summary)
+        val newEntry = Entry(title, Author(authorName, authorEmail), id, updated, content, summary)
         entries += newEntry
       }
       val entriesList = entries.toList
       Some(entriesList)
     } catch {
-      case e: Exception => {
+      case _: Exception =>
         logger.warn(s"Cannot parse XML")
         None
-      }
     }
   }
 }
