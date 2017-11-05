@@ -11,17 +11,21 @@ import org.json4s.jackson.Serialization.read
 trait Admin extends Commands with Instances with ObjectSerialization {
   _: TelegramBot =>
 
-  onCommand("/list") { implicit msg => {
-    val userIDList: Set[Option[String]] = redis.smembers("users").get
-    val users: Set[User] = userIDList.flatten.flatMap(userID => redis.get(s"user:$userID").map(read[User]))
-    users.foreach(user => reply(user.toString))
-  }
+  onCommand("/list") { implicit msg =>
+    {
+      val userIDList: Set[Option[String]] = redis.smembers("users").get
+      val users: Set[User] =
+        userIDList.flatten.flatMap(userID => redis.get(s"user:$userID").map(read[User]))
+      users.foreach(user => reply(user.toString))
+    }
   }
 
-  onCommand("/shutdown") {implicit msg => {
-    reply(s"Shutting down bot. ${"Bye Bye".italic}", parseMode = ParseMode.Markdown)
-    Thread.sleep(2000)
-    System.exit(0)
-  }}
+  onCommand("/shutdown") { implicit msg =>
+    {
+      reply(s"Shutting down bot. ${"Bye Bye".italic} 👋", parseMode = ParseMode.Markdown)
+      Thread.sleep(2000)
+      System.exit(0)
+    }
+  }
 
 }

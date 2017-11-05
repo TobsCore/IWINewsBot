@@ -13,23 +13,23 @@ import scala.io.Source
 import scala.language.postfixOps
 
 class IWINewsBot()
-  extends TelegramBot
+    extends TelegramBot
     with Polling
     with Commands
     with Callbacks
-
     with Subscription
     with Admin
     with AboSettings {
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent the token from leaking
-  lazy val token: String = scala.util.Properties.envOrNone("BOT_TOKEN").getOrElse(Source.fromFile("bot.token").getLines().mkString)
+  lazy val token: String = scala.util.Properties
+    .envOrNone("BOT_TOKEN")
+    .getOrElse(Source.fromFile("bot.token").getLines().mkString)
 
   // Feedreader for INFB news
   val infbReader = new FeedReader(FeedURL.INFB)
   val mkibReader = new FeedReader(FeedURL.MKIB)
   val infmReader = new FeedReader(FeedURL.INFM)
-
 
   // Use Actor system to check for news periodically.
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
@@ -39,22 +39,24 @@ class IWINewsBot()
   }
 
   def sendPushMessageToSubscribers(): Unit = {
-    redis.smembers("users").foreach((userIds: Set[Option[String]]) => {
-      val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
-      val content: Option[List[Entry]] = infbReader.getEntries()
-      content match {
-        case Some(entryList) =>
-          if (entryList.nonEmpty) {
-            val content : List[String] = entryList.map(entry => EntryFormatter.format(entry))
-            userIdList.foreach(userID => request(SendMessage(userID, content(0), parseMode = Some(ParseMode.Markdown))))
-          }
-        case None => logger.debug("No entries received")
-      }
-    })
+    redis
+      .smembers("users")
+      .foreach((userIds: Set[Option[String]]) => {
+        val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
+        val content: Option[List[Entry]] = infbReader.receiveEntryList()
+        content match {
+          case Some(entryList) =>
+            if (entryList.nonEmpty) {
+              val content: List[String] = entryList.map(entry => EntryFormatter.format(entry))
+              userIdList.foreach(userID =>
+                request(SendMessage(userID, content(0), parseMode = Some(ParseMode.Markdown))))
+            }
+          case None => logger.debug("No entries received")
+        }
+      })
   }
 
 }
-
 
 object IWINewsBot extends App {
   val bot = new IWINewsBot()

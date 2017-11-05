@@ -9,13 +9,20 @@ import scala.xml.XML
 class FeedReader(address: String) {
   val logger = Logger(getClass)
 
-  def getEntries(): Option[List[Entry]] = {
+  /**
+    * Connects to feed URL, which has been passed in the constructor and parses the received XML to a list of entry elements. If the returned xml contains errors or couldn't been transported correctly, @code{None} is returned.
+    *
+    * @return A list of entries of the current feed. @code{None}, if there was an error. The list may be empty.
+    */
+  def receiveEntryList(): Option[List[Entry]] = {
     logger.debug(s"Connecting to $address")
-    // get the xml content using scalaj-http
+    // Receive the XML feed from the web by http
     val response: HttpResponse[String] = Http(address)
       .charset("windows-1252")
       .timeout(connTimeoutMs = 2000, readTimeoutMs = 20000)
       .asString
+
+    // Get rid of html entities, like codes for Umlaute.
     val xmlString = StringEscapeUtils.unescapeHtml4(response.body)
 
     logger.debug(s"Request to $address returned HTTP Code ${response.code}")
@@ -26,7 +33,7 @@ class FeedReader(address: String) {
       val xml = XML.loadString(xmlString)
       logger.debug("XML successfully parsed")
 
-      // handle the xml as desired ...
+      // Parse the xml objects and put them in a list
       val entryNodes = xml \\ "entry"
       var entries = new scala.collection.mutable.ListBuffer[Entry]()
       for (elem <- entryNodes) {
@@ -43,8 +50,9 @@ class FeedReader(address: String) {
       val entriesList = entries.toList
       Some(entriesList)
     } catch {
-      case _: Exception =>
+      case e: Exception =>
         logger.warn(s"Cannot parse XML")
+        logger.debug(e.getMessage)
         None
     }
   }

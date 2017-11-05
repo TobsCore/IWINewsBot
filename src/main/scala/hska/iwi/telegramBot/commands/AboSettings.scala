@@ -10,22 +10,20 @@ trait AboSettings extends Commands with Callbacks {
 
   var mkibAbo = false
 
-
-  onCommand("/abo") { implicit msg => {
-    using(_.from) { user =>
-      logger.info(s"User $user is changing settings.")
+  onCommand("/abo") { implicit msg =>
+    {
+      using(_.from) { user =>
+        logger.info(s"User $user is changing settings.")
+      }
+      reply("Hier kannst Du festlegen, zu welchen Studiengängen Du Nachrichten erhalten möchtest.",
+            replyMarkup = Some(markupCounter(0)))
     }
-    reply("Hier kannst Du festlegen, zu welchen Studiengängen Du Nachrichten erhalten möchtest.", replyMarkup = Some(markupCounter(0)))
-  }
   }
 
   def markupCounter(n: Int): InlineKeyboardMarkup = {
     val btnText = if (mkibAbo) "MKIB [Ja]" else "MKIB [Nein]"
     logger.info(btnText)
-    InlineKeyboardMarkup.singleButton(
-      InlineKeyboardButton.callbackData(
-        btnText,
-        tag(n.toString)))
+    InlineKeyboardMarkup.singleButton(InlineKeyboardButton.callbackData(btnText, tag(n.toString)))
   }
 
   val mkibSelectionTAG = "MKIBSELECTION"
@@ -44,17 +42,15 @@ trait AboSettings extends Commands with Callbacks {
     ackCallback(Some(message))
     // Or just ackCallback()
 
-
     for {
       data <- cbq.data
       Extractors.Int(n) = data
       msg <- cbq.message
     } /* do */ {
       request(
-        EditMessageReplyMarkup(
-          chatId = Some(ChatId(msg.source)),
-          messageId = Some(msg.messageId),
-          replyMarkup = Some(markupCounter(n + 1))))
+        EditMessageReplyMarkup(chatId = Some(ChatId(msg.source)),
+                               messageId = Some(msg.messageId),
+                               replyMarkup = Some(markupCounter(n + 1))))
     }
   }
 }
