@@ -13,10 +13,17 @@ trait Admin extends Commands with Instances with ObjectSerialization {
 
   onCommand("/list") { implicit msg =>
     {
-      val userIDList: Set[Option[String]] = redis.smembers("users").get
-      val users: Set[User] =
-        userIDList.flatten.flatMap(userID => redis.get(s"user:$userID").map(read[User]))
-      users.foreach(user => reply(user.toString))
+      using(_.from) { user =>
+        if (Admins.allowed.contains(UserID(user.id))) {
+          val userIDList: Set[Option[String]] = redis.smembers("users").get
+          val users: Set[User] =
+            userIDList.flatten.flatMap(userID => redis.get(s"user:$userID").map(read[User]))
+          users.foreach(user => reply(user.toString))
+        } else {
+          reply("Cannot shutdown bot without admin privileges. This incident will be reported!")
+          logger.warn(s"User $user tried to shutdown service, but is not an admin")
+        }
+      }
     }
   }
 

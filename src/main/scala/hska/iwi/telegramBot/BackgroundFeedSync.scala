@@ -11,6 +11,14 @@ import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
+/**
+  * The background worker is responsible for checking the feed urls for content and notifying
+  * users about it. It contains a list of urls, which will be checked.
+  *
+  * @param token Since the users have to be notified about updates, the token is needed. This is
+  *              the bot's token, which should be defined in the bot.token file and be read by
+  *              the main class.
+  */
 case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
@@ -21,6 +29,11 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val feedProcessor = new FeedProcessor(feedReader)
 
+  /**
+    * The is started by calling this method. Since this starts the background tasks, it should be
+    * noted, that calling this method multiple times will yield too many calls to the feed's
+    * servers and should be avoided.
+    */
   def start(): Unit = {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {

@@ -9,7 +9,9 @@ class FeedProcessor(feedReader: Map[Course, FeedReader]) {
     * contents. The whole feed is placed in the map as a value, where the key is the feed
     * identifier. An identifier might be "INFB".
     *
-    * @return
+    * @return A list, where the course is mapped to a set of entries. This set doesn't have to
+    *         exist and can therefore be @code{None}, in a case where there is problem receiving
+    *         the feeds. Otherwise the set will be empty.
     */
   def receiveNewEntries(): Map[Course, Option[Set[Entry]]] = {
     // TODO: Implement method
