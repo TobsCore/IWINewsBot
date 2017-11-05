@@ -1,8 +1,9 @@
 package hska.iwi.telegramBot
 
 import akka.actor.ActorSystem
-import hska.iwi.telegramBot.news.{Entry, EntryFormatter, FeedReader, FeedURL}
-import hska.iwi.telegramBot.service.RedisInstance
+import hska.iwi.telegramBot.news.Course.Course
+import hska.iwi.telegramBot.news._
+import hska.iwi.telegramBot.service.{RedisInstance, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
@@ -14,13 +15,17 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
 
-  val feedReader = Map("INFB" -> FeedReader(FeedURL.INFB),
-                       "MKIB" -> FeedReader(FeedURL.MKIB),
-                       "INFM" -> FeedReader(FeedURL.INFM))
+  val feedReader = Map(Course.INFB -> FeedReader(FeedURL.INFB),
+                       Course.MKIB -> FeedReader(FeedURL.MKIB),
+                       Course.INFM -> FeedReader(FeedURL.INFM))
+
+  val feedProcessor = new FeedProcessor(feedReader)
 
   def start(): Unit = {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
+      val entries: Map[Course, Option[Set[Entry]]] = feedProcessor.receiveNewEntries()
+      val subsriptionEntries: Map[UserID, Set[Entry]] = Map() // TODO:
       sendPushMessageToSubscribers()
     }
   }
@@ -30,7 +35,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
       .smembers("users")
       .foreach((userIds: Set[Option[String]]) => {
         val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
-        val content: Option[List[Entry]] = feedReader("INFM").receiveEntryList()
+        val content: Option[List[Entry]] = feedReader(Course.INFM).receiveEntryList()
         content match {
           case Some(entryList) =>
             if (entryList.nonEmpty) {
