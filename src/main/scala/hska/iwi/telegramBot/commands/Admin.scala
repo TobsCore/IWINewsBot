@@ -1,6 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.service.{Instances, ObjectSerialization}
+import hska.iwi.telegramBot.service.{Admins, Instances, ObjectSerialization, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.models.User
@@ -22,9 +22,16 @@ trait Admin extends Commands with Instances with ObjectSerialization {
 
   onCommand("/shutdown") { implicit msg =>
     {
-      reply(s"Shutting down bot. ${"Bye Bye".italic} 👋", parseMode = ParseMode.Markdown)
-      Thread.sleep(2000)
-      System.exit(0)
+      using(_.from) { user =>
+        if (Admins.allowed.contains(UserID(user.id))) {
+          reply(s"Shutting down bot. ${"Bye Bye".italic} 👋", parseMode = ParseMode.Markdown)
+          Thread.sleep(2000)
+          System.exit(0)
+        } else {
+          reply("Cannot shutdown bot without admin privileges. This incident will be reported!")
+          logger.warn(s"User $user tried to shutdown service, but is not an admin")
+        }
+      }
     }
   }
 
