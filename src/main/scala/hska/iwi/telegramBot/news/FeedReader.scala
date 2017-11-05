@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringEscapeUtils
 import scalaj.http.{Http, HttpResponse}
 import scala.xml.XML
 
-class FeedReader(address: String) {
+case class FeedReader(address: String) {
   val logger = Logger(getClass)
 
   /**

@@ -13,12 +13,12 @@ import scala.language.postfixOps
 case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
-  // Feedreader for INFB news
-  val infbReader = new FeedReader(FeedURL.INFB)
-  val mkibReader = new FeedReader(FeedURL.MKIB)
-  val infmReader = new FeedReader(FeedURL.INFM)
 
-  def start() = {
+  val feedReader = Map("INFB" -> FeedReader(FeedURL.INFB),
+                       "MKIB" -> FeedReader(FeedURL.MKIB),
+                       "INFM" -> FeedReader(FeedURL.INFM))
+
+  def start(): Unit = {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
       sendPushMessageToSubscribers()
@@ -30,13 +30,13 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
       .smembers("users")
       .foreach((userIds: Set[Option[String]]) => {
         val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
-        val content: Option[List[Entry]] = infbReader.receiveEntryList()
+        val content: Option[List[Entry]] = feedReader("INFM").receiveEntryList()
         content match {
           case Some(entryList) =>
             if (entryList.nonEmpty) {
               val content: List[String] = entryList.map(entry => EntryFormatter.format(entry))
               userIdList.foreach(userID =>
-                request(SendMessage(userID, content(0), parseMode = Some(ParseMode.Markdown))))
+                request(SendMessage(userID, content.head, parseMode = Some(ParseMode.Markdown))))
             }
           case None => logger.debug("No entries received")
         }

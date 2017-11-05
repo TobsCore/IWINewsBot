@@ -24,6 +24,7 @@ class IWINewsBot()
     .envOrNone("BOT_TOKEN")
     .getOrElse(Source.fromFile("bot.token").getLines().mkString)
 
+  // Start the background feed reader.
   BackgroundFeedSync(token).start()
 }
 
