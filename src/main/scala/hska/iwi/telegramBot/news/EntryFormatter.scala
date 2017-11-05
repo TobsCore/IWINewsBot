@@ -7,15 +7,20 @@ import org.joda.time.format.DateTimeFormat
 object EntryFormatter {
 
   def format(entry: Entry): String = {
-    var formattedEntry: String = ""
-    val formattedTitle = s"${entry.title.bold} \n \n"
-    val formattedSubTitle = s"${entry.summary.replaceAll(": " + entry.content, "").bold} \n"
-    val formattedSummary = s"${entry.content} \n \n"
-    val formattedAuthorName = s"${entry.author.name.italic}\t (${entry.author.email}) \n"
-    val formattedDate =
+    val title = entry.title.bold
+    val subTitle = entry.summary.replaceAll(": " + entry.content, "").bold
+    val summary = entry.content
+    val authorName = entry.author.name.italic
+    val authorEmail = entry.author.email
+    val date =
       new DateTime(entry.updated).toString(DateTimeFormat.forPattern("dd.MM.yyyy, HH:mm 'Uhr'"))
 
-    formattedEntry = formattedEntry + formattedTitle + formattedSubTitle + formattedSummary + formattedAuthorName + formattedDate
-    formattedEntry
+    s"""|$title
+        |
+        |$subTitle
+        |$summary
+        |
+        |$authorName ($authorEmail)
+        |$date""".stripMargin
   }
 }
