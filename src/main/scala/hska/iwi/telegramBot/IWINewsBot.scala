@@ -46,7 +46,7 @@ class IWINewsBot()
         case Some(entryList) =>
           if (entryList.nonEmpty) {
             val contentBuilder = new StringBuilder
-            entryList.foreach(entry => contentBuilder.append(entry.toString).append("\n"))
+            entryList.filter(_.id == "NewsBulletinBoard:919").foreach(entry => contentBuilder.append(entry.toString).append("\n"))
             val content = contentBuilder.mkString
             userIdList.foreach(userID => request(SendMessage(userID, content)))
           }
