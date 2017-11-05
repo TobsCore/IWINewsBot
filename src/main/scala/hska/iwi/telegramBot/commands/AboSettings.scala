@@ -36,7 +36,7 @@ trait AboSettings extends Commands with Callbacks {
     val message = if (mkibAbo) {
       "MKIB Nachrichten sind abonniert"
     } else {
-      "MKIB Nachrichten sind abbstellt"
+      "MKIB Nachrichten sind abbestellt"
     }
     // Notification only shown to the user who pressed the button.
     ackCallback(Some(message))
