@@ -1,5 +1,7 @@
 package hska.iwi.telegramBot.news
 
+import java.util.Locale
+
 import info.mukel.telegrambot4s.Implicits._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -13,7 +15,8 @@ object EntryFormatter {
     val authorName = entry.author.name.italic
     val authorEmail = entry.author.email
     val date =
-      new DateTime(entry.updated).toString(DateTimeFormat.forPattern("dd.MM.yyyy, HH:mm 'Uhr'"))
+      new DateTime(entry.updated)
+        .toString(DateTimeFormat.forPattern("d. MMM. yyyy - HH:mm 'Uhr'").withLocale(Locale.GERMAN))
 
     s"""|$title
         |
