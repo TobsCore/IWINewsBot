@@ -1,6 +1,8 @@
 package hska.iwi.telegramBot.service
 
+import com.redis.RedisClient
+
 trait Instances {
-  val redis = RedisInstance.get
+  val redis: RedisClient = RedisInstance.get
 
 }

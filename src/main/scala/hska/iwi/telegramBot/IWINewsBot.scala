@@ -13,6 +13,8 @@ class IWINewsBot()
     with Polling
     with Commands
     with Callbacks
+
+    // These are our commands
     with Subscription
     with Admin
     with AboSettings
