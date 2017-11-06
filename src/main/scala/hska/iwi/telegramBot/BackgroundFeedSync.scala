@@ -36,7 +36,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
   }
 
   /**
-    * The is started by calling this method. Since this starts the background tasks, it should be
+    * The background sync task is started by calling this method. Since this starts the background tasks, it should be
     * noted, that calling this method multiple times will yield too many calls to the feed's
     * servers and should be avoided.
     */

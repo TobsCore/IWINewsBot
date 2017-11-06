@@ -10,9 +10,9 @@ case class FeedReader(address: String) {
   val logger = Logger(getClass)
 
   /**
-    * Connects to feed URL, which has been passed in the constructor and parses the received XML to a list of entry elements. If the returned xml contains errors or couldn't been transported correctly, @code{None} is returned.
+    * Connects to feed URL, which has been passed in the constructor and parses the received XML to a list of entry elements. If the returned xml contains errors or couldn't been transported correctly, `None` is returned.
     *
-    * @return A list of entries of the current feed. @code{None}, if there was an error. The list may be empty.
+    * @return A list of entries of the current feed. `None`, if there was an error. The list may be empty.
     */
   def receiveEntryList(): Option[List[Entry]] = {
     logger.debug(s"Connecting to $address")
