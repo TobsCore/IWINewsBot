@@ -29,6 +29,12 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val feedProcessor = new FeedProcessor(feedReader)
 
+  def entriesForSubscribers(entries: Map[Course, Option[Set[Entry]]],
+                            userConfig: Map[UserID, Set[Course]]): Map[UserID, Set[Entry]] = {
+    // TODO: Implement Method
+    Map(UserID(0) -> Set())
+  }
+
   /**
     * The is started by calling this method. Since this starts the background tasks, it should be
     * noted, that calling this method multiple times will yield too many calls to the feed's
@@ -38,7 +44,8 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
       val entries: Map[Course, Option[Set[Entry]]] = feedProcessor.receiveNewEntries()
-      val subsriptionEntries: Map[UserID, Set[Entry]] = Map() // TODO:
+      val userConfig: Map[UserID, Set[Course]] = RedisInstance.getUserConfig()
+      val subsriptionEntries: Map[UserID, Set[Entry]] = entriesForSubscribers(entries, userConfig)
       sendPushMessageToSubscribers()
     }
   }

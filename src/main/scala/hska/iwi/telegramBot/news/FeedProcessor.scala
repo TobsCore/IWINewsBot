@@ -14,7 +14,7 @@ class FeedProcessor(feedReader: Map[Course, FeedReader]) {
     *         the feeds. Otherwise the set will be empty.
     */
   def receiveNewEntries(): Map[Course, Option[Set[Entry]]] = {
-    // TODO: Implement method
+    // TODO: Implement Method
     Map(Course.MKIB -> None)
   }
 }
