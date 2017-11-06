@@ -10,24 +10,27 @@ case class FeedReader(address: String) {
   val logger = Logger(getClass)
 
   /**
-    * Connects to feed URL, which has been passed in the constructor and parses the received XML to a list of entry elements. If the returned xml contains errors or couldn't been transported correctly, `None` is returned.
+    * Connects to feed URL, which has been passed in the constructor and parses the received XML
+    * to a list of entry elements. If the returned xml contains errors or couldn't been
+    * transported correctly, `None` is returned.
     *
-    * @return A list of entries of the current feed. `None`, if there was an error. The list may be empty.
+    * @return A list of entries of the current feed. `None`, if there was an error. The list may
+    *         be empty.
     */
   def receiveEntryList(): Option[List[Entry]] = {
     logger.debug(s"Connecting to $address")
     // Receive the XML feed from the web by http
-    val response: HttpResponse[String] = Http(address)
-      .charset("windows-1252")
-      .timeout(connTimeoutMs = 2000, readTimeoutMs = 20000)
-      .asString
-
-    // Get rid of html entities, like codes for Umlaute.
-    val xmlString = StringEscapeUtils.unescapeHtml4(response.body)
-
-    logger.debug(s"Request to $address returned HTTP Code ${response.code}")
-
     try {
+      val response: HttpResponse[String] = Http(address)
+        .charset("windows-1252")
+        .timeout(connTimeoutMs = 2000, readTimeoutMs = 20000)
+        .asString
+
+      // Get rid of html entities, like codes for Umlaute.
+      val xmlString = StringEscapeUtils.unescapeHtml4(response.body)
+
+      logger.debug(s"Request to $address returned HTTP Code ${response.code}")
+
       logger.trace(s"Retrieved the following: $xmlString")
       // convert the `String` to a `scala.xml.Elem`
       val xml = XML.loadString(xmlString)
@@ -50,6 +53,10 @@ case class FeedReader(address: String) {
       val entriesList = entries.toList
       Some(entriesList)
     } catch {
+      case ste: java.net.SocketTimeoutException =>
+        logger.warn(s"Cannot connect to $address")
+        logger.debug(ste.getMessage)
+        None
       case e: Exception =>
         logger.warn(s"Cannot parse XML")
         logger.debug(e.getMessage)
