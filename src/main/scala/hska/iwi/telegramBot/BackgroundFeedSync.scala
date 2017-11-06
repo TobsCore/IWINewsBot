@@ -29,14 +29,16 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val feedProcessor = new FeedProcessor(feedReader)
 
-  def entriesForSubscribers(entries: Map[Course, Option[Set[Entry]]],
-                            userConfig: Map[UserID, Set[Course]]): Map[UserID, Set[Entry]] = {
+  def entriesForSubscribers(
+      entries: Map[Course, Option[Set[Entry]]],
+      userConfig: Map[UserID, Option[Set[Course]]]): Map[UserID, Set[Entry]] = {
     // TODO: Implement Method
-    Map(UserID(0) -> Set())
+    Map()
   }
 
   /**
-    * The background sync task is started by calling this method. Since this starts the background tasks, it should be
+    * The background sync task is started by calling this method. Since this starts the
+    * background tasks, it should be
     * noted, that calling this method multiple times will yield too many calls to the feed's
     * servers and should be avoided.
     */
@@ -44,14 +46,14 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
       val entries: Map[Course, Option[Set[Entry]]] = feedProcessor.receiveNewEntries()
-      val userConfig: Map[UserID, Set[Course]] = RedisInstance.getUserConfig()
+      val userConfig: Map[UserID, Option[Set[Course]]] = RedisInstance.userConfig()
       val subsriptionEntries: Map[UserID, Set[Entry]] = entriesForSubscribers(entries, userConfig)
       sendPushMessageToSubscribers()
     }
   }
 
   private def sendPushMessageToSubscribers(): Unit = {
-    RedisInstance.get
+    RedisInstance.redis
       .smembers("users")
       .foreach((userIds: Set[Option[String]]) => {
         val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
