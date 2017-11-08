@@ -6,7 +6,7 @@ import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
 
 object RedisInstance extends ObjectSerialization {
-  val redis = new RedisClient("localhost", 6379)
+  val redis = new RedisClient(Configuration.redisHost, Configuration.redisPort)
 
   /**
     * Adds a user ID to the list of users.

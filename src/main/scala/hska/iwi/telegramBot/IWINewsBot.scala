@@ -1,7 +1,9 @@
 package hska.iwi.telegramBot
 
-// Is used to write syntax such as '10 seconds' in akka calls. Otherwise warnings would be thrown during compilation.
+// Is used to write syntax such as '10 seconds' in akka calls. Otherwise warnings would be thrown
+// during compilation.
 import hska.iwi.telegramBot.commands.{AboSettings, About, Admin, Subscription}
+import hska.iwi.telegramBot.service.Configuration
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 
@@ -20,10 +22,11 @@ class IWINewsBot()
     with AboSettings
     with About {
 
-  // Put the token in file 'bot.token' in the root directly of this project. This will prevent the token from leaking
+  // Put the token in file 'bot.token' in the root directly of this project. This will prevent
+  // the token from leaking
   lazy val token: String = scala.util.Properties
     .envOrNone("BOT_TOKEN")
-    .getOrElse(Source.fromFile("bot.token").getLines().mkString)
+    .getOrElse(Source.fromFile(Configuration.tokenFileName).getLines().mkString)
 
   // Start the background feed reader.
   BackgroundFeedSync(token).start()
