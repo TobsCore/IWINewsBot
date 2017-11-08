@@ -23,8 +23,10 @@ libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0"
 val json4sNative = "org.json4s" %% "json4s-native" % "{latestVersion}"
 val json4sJackson = "org.json4s" %% "json4s-jackson" % "{latestVersion}"
 
+// Removing encodings in rss feeds
 libraryDependencies += "org.apache.commons" % "commons-text" % "1.1"
 
+// Date Formatter
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.18.0"
 
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
