@@ -1,8 +1,9 @@
 package hska.iwi.telegramBot.service
 
+import com.redis.serialization.Parse.Implicits._
+import Implicits._
 import com.redis.RedisClient
 import com.typesafe.scalalogging.Logger
-import hska.iwi.telegramBot.news.Course
 import hska.iwi.telegramBot.news.Course.Course
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
@@ -71,8 +72,21 @@ object RedisInstance extends ObjectSerialization {
     redis.hmset(s"config:${userID.id}", userConfig)
   }
 
+  /**
+    * Sets the user configuration for one particular course. This setting can be either
+    * {{{true}}} or {{{false}}}. If you want to set multiple courses at once, check out the other
+    * method, which takes a map.
+    *
+    * @param userID        The user ID, for which the setting should be changed.
+    * @param course        The course for which the setting will be changed.
+    * @param courseSetting The setting, whether, the user should receive notifications for the
+    *                      course. {{{true}}} means, that the user will receive notifications for
+    *                      the given course, {{{false}}} unsubscribes the user for the given
+    *                      course means, that the user will receive notifications for the given
+    *                      course, {{{false}}} unsubscribes the user for the given course @return
+    */
   def setUserConfig(userID: UserID, course: Course, courseSetting: Boolean): Boolean = {
-    redis.hset(s"config:$userID", course, courseSetting)
+    redis.hset(s"config:${userID.id}", course, courseSetting)
   }
 
   /**
@@ -93,22 +107,22 @@ object RedisInstance extends ObjectSerialization {
     * @return A Map, where each course is mapped to a boolean value. If no configuration can be
     *         found, `None` is returned.
     */
-  def getUserConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
-    val redisResult =
-      redis.hgetall1[String, String](s"config:${userID.id}")
+  def getConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
+    redis.hgetall1[Course, Boolean](s"config:${userID.id}")
+  }
 
-    redisResult match {
-      case None => None
-      case Some(map) =>
-        try {
-          // Map the returned Strings to the corresponding objects
-          Some(map.map { case (key, value) => Course.withNameOpt(key).get -> value.toBoolean })
-        } catch {
-          case e: Exception =>
-            logger.error("Error converting config data to object")
-            logger.debug(e.getMessage)
-            None
-        }
+  /**
+    * Returns the list of all users that are stored in the database.
+    *
+    * @return Returns a set of all existing user IDs. If no ID can be found, {{{None}}} will be
+    *         returned.
+    */
+  def getAllUserIDs: Option[Set[UserID]] = {
+    val userList: Set[UserID] = redis.smembers[UserID]("users").getOrElse(Set()).flatten
+    if (userList.isEmpty) {
+      None
+    } else {
+      Some(userList)
     }
   }
 
@@ -117,11 +131,31 @@ object RedisInstance extends ObjectSerialization {
     * If a user has no subscription, the set
     * will be empty.
     *
-    * @return A set of subscriptions for each user. If no subscription configuration can be
-    *         received, `None` is returned.
+    * @return A set of subscriptions for each user. If no subscription configuration has been
+    *         stored in the database, `None` is returned.
     */
   def userConfig(): Map[UserID, Option[Set[Course]]] = {
-    //TODO: Implement Method
-    Map()
+    val userIDs = getAllUserIDs.getOrElse(Set())
+    val userSet = userIDs
+      .map(
+        userID =>
+          userID -> getConfigFor(userID)
+            .getOrElse(Map())
+            .filter((p: (Course, Boolean)) => p._2)
+            .keys
+            .toSet[Course])
+      .toMap[UserID, Set[Course]]
+
+    userSet.mapValues(courses =>
+      if (courses.nonEmpty) {
+        Some(courses)
+      } else {
+        None
+    })
+  }
+
+  def getConfigForUsers: Map[Course, Option[UserID]] = {
+    val userConfiguration = userConfig()
+    Map[Course, Option[UserID]]()
   }
 }
