@@ -1,6 +1,8 @@
 package hska.iwi.telegramBot.commands
 
 import com.redis.RedisClient
+import hska.iwi.telegramBot.news.Course
+import hska.iwi.telegramBot.news.Course.Course
 import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
@@ -55,8 +57,33 @@ trait Admin extends Commands with Instances with ObjectSerialization {
       case None => logger.warn("No userID received")
       case Some(id) =>
         logger.info(s"User id: $id")
-        val redisLookup = RedisInstance.userConfig(UserID(id.toInt))
+        val redisLookup = RedisInstance.getUserConfigFor(UserID(id.toInt))
         reply(redisLookup.toString)
+    }
+  }
+
+  onCommand("/setconfig") { implicit msg =>
+    val msgParts = msg.text.get.split(" ")
+    if (msgParts.size >= 3) {
+      val courseAsString = msgParts(1)
+      val courseSettingAsString = msgParts(2)
+
+      val user = UserID(msg.from.get.id)
+      val course = Course.withNameOpt(courseAsString)
+
+      if (course.isEmpty) {
+        reply(s"${courseAsString.italic} is not a valid course")
+      } else {
+        try {
+          val courseSetting = courseSettingAsString.toBoolean
+          RedisInstance.setUserConfig(user, course.get, courseSetting)
+
+          reply(s"Set $courseAsString to ${courseSettingAsString.italic}", ParseMode.Markdown)
+        } catch {
+          case _: Exception => reply(s"${courseSettingAsString.italic} is not a valid setting")
+        }
+      }
+
     }
 
   }

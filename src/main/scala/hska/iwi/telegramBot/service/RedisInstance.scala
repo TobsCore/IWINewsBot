@@ -71,6 +71,10 @@ object RedisInstance extends ObjectSerialization {
     redis.hmset(s"config:${userID.id}", userConfig)
   }
 
+  def setUserConfig(userID: UserID, course: Course, courseSetting: Boolean): Boolean = {
+    redis.hset(s"config:$userID", course, courseSetting)
+  }
+
   /**
     * Removes the user configuration from the database
     *
@@ -89,14 +93,15 @@ object RedisInstance extends ObjectSerialization {
     * @return A Map, where each course is mapped to a boolean value. If no configuration can be
     *         found, `None` is returned.
     */
-  def userConfig(userID: UserID): Option[Map[Course, Boolean]] = {
-    val redisResult: Option[Map[String, String]] =
+  def getUserConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
+    val redisResult =
       redis.hgetall1[String, String](s"config:${userID.id}")
 
     redisResult match {
       case None => None
       case Some(map) =>
         try {
+          // Map the returned Strings to the corresponding objects
           Some(map.map { case (key, value) => Course.withNameOpt(key).get -> value.toBoolean })
         } catch {
           case e: Exception =>
