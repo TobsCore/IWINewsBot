@@ -1,11 +1,14 @@
 package hska.iwi.telegramBot.service
 
 import com.redis.RedisClient
+import com.typesafe.scalalogging.Logger
+import hska.iwi.telegramBot.news.Course
 import hska.iwi.telegramBot.news.Course.Course
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
 
 object RedisInstance extends ObjectSerialization {
+  val logger = Logger(getClass)
   val redis = new RedisClient(Configuration.redisHost, Configuration.redisPort)
 
   /**
@@ -87,8 +90,21 @@ object RedisInstance extends ObjectSerialization {
     *         found, `None` is returned.
     */
   def userConfig(userID: UserID): Option[Map[Course, Boolean]] = {
-    // TODO: Implement Method
-    None
+    val redisResult: Option[Map[String, String]] =
+      redis.hgetall1[String, String](s"config:${userID.id}")
+
+    redisResult match {
+      case None => None
+      case Some(map) =>
+        try {
+          Some(map.map { case (key, value) => Course.withNameOpt(key).get -> value.toBoolean })
+        } catch {
+          case e: Exception =>
+            logger.error("Error converting config data to object")
+            logger.debug(e.getMessage)
+            None
+        }
+    }
   }
 
   /**

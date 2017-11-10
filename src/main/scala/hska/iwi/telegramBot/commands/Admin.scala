@@ -1,6 +1,7 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.service.{Admins, Instances, ObjectSerialization, UserID}
+import com.redis.RedisClient
+import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.models.User
@@ -40,6 +41,24 @@ trait Admin extends Commands with Instances with ObjectSerialization {
         }
       }
     }
+  }
+
+  onCommand("/userconfig") { implicit msg =>
+    val msgParts = msg.text.get.split(" ")
+    val userID = if (msgParts.size > 1) {
+      Some(msgParts(1))
+    } else {
+      None
+    }
+
+    userID match {
+      case None => logger.warn("No userID received")
+      case Some(id) =>
+        logger.info(s"User id: $id")
+        val redisLookup = RedisInstance.userConfig(UserID(id.toInt))
+        reply(redisLookup.toString)
+    }
+
   }
 
 }
