@@ -1,3 +1,3 @@
 package hska.iwi.telegramBot.service
 
-case class UserID(id: Int) {}
+case class UserID(id: Int) extends AnyVal {}
