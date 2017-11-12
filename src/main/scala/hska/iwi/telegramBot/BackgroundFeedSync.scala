@@ -1,12 +1,14 @@
 package hska.iwi.telegramBot
 
 import akka.actor.ActorSystem
+import com.redis.RedisClient
 import hska.iwi.telegramBot.news.Course.Course
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.{RedisInstance, UserID}
+import hska.iwi.telegramBot.service.{Configuration, RedisInstance, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
+import info.mukel.telegrambot4s.models.ChatId
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -21,6 +23,7 @@ import scala.language.postfixOps
   */
 case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
+  val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
 
   val feedReader = Map(Course.INFB -> FeedReader(FeedURL.INFB),
@@ -46,27 +49,26 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
       val entries = feedProcessor.receiveNewEntries()
-      val userConfig = RedisInstance.userConfig()
+      val userConfig = redis.userConfig()
       val subsriptionEntries = entriesForSubscribers(entries, userConfig)
       sendPushMessageToSubscribers()
     }
   }
 
   private def sendPushMessageToSubscribers(): Unit = {
-    RedisInstance.redis
-      .smembers("users")
-      .foreach((userIds: Set[Option[String]]) => {
-        val userIdList: Set[Long] = userIds.flatten.map(_.toLong)
-        val content: Option[List[Entry]] = feedReader(Course.INFM).receiveEntryList()
+    val content: Option[List[Entry]] = feedReader(Course.INFM).receiveEntryList()
+
+    redis.getAllUserIDs.get
+      .foreach((userID: UserID) =>
         content match {
           case Some(entryList) =>
             if (entryList.nonEmpty) {
               val content: List[String] = entryList.map(entry => EntryFormatter.format(entry))
-              userIdList.foreach(userID =>
-                request(SendMessage(userID, content.head, parseMode = Some(ParseMode.Markdown))))
+              request(
+                SendMessage(ChatId(userID.id), content.head, parseMode = Some(ParseMode.Markdown)))
             }
           case None => logger.debug("No entries received")
-        }
       })
   }
+
 }

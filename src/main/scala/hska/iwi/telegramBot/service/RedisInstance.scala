@@ -1,16 +1,16 @@
 package hska.iwi.telegramBot.service
 
-import com.redis.serialization.Parse.Implicits._
-import Implicits._
 import com.redis.RedisClient
+import com.redis.serialization.Parse.Implicits._
 import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.news.Course.Course
+import hska.iwi.telegramBot.service.Implicits._
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
 
-object RedisInstance extends ObjectSerialization {
+class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
+
   val logger = Logger(getClass)
-  val redis = new RedisClient(Configuration.redisHost, Configuration.redisPort)
 
   /**
     * Adds a user ID to the list of users.
@@ -45,6 +45,17 @@ object RedisInstance extends ObjectSerialization {
     */
   def setUserData(userID: UserID, user: User): Boolean = {
     redis.set(s"user:${userID.id}", write(user))
+  }
+
+  /**
+    * Receives the user data from the database, if there are any saved.
+    *
+    * @param userID The user id, for which the userdata should be received.
+    * @return The user object, that is saved for the given id. If no user can be returned,
+    *         {{{None}}} will be returned.
+    */
+  def getUserData(userID: UserID): Option[User] = {
+    redis.get[User](s"user:${userID.id}")
   }
 
   /**
@@ -168,4 +179,10 @@ object RedisInstance extends ObjectSerialization {
       .flatMap((p: (UserID, Option[Set[Course]])) => p._2.get.toList.map(f => f -> p._1))
       .groupBy(_._1)
       .map((p: (Course, Iterable[(Course, UserID)])) => (p._1, p._2.map(_._2).toSet))
+}
+
+object RedisInstance {
+
+  def default: RedisInstance =
+    new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
 }

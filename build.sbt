@@ -2,6 +2,11 @@ name := "IWINewsBot"
 version := "0.1"
 scalaVersion := "2.12.4"
 
+
+// Scala Test
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.4"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+
 // Logback logging engine
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
@@ -13,15 +18,14 @@ libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.14"
 libraryDependencies += "net.debasishg" %% "redisclient" % "3.4"
 
 // XML
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
 
 // ScalaJ-HTTP for accessing feed
 libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0"
 
 // Serialization and Deserialization
-val json4sNative = "org.json4s" %% "json4s-native" % "{latestVersion}"
-val json4sJackson = "org.json4s" %% "json4s-jackson" % "{latestVersion}"
+val json4sNative = "org.json4s" %% "json4s-native" % "3.6.0-M1"
+val json4sJackson = "org.json4s" %% "json4s-jackson" % "3.6.0-M1"
 
 // Removing encodings in rss feeds
 libraryDependencies += "org.apache.commons" % "commons-text" % "1.1"

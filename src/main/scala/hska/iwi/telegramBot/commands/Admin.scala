@@ -7,7 +7,6 @@ import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.models.User
 import info.mukel.telegrambot4s.Implicits._
 import info.mukel.telegrambot4s.methods.ParseMode
-import org.json4s.jackson.Serialization.read
 
 trait Admin extends Commands with Instances with ObjectSerialization with Admins {
   _: TelegramBot =>
@@ -16,10 +15,10 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
     {
       using(_.from) { user =>
         if (isAllowed(user)) {
-          val userIDList: Set[Option[String]] = redis.smembers("users").get
-          val users: Set[User] =
-            userIDList.flatten.flatMap(userID => redis.get(s"user:$userID").map(read[User]))
-          users.foreach(user => reply(user.toString))
+          redis.getAllUserIDs
+            .getOrElse(Set())
+            .map(userID => redis.getUserData(userID))
+            .foreach(userID => reply(userID.toString))
         } else {
           reply("Cannot list all users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
@@ -63,7 +62,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
             id.toInt
         }
 
-        val redisLookup = RedisInstance.getConfigFor(UserID(searchUserID))
+        val redisLookup = redis.getConfigFor(UserID(searchUserID))
         reply(redisLookup.toString)
       } else {
         reply("Cannot check user configuration - This is an Admin feature")
@@ -75,7 +74,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
   onCommand("/subscriptions", "/subs") { implicit msg =>
     using(_.from) { user: User =>
       if (isAllowed(user)) {
-        val subscriptions = RedisInstance.getConfigForUsers
+        val subscriptions = redis.getConfigForUsers
         subscriptions.foreach(e => reply(e.toString()))
       } else {
         reply("Cannot check subscriptions - This is an Admin feature")
@@ -100,7 +99,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
           } else {
             try {
               val courseSetting = courseSettingAsString.toBoolean
-              RedisInstance.setUserConfig(user, course.get, courseSetting)
+              redis.setUserConfig(user, course.get, courseSetting)
 
               reply(s"Set $courseAsString to ${courseSettingAsString.italic}", ParseMode.Markdown)
             } catch {
