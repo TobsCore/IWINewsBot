@@ -28,7 +28,7 @@ object EntryFormatter {
     val authorEmail = entry.author.email
     val date =
       new DateTime(entry.updated)
-        .toString(DateTimeFormat.forPattern("d. MMM. yyyy - HH:mm 'Uhr'").withLocale(Locale.GERMAN))
+        .toString(DateTimeFormat.forPattern("d. MMM yyyy - HH:mm 'Uhr'").withLocale(Locale.GERMAN))
 
     s"""|$title
         |$subTitle
