@@ -72,6 +72,15 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
     }
   }
 
+  onCommand("/subscriptions", "/subs") { implicit msg =>
+    using(_.from) { user: User =>
+      if (isAllowed(user)) {
+        val subscriptions = RedisInstance.getConfigForUsers
+        subscriptions.foreach(e => reply(e.toString()))
+      } else {
+        reply("Cannot check subscriptions - This is an Admin feature")
+        logger.warn(s"User $user tried to check all subscriptions")
+      }
     }
   }
 

@@ -154,8 +154,18 @@ object RedisInstance extends ObjectSerialization {
     })
   }
 
-  def getConfigForUsers: Map[Course, Option[UserID]] = {
-    val userConfiguration = userConfig()
-    Map[Course, Option[UserID]]()
-  }
+  /**
+    * Returns a map, where each course is mapped to a set of users, that are subscribed to the
+    * course. If there are no users subscribed to the course, an empty set will be returned.
+    * Different courses can point to the same user, since one user can be subscribed to multiple
+    * courses.
+    *
+    * @return A set, where each course is mapped to the users that are subscribed to the course.
+    */
+  def getConfigForUsers: Map[Course, Set[UserID]] =
+    userConfig()
+      .filter((p: (UserID, Option[Set[Course]])) => p._2.isDefined)
+      .flatMap((p: (UserID, Option[Set[Course]])) => p._2.get.toList.map(f => f -> p._1))
+      .groupBy(_._1)
+      .map((p: (Course, Iterable[(Course, UserID)])) => (p._1, p._2.map(_._2).toSet))
 }
