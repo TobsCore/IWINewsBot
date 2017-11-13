@@ -174,11 +174,14 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     * @return A set, where each course is mapped to the users that are subscribed to the course.
     */
   def getConfigForUsers: Map[Course, Set[UserID]] =
-    userConfig()
+    userConfig().par
       .filter((p: (UserID, Option[Set[Course]])) => p._2.isDefined)
       .flatMap((p: (UserID, Option[Set[Course]])) => p._2.get.toList.map(f => f -> p._1))
+      .seq
       .groupBy(_._1)
+      .par
       .map((p: (Course, Iterable[(Course, UserID)])) => (p._1, p._2.map(_._2).toSet))
+      .seq
 }
 
 object RedisInstance {
