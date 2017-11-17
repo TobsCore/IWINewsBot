@@ -65,7 +65,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
             if (entryList.nonEmpty) {
               val content: List[String] = entryList.map(entry => EntryFormatter.format(entry))
               request(
-                SendMessage(ChatId(userID.id), content.head, parseMode = Some(ParseMode.Markdown)))
+                SendMessage(ChatId(userID.id), content.head, parseMode = Some(ParseMode.HTML)))
             }
           case None => logger.debug("No entries received")
       })

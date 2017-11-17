@@ -16,25 +16,25 @@ object EntryFormatter {
     *         without any further modification to send it to recipients.
     */
   def format(entry: Entry): String = {
-    val title = entry.title.bold
+    val title = entry.title
     val splitSummary = entry.summary.split(": ", 2)
     val subTitle = if (splitSummary.size >= 2) {
-      "\n" + splitSummary(0).bold
+      "\n" + splitSummary(0)
     } else {
       ""
     }
     val summary = entry.content
-    val authorName = entry.author.name.italic
+    val authorName = entry.author.name
     val authorEmail = entry.author.email
     val date =
       new DateTime(entry.updated)
         .toString(DateTimeFormat.forPattern("d. MMM yyyy - HH:mm 'Uhr'").withLocale(Locale.GERMAN))
 
-    s"""|$title
-        |$subTitle
+    s"""|<b>$title</b>
+        |<b>$subTitle</b>
         |$summary
         |
-        |$authorName ($authorEmail)
+        |<i>$authorName</i>  ($authorEmail)
         |$date""".stripMargin
   }
 }
