@@ -39,6 +39,11 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     Map()
   }
 
+  def saveEntries(allEntries: Map[Course, Option[Set[Entry]]]): Map[Course, Option[Set[Entry]]] = {
+    allEntries.map((f: (Course, Option[Set[Entry]])) =>
+      f._1 -> redis.addNewsEntries(f._1, f._2.getOrElse(Set())))
+  }
+
   /**
     * The background sync task is started by calling this method. Since this starts the
     * background tasks, it should be
@@ -48,26 +53,32 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
   def start(): Unit = {
     // Start searching 10 seconds after launch and then every 1 minute
     backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
-      val entries = feedProcessor.receiveNewEntries()
+      logger.info("Loading again.")
+      val entries = feedProcessor.receiveEntries()
       val userConfig = redis.userConfig()
+      val newEntries = saveEntries(entries)
       val subsriptionEntries = entriesForSubscribers(entries, userConfig)
-      sendPushMessageToSubscribers()
+      sendPushMessageToSubscribers(newEntries)
     }
   }
 
-  private def sendPushMessageToSubscribers(): Unit = {
-    val content: Option[List[Entry]] = feedReader(Course.INFM).receiveEntryList()
+  private def sendPushMessageToSubscribers(newEntries: Map[Course, Option[Set[Entry]]]): Unit = {
+    newEntries
+      .filterKeys(_.equals(Course.INFM))
+      .foreach((f: (Course, Option[Set[Entry]])) => {
 
-    redis.getAllUserIDs.get
-      .foreach((userID: UserID) =>
-        content match {
-          case Some(entryList) =>
-            if (entryList.nonEmpty) {
-              val content: List[String] = entryList.map(entry => EntryFormatter.format(entry))
+        val entryList = f._2.getOrElse(Set())
+        entryList.foreach((entry: Entry) => {
+          redis.getAllUserIDs
+            .getOrElse(Set())
+            .foreach(userID => {
+              logger.debug(s"Sending reply to user $userID")
               request(
-                SendMessage(ChatId(userID.id), content.head, parseMode = Some(ParseMode.HTML)))
-            }
-          case None => logger.debug("No entries received")
+                SendMessage(ChatId(userID.id),
+                            EntryFormatter.format(entry),
+                            parseMode = Some(ParseMode.HTML)))
+            })
+        })
       })
   }
 

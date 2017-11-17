@@ -1,6 +1,7 @@
 package hska.iwi.telegramBot.service
 
 import hska.iwi.telegramBot.news.Course.Course
+import hska.iwi.telegramBot.news.Entry
 import info.mukel.telegrambot4s.models.User
 
 trait DBConnection {
@@ -124,5 +125,15 @@ trait DBConnection {
     * @return A set, where each course is mapped to the users that are subscribed to the course.
     */
   def getConfigForUsers: Map[Course, Set[UserID]]
+
+  /**
+    * Saves all new NewsEntries in the DB for the given course. This will only store new entries.
+    *
+    * @param course       The course for which the news entries are added.
+    * @param newsEntrySet The entry set which will be added to the DB.
+    * @return If no new entries have been given, {{{None}}} is returned. If there are new entries
+    *         in the given list, only those will be returned.
+    */
+  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Option[Set[Entry]]
 
 }

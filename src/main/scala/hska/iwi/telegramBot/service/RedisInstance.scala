@@ -4,9 +4,12 @@ import com.redis.RedisClient
 import com.redis.serialization.Parse.Implicits._
 import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.news.Course.Course
+import hska.iwi.telegramBot.news.Entry
 import hska.iwi.telegramBot.service.Implicits._
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
+
+import scala.collection.mutable
 
 class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
 
@@ -86,6 +89,21 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
       .par
       .map((p: (Course, Iterable[(Course, UserID)])) => (p._1, p._2.map(_._2).toSet))
       .seq
+
+  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Option[Set[Entry]] = {
+    val resultSet: mutable.Set[Entry] = mutable.Set[Entry]()
+
+    newsEntrySet.foreach(entry => {
+      if (redis.sadd(s"news:$course", entry.id).getOrElse(0l).toInt == 1) {
+        resultSet += entry
+      }
+    })
+    if (resultSet.isEmpty) {
+      None
+    } else {
+      Some(resultSet.toSet)
+    }
+  }
 }
 
 object RedisInstance {

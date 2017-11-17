@@ -13,8 +13,7 @@ class FeedProcessor(feedReader: Map[Course, FeedReader]) {
     *         exist and can therefore be `None`, in a case where there is problem receiving
     *         the feeds. Otherwise the set will be empty.
     */
-  def receiveNewEntries(): Map[Course, Option[Set[Entry]]] = {
-    // TODO: Implement Method
-    Map(Course.MKIB -> None)
+  def receiveEntries(): Map[Course, Option[Set[Entry]]] = {
+    feedReader.mapValues(_.receiveEntryList())
   }
 }

@@ -17,7 +17,7 @@ case class FeedReader(address: String) {
     * @return A list of entries of the current feed. `None`, if there was an error. The list may
     *         be empty.
     */
-  def receiveEntryList(): Option[List[Entry]] = {
+  def receiveEntryList(): Option[Set[Entry]] = {
     logger.debug(s"Connecting to $address")
     // Receive the XML feed from the web by http
     try {
@@ -50,8 +50,7 @@ case class FeedReader(address: String) {
         val newEntry = Entry(title, Author(authorName, authorEmail), id, updated, content, summary)
         entries += newEntry
       }
-      val entriesList = entries.toList
-      Some(entriesList)
+      Some(entries.toSet)
     } catch {
       case ste: java.net.SocketTimeoutException =>
         logger.warn(s"Cannot connect to $address")
