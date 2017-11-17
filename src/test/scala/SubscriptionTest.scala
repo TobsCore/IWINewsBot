@@ -11,13 +11,13 @@ class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
   val redis = new RedisInstance(
     new RedisClient(Configuration.redisHost, Configuration.redisTestPort))
 
-  val logger = LoggerFactory
+  val logger: Unit = LoggerFactory
     .getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME)
     .asInstanceOf[Logger]
     .setLevel(Level.INFO)
-  val range = 10000 until 50000
+  private val range: Range = 10000 until 500000
 
-  override def beforeAll() {
+  /*override def beforeAll() {
     println("Setting up database")
     for (id <- range) {
       val userID = UserID(id)
@@ -28,7 +28,7 @@ class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
       redis.setUserData(userID, user)
       redis.setUserConfig(userID, config)
     }
-  }
+  }*/
 
   test("Get user data") {
     val userID = UserID(13333)
@@ -37,13 +37,14 @@ class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
   }
 
   test("Get configuration") {
+    println("Run speed test")
     time {
       val result = redis.getConfigForUsers
+      assert(result.nonEmpty)
     }
-
   }
 
-  override def afterAll() {
+  /* override def afterAll() {
     println("Destructing database entries")
     for (id <- range) {
       val userID = UserID(id)
@@ -51,7 +52,7 @@ class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
       redis.removeUserData(userID)
       redis.removeUserConfig(userID)
     }
-  }
+  }*/
 
   def time[R](block: => R): R = {
     val t0 = System.nanoTime()
