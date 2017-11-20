@@ -80,15 +80,22 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     })
   }
 
-  def getConfigForUsers: Map[Course, Set[UserID]] =
-    userConfig().par
+  def getConfigForUsers: Map[Course, Set[UserID]] = {
+    val userToCourse = userConfig()
       .filter((p: (UserID, Option[Set[Course]])) => p._2.isDefined)
-      .flatMap((p: (UserID, Option[Set[Course]])) => p._2.get.toList.map(f => f -> p._1))
-      .seq
-      .groupBy(_._1)
-      .par
-      .map((p: (Course, Iterable[(Course, UserID)])) => (p._1, p._2.map(_._2).toSet))
-      .seq
+      .map((p: (UserID, Option[Set[Course]])) => p._2.get.toList.map(f => f -> p._1))
+
+    // In order to merge the Lists which have the same keys, which should map to a set of user
+    // ids, a mutable map is used to add the elements to.
+    val mutableResultMap: mutable.Map[Course, Set[UserID]] = mutable.Map.empty
+
+    userToCourse.foreach(l =>
+      l.foreach((e: (Course, UserID)) => {
+        mutableResultMap.put(e._1, mutableResultMap.getOrElse(e._1, Set()) + e._2)
+      }))
+
+    mutableResultMap.toMap
+  }
 
   def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Option[Set[Entry]] = {
     val resultSet: mutable.Set[Entry] = mutable.Set[Entry]()
