@@ -52,8 +52,8 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     */
   def start(): Unit = {
     // Start searching 10 seconds after launch and then every 1 minute
-    backgroundActorSystem.scheduler.schedule(1 seconds, 1 minute) {
-      logger.info("Loading again.")
+    backgroundActorSystem.scheduler.schedule(10 seconds, 1 minute) {
+      logger.debug("Loading remote data.")
       val entries = feedProcessor.receiveEntries()
       val userConfig = redis.userConfig()
       val newEntries = saveEntries(entries)

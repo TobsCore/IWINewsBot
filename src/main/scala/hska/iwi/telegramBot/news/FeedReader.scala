@@ -53,7 +53,7 @@ case class FeedReader(address: String) {
       Some(entries.toSet)
     } catch {
       case ste: java.net.SocketTimeoutException =>
-        logger.warn(s"Cannot connect to $address")
+        logger.info(s"Cannot connect to $address")
         logger.debug(ste.getMessage)
         None
       case e: Exception =>

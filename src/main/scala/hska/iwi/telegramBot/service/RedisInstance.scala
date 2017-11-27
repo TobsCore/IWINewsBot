@@ -23,6 +23,10 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     redis.srem("users", userID.id).getOrElse(0l).toInt == 1
   }
 
+  def isMember(userID: UserID): Boolean = {
+    redis.sismember("users", userID.id)
+  }
+
   def setUserData(userID: UserID, user: User): Boolean = {
     redis.set(s"user:${userID.id}", write(user))
   }
