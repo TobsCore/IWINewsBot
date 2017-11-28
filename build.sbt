@@ -37,6 +37,7 @@ mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt
 fork in run := true
+test in assembly := {}
 
 // Stops the program from running in sbt (by calling ctrl+c) and doesn't stop sbt
 cancelable in Global := true
