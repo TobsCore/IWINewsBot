@@ -26,9 +26,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
   val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
 
-  val feedReader = Map(Course.INFB -> FeedReader(FeedURL.INFB),
-                       Course.MKIB -> FeedReader(FeedURL.MKIB),
-                       Course.INFM -> FeedReader(FeedURL.INFM))
+  val feedReader = Map(Course.INFM -> FeedReader(FeedURL.bulletinBoard))
 
   val feedProcessor = new FeedProcessor(feedReader)
 
@@ -57,7 +55,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
       val entries = feedProcessor.receiveEntries()
       val userConfig = redis.userConfig()
       val newEntries = saveEntries(entries)
-      val subsriptionEntries = entriesForSubscribers(entries, userConfig)
+      val subscriptionEntries = entriesForSubscribers(entries, userConfig)
       sendPushMessageToSubscribers(newEntries)
     }
   }

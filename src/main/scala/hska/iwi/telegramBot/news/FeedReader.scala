@@ -2,16 +2,16 @@ package hska.iwi.telegramBot.news
 
 import com.typesafe.scalalogging.Logger
 import org.apache.commons.lang3.StringEscapeUtils
-
-import scalaj.http.{Http, HttpResponse}
-import scala.xml.XML
+import org.json4s.{DefaultFormats, _}
+import org.json4s.jackson.JsonMethods
 
 case class FeedReader(address: String) {
+  implicit val jsonDefaultFormats = DefaultFormats
   val logger = Logger(getClass)
 
   /**
-    * Connects to feed URL, which has been passed in the constructor and parses the received XML
-    * to a list of entry elements. If the returned xml contains errors or couldn't been
+    * Connects to feed URL, which has been passed in the constructor and parses the received JSON
+    * to a list of entry elements. If the returned json contains errors or couldn't been
     * transported correctly, `None` is returned.
     *
     * @return A list of entries of the current feed. `None`, if there was an error. The list may
@@ -19,47 +19,48 @@ case class FeedReader(address: String) {
     */
   def receiveEntryList(): Option[Set[Entry]] = {
     logger.debug(s"Connecting to $address")
-    // Receive the XML feed from the web by http
+    // Receive the feed from the web by http
     try {
-      val response: HttpResponse[String] = Http(address)
-        .charset("windows-1252")
-        .timeout(connTimeoutMs = 2000, readTimeoutMs = 20000)
-        .asString
+      //response from bulletin board
+      val content = get(address)
 
-      // Get rid of html entities, like codes for Umlaute.
-      val xmlString = StringEscapeUtils.unescapeHtml4(response.body)
+      //fixes encoding problem
+      val jsonString = StringEscapeUtils.unescapeHtml4(content)
 
-      logger.debug(s"Request to $address returned HTTP Code ${response.code}")
+      //fixes problem which results from type being a scala keyword
+      val updated = jsonString.replaceAll("type", "newsType")
 
-      logger.trace(s"Retrieved the following: $xmlString")
-      // convert the `String` to a `scala.xml.Elem`
-      val xml = XML.loadString(xmlString)
-      logger.debug("XML successfully parsed")
+      //parses the json entries and stores them in a set of entries
+      val entries = JsonMethods.parse(updated).extract[Set[Entry]]
+      logger.debug("JSON successfully parsed")
 
-      // Parse the xml objects and put them in a list
-      val entryNodes = xml \\ "entry"
-      var entries = new scala.collection.mutable.ListBuffer[Entry]()
-      for (elem <- entryNodes) {
-        val title = (elem \\ "title").text
-        val authorName = (elem \\ "author" \\ "name").text
-        val authorEmail = (elem \\ "author" \\ "email").text
-        val id = (elem \\ "id").text
-        val updated = (elem \\ "updated").text
-        val content = (elem \\ "content").text
-        val summary = (elem \\ "summary").text
-        val newEntry = Entry(title, Author(authorName, authorEmail), id, updated, content, summary)
-        entries += newEntry
-      }
-      Some(entries.toSet)
+      Some(entries)
     } catch {
       case ste: java.net.SocketTimeoutException =>
         logger.info(s"Cannot connect to $address")
         logger.debug(ste.getMessage)
         None
-      case e: Exception =>
-        logger.warn(s"Cannot parse XML")
+      case e: java.io.IOException =>
+        logger.warn(s"Cannot parse json correctly.")
         logger.debug(e.getMessage)
         None
     }
+  }
+
+  @throws(classOf[java.io.IOException])
+  @throws(classOf[java.net.SocketTimeoutException])
+  private def get(url: String,
+                  connectTimeout: Int = 5000,
+                  readTimeout: Int = 5000,
+                  requestMethod: String = "GET") = {
+    import java.net.{HttpURLConnection, URL}
+    val connection = (new URL(url)).openConnection.asInstanceOf[HttpURLConnection]
+    connection.setConnectTimeout(connectTimeout)
+    connection.setReadTimeout(readTimeout)
+    connection.setRequestMethod(requestMethod)
+    val inputStream = connection.getInputStream
+    val content = io.Source.fromInputStream(inputStream).mkString
+    if (inputStream != null) inputStream.close
+    content
   }
 }
