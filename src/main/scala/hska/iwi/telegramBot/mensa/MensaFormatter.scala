@@ -36,11 +36,26 @@ object MensaFormatter {
     var formattedMeals = ""
     for (meal <- meals) {
       formattedMeals +=
-        s"""${meal.name}
+        s"""${meal.name} <i>${getEmojiSet(meal)}</i>
          |<i>${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}</i>
          |""".stripMargin
     }
     formattedMeals
+  }
+
+  private def getEmojiSet(meal: Meal): String = {
+    var emojiString = ""
+    for (food <- meal.foodAdditiveNumbers) {
+      food match {
+        case "Fi" | "27" | "98" => emojiString += "\ud83d\udc1f " //Fisch
+        case "93" | "94"        => emojiString += "\ud83d\udc04 " //Rind
+        case "95"               => emojiString += "\ud83d\udc16 " //Schwein
+        case "96"               => emojiString += "(veget.) " //vegetarisch
+        case "97"               => emojiString += "(veg.) " //vegan
+        case _                  => emojiString += ""
+      }
+    }
+    emojiString
   }
 
 }
