@@ -16,8 +16,7 @@ trait Mensa extends Commands {
   onCommand("/mensa") { implicit msg =>
     logger.debug("received command 'mensa'")
     val mensaUrl = FeedURL.mensa + Date.getCurrentDate()
-    val feedReader = new FeedReader(mensaUrl)
-    val content = feedReader.get()
+    val content = HTTPGet.get(mensaUrl)
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object
       val mensa = JsonMethods.parse(content.get).extract[MensaMoltke]

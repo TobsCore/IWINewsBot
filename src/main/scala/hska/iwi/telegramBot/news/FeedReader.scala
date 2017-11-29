@@ -1,9 +1,8 @@
 package hska.iwi.telegramBot.news
 
 import com.typesafe.scalalogging.Logger
-import org.apache.commons.lang3.StringEscapeUtils
-import org.json4s.{DefaultFormats, _}
 import org.json4s.jackson.JsonMethods
+import org.json4s.{DefaultFormats, _}
 
 case class FeedReader(address: String) {
   implicit val jsonDefaultFormats = DefaultFormats
@@ -20,47 +19,22 @@ case class FeedReader(address: String) {
   def receiveEntryList(): Option[Set[Entry]] = {
     logger.debug(s"Connecting to $address")
     // Receive the feed from the web by http
-    try {
-      //response from bulletin board
-      val content = get(address)
+    //response from bulletin board
+    val content = HTTPGet.get(address)
 
-      //fixes encoding problem
-      val jsonString = StringEscapeUtils.unescapeHtml4(content)
-
+    if (content.isDefined) {
       //fixes problem which results from type being a scala keyword
-      val updated = jsonString.replaceAll("type", "newsType")
+      val updated = content.get.replaceAll("type", "newsType")
 
       //parses the json entries and stores them in a set of entries
       val entries = JsonMethods.parse(updated).extract[Set[Entry]]
       logger.debug("JSON successfully parsed")
 
       Some(entries)
-    } catch {
-      case ste: java.net.SocketTimeoutException =>
-        logger.info(s"Cannot connect to $address")
-        logger.debug(ste.getMessage)
-        None
-      case e: java.io.IOException =>
-        logger.warn(s"Cannot parse json correctly.")
-        logger.debug(e.getMessage)
-        None
+    } else {
+      None
     }
+
   }
 
-  @throws(classOf[java.io.IOException])
-  @throws(classOf[java.net.SocketTimeoutException])
-  private def get(url: String,
-                  connectTimeout: Int = 5000,
-                  readTimeout: Int = 5000,
-                  requestMethod: String = "GET") = {
-    import java.net.{HttpURLConnection, URL}
-    val connection = (new URL(url)).openConnection.asInstanceOf[HttpURLConnection]
-    connection.setConnectTimeout(connectTimeout)
-    connection.setReadTimeout(readTimeout)
-    connection.setRequestMethod(requestMethod)
-    val inputStream = connection.getInputStream
-    val content = io.Source.fromInputStream(inputStream).mkString
-    if (inputStream != null) inputStream.close
-    content
-  }
 }
