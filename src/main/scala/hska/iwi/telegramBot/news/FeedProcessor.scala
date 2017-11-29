@@ -2,18 +2,28 @@ package hska.iwi.telegramBot.news
 
 import hska.iwi.telegramBot.news.Course.Course
 
-class FeedProcessor(feedReader: Map[Course, FeedReader]) {
+import scala.collection.mutable
+
+class FeedProcessor(feedReader: FeedReader) {
 
   /**
-    * Takes the feed that were passed in as constructor arguments and checks each feed for its
-    * contents. The whole feed is placed in the map as a value, where the key is the feed
-    * identifier. An identifier might be "INFB".
+    * Takes the feed that were passed in as constructor arguments and checks the feed for its
+    * contents. The
     *
     * @return A list, where the course is mapped to a set of entries. This set doesn't have to
     *         exist and can therefore be `None`, in a case where there is problem receiving
     *         the feeds. Otherwise the set will be empty.
     */
-  def receiveEntries(): Map[Course, Option[Set[Entry]]] = {
-    feedReader.mapValues(_.receiveEntryList())
+  def receiveEntries(): Map[Course, Set[Entry]] = {
+    val entryList: Set[Entry] = feedReader.receiveEntryList().getOrElse(Set())
+    val mutableResultMap: mutable.Map[Course, Set[Entry]] = mutable.Map.empty[Course, Set[Entry]]
+
+    for (entry <- entryList) {
+      val entryCourses = entry.courseOfStudies.map(Course.withName)
+      for (course <- entryCourses) {
+        mutableResultMap.put(course, mutableResultMap.getOrElse(course, Set()) + entry)
+      }
+    }
+    mutableResultMap.toMap
   }
 }

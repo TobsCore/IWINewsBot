@@ -101,7 +101,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     mutableResultMap.toMap
   }
 
-  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Option[Set[Entry]] = {
+  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Set[Entry] = {
     val resultSet: mutable.Set[Entry] = mutable.Set[Entry]()
 
     newsEntrySet.foreach(entry => {
@@ -109,11 +109,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
         resultSet += entry
       }
     })
-    if (resultSet.isEmpty) {
-      None
-    } else {
-      Some(resultSet.toSet)
-    }
+    resultSet.toSet
   }
 }
 

@@ -131,9 +131,9 @@ trait DBConnection {
     *
     * @param course       The course for which the news entries are added.
     * @param newsEntrySet The entry set which will be added to the DB.
-    * @return If no new entries have been given, {{{None}}} is returned. If there are new entries
-    *         in the given list, only those will be returned.
+    * @return If no new entries have been given, an empty Set will be returned. If there are new
+    *         entries in the given list, only those will be returned.
     */
-  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Option[Set[Entry]]
+  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Set[Entry]
 
 }

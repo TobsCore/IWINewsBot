@@ -26,20 +26,17 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
   val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
 
-  val feedReader = Map(Course.INFM -> FeedReader(FeedURL.bulletinBoard))
-
-  val feedProcessor = new FeedProcessor(feedReader)
+  val feedProcessor = new FeedProcessor(FeedReader(FeedURL.bulletinBoard))
 
   def entriesForSubscribers(
-      entries: Map[Course, Option[Set[Entry]]],
+      entries: Map[Course, Set[Entry]],
       userConfig: Map[UserID, Option[Set[Course]]]): Map[UserID, Set[Entry]] = {
     // TODO: Implement Method
     Map()
   }
 
-  def saveEntries(allEntries: Map[Course, Option[Set[Entry]]]): Map[Course, Option[Set[Entry]]] = {
-    allEntries.map((f: (Course, Option[Set[Entry]])) =>
-      f._1 -> redis.addNewsEntries(f._1, f._2.getOrElse(Set())))
+  def saveEntries(allEntries: Map[Course, Set[Entry]]): Map[Course, Set[Entry]] = {
+    allEntries.map((f: (Course, Set[Entry])) => f._1 -> redis.addNewsEntries(f._1, f._2))
   }
 
   /**
@@ -60,12 +57,12 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     }
   }
 
-  private def sendPushMessageToSubscribers(newEntries: Map[Course, Option[Set[Entry]]]): Unit = {
+  private def sendPushMessageToSubscribers(newEntries: Map[Course, Set[Entry]]): Unit = {
     newEntries
       .filterKeys(_.equals(Course.INFM))
-      .foreach((f: (Course, Option[Set[Entry]])) => {
+      .foreach((f: (Course, Set[Entry])) => {
 
-        val entryList = f._2.getOrElse(Set())
+        val entryList = f._2
         entryList.foreach((entry: Entry) => {
           redis.getAllUserIDs
             .getOrElse(Set())
