@@ -9,7 +9,7 @@ object MensaFormatter {
     val formattedMealGroups: String = formatMealGroups(mensa.mealGroups)
 
     s"""<b>${mensa.name}</b>
-       |<b>Heute: $date</b>
+       |$date
        |
        |$formattedMealGroups
        |<i>Preise: Studierende / Mitarbeiter(innen)</i>
@@ -37,7 +37,7 @@ object MensaFormatter {
     for (meal <- meals) {
       formattedMeals +=
         s"""${meal.name} <i>${getEmojiSet(meal)}</i>
-         |<i>${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}</i>
+         |${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
          |""".stripMargin
     }
     formattedMeals
@@ -51,7 +51,7 @@ object MensaFormatter {
         case "93" | "94"        => emojiString += "\ud83d\udc04 " //Rind
         case "95"               => emojiString += "\ud83d\udc16 " //Schwein
         case "96"               => emojiString += "(veget.) " //vegetarisch
-        case "97"               => emojiString += "(veg.) " //vegan
+        case "97"               => emojiString += "(vegan) " //vegan
         case _                  => emojiString += ""
       }
     }

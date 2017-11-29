@@ -1,7 +1,7 @@
 package hska.iwi.telegramBot.mensa
 
 import java.text.SimpleDateFormat
-import java.util.{Calendar, Date}
+import java.util.{Calendar, Date, Locale}
 
 object Date {
 
@@ -11,7 +11,7 @@ object Date {
   }
 
   def formatPretty(date: Date): String = {
-    val format = new SimpleDateFormat("d. MMM yyyy")
+    val format = new SimpleDateFormat("EEEE, d. MMM yyyy", Locale.GERMANY)
     format.format(date)
   }
 
