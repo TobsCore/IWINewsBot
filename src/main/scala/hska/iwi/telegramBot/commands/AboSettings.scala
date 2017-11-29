@@ -119,7 +119,7 @@ trait AboSettings extends Commands with Callbacks with Instances {
     if (value) {
       s"$course abonnieren"
     } else {
-      s"$course abbstellen"
+      s"$course abbestellen"
     }
 
   def notificationText(selection: Boolean, course: Course): String =
