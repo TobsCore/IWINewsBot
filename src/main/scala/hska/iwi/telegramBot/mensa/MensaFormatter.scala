@@ -5,7 +5,7 @@ import java.util.{Currency, Locale}
 object MensaFormatter {
 
   def format(mensa: MensaMoltke): String = {
-    val date = Date.formatPrettyCurrentDate()
+    val date = LocalDate.formatPrettyCurrentDate()
     val formattedMealGroups: String = formatMealGroups(mensa.mealGroups)
 
     s"""<b>${mensa.name}</b>
@@ -36,18 +36,18 @@ object MensaFormatter {
     var formattedMeals = ""
     for (meal <- meals) {
       formattedMeals +=
-        s"""${meal.name} <i>${getEmojiSet(meal)}</i>
+        s"""${meal.name} <i>${getEmojis(meal)}</i>
          |${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
          |""".stripMargin
     }
     formattedMeals
   }
 
-  private def getEmojiSet(meal: Meal): String = {
+  private def getEmojis(meal: Meal): String = {
     var emojiString = ""
     for (food <- meal.foodAdditiveNumbers) {
       food match {
-        case "Fi" | "27" | "98" => emojiString += "\ud83d\udc1f " //Fisch
+        case "Fi" | "27" | "98" => emojiString += "\uD83D\uDC1F " //Fisch
         case "93" | "94"        => emojiString += "\ud83d\udc04 " //Rind
         case "95"               => emojiString += "\ud83d\udc16 " //Schwein
         case "96"               => emojiString += "(veget.) " //vegetarisch

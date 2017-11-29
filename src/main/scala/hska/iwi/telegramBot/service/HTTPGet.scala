@@ -1,6 +1,7 @@
-package hska.iwi.telegramBot.news
+package hska.iwi.telegramBot.service
 
 import java.net.{HttpURLConnection, URL}
+
 import com.typesafe.scalalogging.Logger
 
 object HTTPGet {
@@ -12,8 +13,7 @@ object HTTPGet {
           readTimeout: Int = 5000,
           requestMethod: String = "GET"): Option[String] = {
     try {
-      import java.nio.charset.Charset
-      import java.nio.charset.CodingErrorAction
+      import java.nio.charset.{Charset, CodingErrorAction}
       val decoder = Charset.forName("UTF-8").newDecoder()
       decoder.onMalformedInput(CodingErrorAction.IGNORE)
 

@@ -3,7 +3,7 @@ package hska.iwi.telegramBot.mensa
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date, Locale}
 
-object Date {
+object LocalDate {
 
   def getCurrentDate(): String = {
     val format = new SimpleDateFormat("yyyy-MM-dd")

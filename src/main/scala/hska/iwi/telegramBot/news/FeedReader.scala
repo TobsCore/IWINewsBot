@@ -1,6 +1,7 @@
 package hska.iwi.telegramBot.news
 
 import com.typesafe.scalalogging.Logger
+import hska.iwi.telegramBot.service.HTTPGet
 import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
 

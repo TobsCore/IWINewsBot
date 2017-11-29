@@ -17,9 +17,6 @@ libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.14"
 // Redis as persistence
 libraryDependencies += "net.debasishg" %% "redisclient" % "3.4"
 
-// XML
-libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
-
 // ScalaJ-HTTP for accessing feed
 libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0"
 
