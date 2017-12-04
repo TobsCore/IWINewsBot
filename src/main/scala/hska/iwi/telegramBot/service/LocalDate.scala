@@ -1,4 +1,4 @@
-package hska.iwi.telegramBot.mensa
+package hska.iwi.telegramBot.service
 
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date, Locale}
