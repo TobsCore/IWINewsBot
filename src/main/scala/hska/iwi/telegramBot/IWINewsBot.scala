@@ -21,7 +21,10 @@ class IWINewsBot()
     with Admin
     with AboSettings
     with About
-    with Mensa {
+    with Mensa
+    with FreeRooms {
+
+  override implicit val formats = org.json4s.DefaultFormats
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent
   // the token from leaking
