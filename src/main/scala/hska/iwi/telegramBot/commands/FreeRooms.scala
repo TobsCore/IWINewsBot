@@ -12,7 +12,7 @@ trait FreeRooms extends Commands {
   _: TelegramBot =>
   implicit val formats = org.json4s.DefaultFormats
 
-  onCommand("/freeRooms") { implicit msg =>
+  onCommand("/freieRaeume") { implicit msg =>
     logger.debug("received command 'freeRooms'")
     val content = HTTPGet.get(FeedURL.freeRooms)
     if (content.isDefined) {
