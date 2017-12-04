@@ -1,14 +1,13 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.mensa.{LocalDate, MensaFormatter, MensaMoltke}
+import hska.iwi.telegramBot.mensa.{MensaFormatter, MensaMoltke}
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.HTTPGet
+import hska.iwi.telegramBot.service.{HTTPGet, LocalDate}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.ParseMode
-import org.apache.commons.lang3.StringEscapeUtils
-import org.json4s.{DefaultFormats, _}
 import org.json4s.jackson.JsonMethods
+import org.json4s.{DefaultFormats, _}
 
 trait Mensa extends Commands {
   _: TelegramBot =>

@@ -2,6 +2,8 @@ package hska.iwi.telegramBot.mensa
 
 import java.util.{Currency, Locale}
 
+import hska.iwi.telegramBot.service.LocalDate
+
 object MensaFormatter {
 
   def format(mensa: MensaMoltke): String = {
@@ -51,12 +53,20 @@ object MensaFormatter {
     val emojiString: StringBuilder = new StringBuilder()
     for (food <- meal.foodAdditiveNumbers) {
       food match {
-        case "Fi" | "27" | "98" => emojiString.append("\uD83D\uDC1F ") //Fisch
-        case "93" | "94"        => emojiString.append("\ud83d\udc04 ") //Rind
-        case "95"               => emojiString.append("\ud83d\udc16 ") //Schwein
-        case "96"               => emojiString.append("(veget.) ") //vegetarisch
-        case "97"               => emojiString.append("(vegan) ") //vegan
-        case _                  => emojiString.append("")
+        case "Fi" | "27" | "98" => {
+          if (!emojiString.toString().contains("\uD83D\uDC1F")) {
+            emojiString.append("\uD83D\uDC1F ")
+          }
+        } //Fisch
+        case "93" | "94" =>
+          if (!emojiString.toString().contains("\ud83d\udc04")) {
+            emojiString.append("\ud83d\udc04 ")
+          } //Rind
+        case "95" => emojiString.append("\ud83d\udc16 ") //Schwein
+        case "96" => emojiString.append("(veget.) ") //vegetarisch
+        case "97" => emojiString.append("(vegan) ") //vegan
+        case "We" => emojiString.append("\uD83E\uDD91 ")
+        case _    => emojiString.append("")
       }
     }
     emojiString.toString()
