@@ -22,7 +22,8 @@ class IWINewsBot()
     with AboSettings
     with About
     with Mensa
-    with FreeRooms {
+    with FreeRooms
+    with Lecturers {
 
   override implicit val formats = org.json4s.DefaultFormats
 

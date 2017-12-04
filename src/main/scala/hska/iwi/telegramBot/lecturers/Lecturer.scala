@@ -1,0 +1,22 @@
+package hska.iwi.telegramBot.lecturers
+
+case class Lecturer(id: Int,
+                    firstname: String,
+                    lastname: String,
+                    title: String,
+                    adsAccount: String,
+                    mailAddress: String,
+                    consultationDay: Int,
+                    consultationStartTime: Int,
+                    consultationEndTime: Int,
+                    consultationTimeComment: String,
+                    room: String,
+                    building: String,
+                    department: String,
+                    faculty: String,
+                    picture: String,
+                    pictureType: String,
+                    lecturers: Set[Lecture],
+                    fullname: String,
+                    visitingLecturer: Boolean,
+                    shortenedFullname: String) {}

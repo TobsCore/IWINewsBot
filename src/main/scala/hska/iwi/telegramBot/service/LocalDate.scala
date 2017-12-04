@@ -20,4 +20,10 @@ object LocalDate {
     formatPretty(currentDate)
   }
 
+  def getWeekDay(day: Int): String = {
+    val weekDays =
+      Seq("Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag")
+    weekDays(day)
+  }
+
 }
