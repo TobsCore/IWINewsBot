@@ -6,5 +6,5 @@ object FeedURL {
   val lecturer = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/lecturersconsultationhours"
 
   val freeRooms =
-    "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/unoccupiedrooms/lecturehalls/now"
+    "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/unoccupiedrooms/lecturehalls/now?suppress_error=true"
 }
