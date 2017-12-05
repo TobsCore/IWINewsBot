@@ -4,6 +4,7 @@ object FeedURL {
   val bulletinBoard = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/newsbulletinboard"
   val mensa = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/canteen/v2/2/"
   val lecturer = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/lecturersconsultationhours"
+  val facultyNews = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/faculty/news/texts/IWI"
 
   val freeRooms =
     "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/unoccupiedrooms/lecturehalls/now?suppress_error=true"
