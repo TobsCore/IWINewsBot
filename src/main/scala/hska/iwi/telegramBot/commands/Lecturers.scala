@@ -22,7 +22,7 @@ trait Lecturers extends Commands with Callbacks {
   var lecturers: Option[Seq[Lecturer]] = None
 
   onCommand("/profs") { implicit msg =>
-    logger.debug("Received command 'lecturers'")
+    logger.debug(s"${msg.from.getOrElse("")} requested data about lecturers")
     val content = HTTPGet.get(FeedURL.lecturer)
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object

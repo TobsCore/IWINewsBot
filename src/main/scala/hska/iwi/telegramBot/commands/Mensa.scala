@@ -14,7 +14,7 @@ trait Mensa extends Commands {
   implicit val jsonDefaultFormats = DefaultFormats
 
   onCommand("/mensa") { implicit msg =>
-    logger.debug("received command 'mensa'")
+    logger.debug(s"${msg.from.getOrElse("")} requested mensa data")
     val mensaUrl = FeedURL.mensa + LocalDateTime.getCurrentDate()
     val content = HTTPGet.get(mensaUrl)
     if (content.isDefined) {

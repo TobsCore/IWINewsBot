@@ -16,8 +16,9 @@ trait Subscription extends Commands with Instances {
           if (redis.addUser(userID)) {
             reply(
               """Du erhältst ab jetzt alle Nachrichten des schwarzen Bretts und der Fakultät IWI an der HSKA.
-                |Um Deine Einstellungen anzupassen, wähle /abo aus.""".stripMargin)
-            logger.info(s"User $user added to subscriptions.")
+              |Um Deine Einstellungen anzupassen, wähle /abo aus.""".stripMargin)
+            logger.info(s"${user.firstName} ${user.lastName.getOrElse("")} added to subscriptions.")
+            logger.debug(s"$user is stored in Database")
 
             // Set configuration. Everything is set to true, since the user subscribes to all
             // subjects by default.
@@ -45,7 +46,8 @@ trait Subscription extends Commands with Instances {
         try {
           if (redis.removeUser(userID)) {
             reply("Du erhältst von nun an keine Nachrichten mehr.")
-            logger.info(s"Deleting user data for $user")
+            logger.info(s"User ${user.firstName} ${user.lastName.getOrElse("")} unsubscribed")
+            logger.debug(s"Deleting user data for $user")
 
             // Remove the user data from the database
             redis.removeUserData(userID)

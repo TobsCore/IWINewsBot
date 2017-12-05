@@ -13,7 +13,7 @@ trait FreeRooms extends Commands {
   implicit val formats = org.json4s.DefaultFormats
 
   onCommand("/freieraeume") { implicit msg =>
-    logger.debug("received command 'freeRooms'")
+    logger.debug(s"${msg.from.getOrElse("")} requested data about free rooms")
     val content = HTTPGet.get(FeedURL.freeRooms)
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object
