@@ -71,7 +71,7 @@ trait AboSettings extends Commands with Callbacks with Instances {
 
   def callbackMethod(course: Course)(implicit cbq: CallbackQuery): Unit = {
     val setValue = getValueFromCallback(cbq)
-    logger.info(s"Setting $course to $setValue")
+    logger.debug(s"Setting $course to $setValue")
     if (cbq.message.isEmpty) {
       logger.warn("Keine Nachricht für Callback verfügbar. Das sollte nicht passieren.")
     } else {

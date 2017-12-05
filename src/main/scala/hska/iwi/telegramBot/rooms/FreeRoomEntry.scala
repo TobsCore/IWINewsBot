@@ -8,7 +8,8 @@ case class FreeRoomEntry(day: Int, endTime: Int, locations: Set[Room], startTime
     val date = LocalDateTime.formatPrettyCurrentDate()
 
     s"""<b>Freie Räume</b>
-       |$date${formatLocations(this)}""".stripMargin
+       |$date
+       |${formatLocations(this)}""".stripMargin
   }
 
   private def formatLocations(entry: FreeRoomEntry): String = {
@@ -21,8 +22,7 @@ case class FreeRoomEntry(day: Int, endTime: Int, locations: Set[Room], startTime
 
       val locationsString: StringBuilder = new StringBuilder()
 
-      locationsString.append(s"""
-                                |$startTime - $endTime Uhr
+      locationsString.append(s"""$startTime - $endTime Uhr
                                 |
            |""".stripMargin)
 
