@@ -2,6 +2,7 @@ package hska.iwi.telegramBot.news
 
 import java.util.Locale
 
+import hska.iwi.telegramBot.service.LocalDate
 import info.mukel.telegrambot4s.Implicits._
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -16,9 +17,8 @@ object EntryFormatter {
     *         without any further modification to send it to recipients.
     */
   def format(entry: Entry): String = {
-    val date =
-      new DateTime(entry.publicationDate)
-        .toString(DateTimeFormat.forPattern("d. MMM yyyy").withLocale(Locale.GERMAN))
+
+    val date = LocalDate.parseTimestamp(entry.publicationTimestamp)
 
     s"""<b>${entry.title}</b>
        |
