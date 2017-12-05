@@ -14,7 +14,9 @@ trait Subscription extends Commands with Instances {
         val userID = UserID(user.id)
         try {
           if (redis.addUser(userID)) {
-            reply("You have successfully subscribed to the faculty news.")
+            reply(
+              """Du erhältst ab jetzt alle Nachrichten des schwarzen Bretts und der Fakultät IWI an der HSKA.
+                |Um Deine Einstellungen anzupassen, wähle /abo aus.""".stripMargin)
             logger.info(s"User $user added to subscriptions.")
 
             // Set configuration. Everything is set to true, since the user subscribes to all
@@ -22,8 +24,7 @@ trait Subscription extends Commands with Instances {
             redis.setUserConfig(userID,
                                 Map(Course.INFB -> true, Course.MKIB -> true, Course.INFM -> true))
           } else {
-            reply("You already subscribed to the faculty news.")
-            logger.info(s"$user already subscribed")
+            reply("Du erhälst bereits Nachrichten.")
           }
 
           // Update the user data
@@ -43,14 +44,14 @@ trait Subscription extends Commands with Instances {
         val userID = UserID(user.id)
         try {
           if (redis.removeUser(userID)) {
-            reply("You will not receive any notifications.")
+            reply("Du erhältst von nun an keine Nachrichten mehr.")
             logger.info(s"Deleting user data for $user")
 
             // Remove the user data from the database
             redis.removeUserData(userID)
             redis.removeUserConfig(userID)
           } else {
-            reply("You're currently not receiving any notifications.")
+            reply("Du bist bereits abgemeldet.")
           }
         } catch {
           case rte: RuntimeException =>
