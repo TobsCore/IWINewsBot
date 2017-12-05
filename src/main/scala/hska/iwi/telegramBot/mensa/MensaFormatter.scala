@@ -2,12 +2,12 @@ package hska.iwi.telegramBot.mensa
 
 import java.util.{Currency, Locale}
 
-import hska.iwi.telegramBot.service.LocalDate
+import hska.iwi.telegramBot.service.{LocalDateTime}
 
 object MensaFormatter {
 
   def format(mensa: MensaMoltke): String = {
-    val date = LocalDate.formatPrettyCurrentDate()
+    val date = LocalDateTime.formatPrettyCurrentDate()
     val formattedMealGroups: String = formatMealGroups(mensa.mealGroups)
     s"""<b>${mensa.name}</b>
        |$date

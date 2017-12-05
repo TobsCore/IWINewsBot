@@ -3,14 +3,14 @@ package hska.iwi.telegramBot.rooms
 import java.util.Locale
 
 import hska.iwi.telegramBot.news.Entry
-import hska.iwi.telegramBot.service.{LocalDate, LocalTime}
+import hska.iwi.telegramBot.service.LocalDateTime
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
 object RoomFormatter {
 
   def format(entry: FreeRoomEntry): String = {
-    val date = LocalDate.formatPrettyCurrentDate()
+    val date = LocalDateTime.formatPrettyCurrentDate()
 
     s"""<b>Freie Räume</b>
        |$date${formatLocations(entry)}""".stripMargin
@@ -21,8 +21,8 @@ object RoomFormatter {
     if (locations.isEmpty) {
       "Im Moment sind keine Räume verfügbar."
     } else {
-      val startTime = LocalTime.prettyHourIntervall(entry.startTime)
-      val endTime = LocalTime.prettyHourIntervall(entry.endTime)
+      val startTime = LocalDateTime.prettyHourIntervall(entry.startTime)
+      val endTime = LocalDateTime.prettyHourIntervall(entry.endTime)
 
       val locationsString: StringBuilder = new StringBuilder()
 

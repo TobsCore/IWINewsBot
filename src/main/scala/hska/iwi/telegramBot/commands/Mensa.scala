@@ -2,7 +2,7 @@ package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.mensa.{MensaFormatter, MensaMoltke}
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.{HTTPGet, LocalDate}
+import hska.iwi.telegramBot.service.{HTTPGet, LocalDateTime}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.ParseMode
@@ -15,7 +15,7 @@ trait Mensa extends Commands {
 
   onCommand("/mensa") { implicit msg =>
     logger.debug("received command 'mensa'")
-    val mensaUrl = FeedURL.mensa + LocalDate.getCurrentDate()
+    val mensaUrl = FeedURL.mensa + LocalDateTime.getCurrentDate()
     val content = HTTPGet.get(mensaUrl)
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object

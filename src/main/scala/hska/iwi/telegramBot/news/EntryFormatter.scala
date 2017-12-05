@@ -1,11 +1,6 @@
 package hska.iwi.telegramBot.news
 
-import java.util.Locale
-
-import hska.iwi.telegramBot.service.LocalDate
-import info.mukel.telegrambot4s.Implicits._
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
+import hska.iwi.telegramBot.service.LocalDateTime
 
 object EntryFormatter {
 
@@ -18,7 +13,7 @@ object EntryFormatter {
     */
   def format(entry: Entry): String = {
 
-    val date = LocalDate.parseTimestamp(entry.publicationTimestamp)
+    val date = LocalDateTime.parseTimestamp(entry.publicationTimestamp)
 
     s"""<b>${entry.title}</b>
        |
