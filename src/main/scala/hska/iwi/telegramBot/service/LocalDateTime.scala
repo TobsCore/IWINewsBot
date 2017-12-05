@@ -32,7 +32,7 @@ object LocalDateTime {
     val timestampFormatted = timestamp.dropRight(4)
     val formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withLocale(Locale.GERMANY)
     val dt = formatter.parseDateTime(timestampFormatted)
-    dt.toString("EEEE, d. MMM. yyyy - hh:mm 'Uhr'")
+    dt.toString("EEEE, d. MMM yyyy - HH:mm 'Uhr'")
   }
 
   def prettyHourFormat(): String = {
