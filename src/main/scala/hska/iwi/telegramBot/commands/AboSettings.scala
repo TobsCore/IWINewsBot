@@ -1,10 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import java.lang.IllegalArgumentException
-
-import hska.iwi.telegramBot.news
-import hska.iwi.telegramBot.news.Course
-import hska.iwi.telegramBot.news.Course.Course
+import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.{Instances, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
@@ -16,20 +12,15 @@ import info.mukel.telegrambot4s.models.{
   InlineKeyboardMarkup
 }
 
-import scala.util.Try
-
 trait AboSettings extends Commands with Callbacks with Instances {
   _: TelegramBot =>
 
-  val mkibSelectionTAG = "MKIBSELECTION"
-  val infbSelectionTAG = "INFBSELECTION"
-  val infmSelectionTAG = "INFMSELECTION"
+  val MKIBSelectionTAG = "MKIBSELECTION"
+  val INFBSelectionTAG = "INFBSELECTION"
+  val INFMSelectionTAG = "INFMSELECTION"
+  val FacultyNewsSelectionTAG = "FacultySELECTION"
 
-  private def mkibtag = prefixTag(mkibSelectionTAG) _
-
-  private def infbtag = prefixTag(infbSelectionTAG) _
-
-  private def infmtag = prefixTag(infmSelectionTAG) _
+  def tagAbo: String => String = prefixTag("Abo")
 
   onCommand("/abo") { implicit msg =>
     {
@@ -57,35 +48,40 @@ trait AboSettings extends Commands with Callbacks with Instances {
     }
   }
 
-  onCallbackWithTag(infmSelectionTAG) { implicit cbq: CallbackQuery =>
-    callbackMethod(Course.INFM)
-  }
-
-  onCallbackWithTag(infbSelectionTAG) { implicit cbq: CallbackQuery =>
-    callbackMethod(Course.INFB)
-  }
-
-  onCallbackWithTag(mkibSelectionTAG) { implicit cbq: CallbackQuery =>
-    callbackMethod(Course.MKIB)
+  onCallbackWithTag("Abo") { implicit cbq: CallbackQuery =>
+    val tag = cbq.data
+    if (tag.isDefined) {
+      tag.get match {
+        case MKIBSelectionTAG        => callbackMethod(MKIB)
+        case INFBSelectionTAG        => callbackMethod(INFB)
+        case INFMSelectionTAG        => callbackMethod(INFM)
+        case FacultyNewsSelectionTAG => callbackMethod(Faculty)
+        case _                       => throw new IllegalArgumentException
+      }
+    }
   }
 
   def callbackMethod(course: Course)(implicit cbq: CallbackQuery): Unit = {
-    val setValue = getValueFromCallback(cbq)
-    logger.debug(s"Setting $course to $setValue")
+    val userID: UserID = UserID(cbq.message.get.chat.id.toInt)
+    val setValue: Boolean =
+      !redis.getConfigFor(userID).getOrElse(Map()).find(_._1 == course).head._2
+
+    logger.info(s"Setting $course to $setValue")
     if (cbq.message.isEmpty) {
-      logger.warn("Keine Nachricht für Callback verfügbar. Das sollte nicht passieren.")
+      logger.error(
+        "There was no content to the callback method. This shouldn't happen, as the user cannot " +
+          "set the subscriptions correctly. If this error occurs, check this.")
     } else {
-      redis.setUserConfig(UserID(cbq.message.get.chat.id.toInt), course, setValue)
+      redis.setUserConfig(userID, course, setValue)
       // Notification only shown to the user who pressed the button.
       ackCallback(Some(notificationText(setValue, course)))
       callback(cbq)
     }
   }
 
-  private def getValueFromCallback(cbq: CallbackQuery): Boolean = {
-    Try {
-      cbq.data.getOrElse("false").toBoolean
-    }.getOrElse(false)
+  def callbackMethod(faculty: Faculty.type)(implicit cbq: CallbackQuery): Unit = {
+    // TODO: Implement this functionality
+    logger.info("Selected Factuly setting")
   }
 
   private def callback(cbq: CallbackQuery): Unit =
@@ -105,21 +101,37 @@ trait AboSettings extends Commands with Callbacks with Instances {
 
     InlineKeyboardMarkup.singleColumn(
       Seq(
-        InlineKeyboardButton.callbackData(buttonText(!config(Course.INFB), Course.INFB),
-                                          infbtag((!config(Course.INFB)).toString)),
-        InlineKeyboardButton.callbackData(buttonText(!config(Course.MKIB), Course.MKIB),
-                                          mkibtag((!config(Course.MKIB)).toString)),
-        InlineKeyboardButton.callbackData(buttonText(!config(Course.INFM), Course.INFM),
-                                          infmtag((!config(Course.INFM)).toString)),
+        InlineKeyboardButton.callbackData(buttonText(!config(INFB), INFB),
+                                          tagAbo(INFBSelectionTAG)),
+        InlineKeyboardButton.callbackData(buttonText(!config(MKIB), MKIB),
+                                          tagAbo(MKIBSelectionTAG)),
+        InlineKeyboardButton.callbackData(buttonText(!config(INFM), INFM),
+                                          tagAbo(INFMSelectionTAG)),
+        InlineKeyboardButton.callbackData(buttonText4Faculty(false),
+                                          tagAbo(FacultyNewsSelectionTAG))
       )
     )
   }
 
-  def buttonText(value: Boolean, course: Course): String =
+  def buttonText(value: Boolean, course: SubscribableMember): String =
     if (value) {
       s"$course abonnieren"
     } else {
       s"$course abbestellen"
+    }
+
+  def buttonText4Faculty(value: Boolean): String =
+    if (value) {
+      s"Fakultät abonnieren"
+    } else {
+      s"Fakultät abbestellen"
+    }
+
+  def notificationText(selection: Boolean, faculty: Faculty.type): String =
+    if (selection) {
+      s"Nachrichten der Fakultät sind abonniert"
+    } else {
+      s"Nachrichten der Fakultät sind abbestellt"
     }
 
   def notificationText(selection: Boolean, course: Course): String =

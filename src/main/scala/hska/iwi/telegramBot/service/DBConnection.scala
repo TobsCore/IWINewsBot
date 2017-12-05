@@ -1,7 +1,6 @@
 package hska.iwi.telegramBot.service
 
-import hska.iwi.telegramBot.news.Course.Course
-import hska.iwi.telegramBot.news.Entry
+import hska.iwi.telegramBot.news.{Course, Entry}
 import info.mukel.telegrambot4s.models.User
 
 trait DBConnection {

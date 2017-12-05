@@ -1,7 +1,5 @@
 package hska.iwi.telegramBot.news
 
-import hska.iwi.telegramBot.news.Course.Course
-
 import scala.collection.mutable
 
 class FeedProcessor(feedReader: FeedReader) {
@@ -19,7 +17,7 @@ class FeedProcessor(feedReader: FeedReader) {
     val mutableResultMap: mutable.Map[Course, Set[Entry]] = mutable.Map.empty[Course, Set[Entry]]
 
     for (entry <- entryList) {
-      val entryCourses = entry.courseOfStudies.map(Course.withName)
+      val entryCourses = entry.courseOfStudies.map(Course.getCourseByName(_).get)
       for (course <- entryCourses) {
         mutableResultMap.put(course, mutableResultMap.getOrElse(course, Set()) + entry)
       }

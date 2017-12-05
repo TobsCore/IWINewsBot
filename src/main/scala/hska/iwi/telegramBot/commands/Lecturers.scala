@@ -1,11 +1,10 @@
 package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.lecturers.Lecturer
-import hska.iwi.telegramBot.news.Course.Course
 import hska.iwi.telegramBot.news.FeedURL
 import hska.iwi.telegramBot.service.HTTPGet
 import info.mukel.telegrambot4s.api.TelegramBot
-import info.mukel.telegrambot4s.api.declarative.{Action, Callbacks, Commands}
+import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.{
   CallbackQuery,
@@ -13,11 +12,12 @@ import info.mukel.telegrambot4s.models.{
   InlineKeyboardButton,
   InlineKeyboardMarkup
 }
+import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
 trait Lecturers extends Commands with Callbacks {
   _: TelegramBot =>
-  implicit val formats = org.json4s.DefaultFormats
+  implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
 
   var lecturers: Option[Seq[Lecturer]] = None
 
@@ -40,7 +40,6 @@ trait Lecturers extends Commands with Callbacks {
     val buttonSeq =
       lecturersSet
         .map(lec => InlineKeyboardButton.callbackData(lec.lastname, tagLecturer(lec.id.toString)))
-        .toSeq
 
     InlineKeyboardMarkup.singleColumn(buttonSeq)
   }
@@ -63,5 +62,5 @@ trait Lecturers extends Commands with Callbacks {
     }
   }
 
-  def tagLecturer: String => String = prefixTag("Lecturer") _
+  def tagLecturer: String => String = prefixTag("Lecturer")
 }

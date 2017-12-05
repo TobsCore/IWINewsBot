@@ -1,7 +1,7 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.news.Course
-import hska.iwi.telegramBot.service.{Instances, RedisInstance, UserID}
+import hska.iwi.telegramBot.news.{INFB, INFM, MKIB}
+import hska.iwi.telegramBot.service.{Instances, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 
@@ -22,8 +22,7 @@ trait Subscription extends Commands with Instances {
 
             // Set configuration. Everything is set to true, since the user subscribes to all
             // subjects by default.
-            redis.setUserConfig(userID,
-                                Map(Course.INFB -> true, Course.MKIB -> true, Course.INFM -> true))
+            redis.setUserConfig(userID, Map(INFB -> true, MKIB -> true, INFM -> true))
           } else {
             reply("Du erhälst bereits Nachrichten.")
           }

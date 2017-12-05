@@ -2,7 +2,6 @@ package hska.iwi.telegramBot
 
 import akka.actor.ActorSystem
 import com.redis.RedisClient
-import hska.iwi.telegramBot.news.Course.Course
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.{Configuration, RedisInstance, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot

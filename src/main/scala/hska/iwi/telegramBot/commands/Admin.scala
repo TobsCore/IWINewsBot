@@ -92,7 +92,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
           val courseSettingAsString = msgParts(2)
 
           val user = UserID(msg.from.get.id)
-          val course = Course.withNameOpt(courseAsString)
+          val course = Course.getCourseByName(courseAsString)
 
           if (course.isEmpty) {
             reply(s"${courseAsString.italic} is not a valid course")

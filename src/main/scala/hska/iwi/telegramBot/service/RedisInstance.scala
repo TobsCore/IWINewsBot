@@ -3,8 +3,7 @@ package hska.iwi.telegramBot.service
 import com.redis.RedisClient
 import com.redis.serialization.Parse.Implicits._
 import com.typesafe.scalalogging.Logger
-import hska.iwi.telegramBot.news.Course.Course
-import hska.iwi.telegramBot.news.Entry
+import hska.iwi.telegramBot.news.{Course, Entry}
 import hska.iwi.telegramBot.service.Implicits._
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
