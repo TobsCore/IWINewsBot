@@ -1,6 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.lecturers.{Lecturer, LecturerFormatter}
+import hska.iwi.telegramBot.lecturers.Lecturer
 import hska.iwi.telegramBot.news.Course.Course
 import hska.iwi.telegramBot.news.FeedURL
 import hska.iwi.telegramBot.service.HTTPGet
@@ -55,7 +55,7 @@ trait Lecturers extends Commands with Callbacks {
         ackCallback()(cbq)
         request(
           SendMessage(ChatId(cbq.message.get.chat.id),
-                      s"${LecturerFormatter.format(selectedLecturer.get)}",
+                      s"${selectedLecturer.get.toString}",
                       parseMode = Some(ParseMode.HTML)))
       } else {
         logger.warn(s"No information received about lecturer with id: $lecturerID")

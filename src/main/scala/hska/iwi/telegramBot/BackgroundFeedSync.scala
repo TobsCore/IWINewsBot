@@ -72,9 +72,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
             .foreach(userID => {
               logger.debug(s"Sending reply to user $userID")
               request(
-                SendMessage(ChatId(userID.id),
-                            EntryFormatter.format(entry),
-                            parseMode = Some(ParseMode.HTML)))
+                SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
             })
         })
       })

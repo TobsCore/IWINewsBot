@@ -1,6 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.mensa.{MensaFormatter, MensaMoltke}
+import hska.iwi.telegramBot.mensa.MensaMoltke
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.{HTTPGet, LocalDateTime}
 import info.mukel.telegrambot4s.api.TelegramBot
@@ -20,7 +20,7 @@ trait Mensa extends Commands {
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object
       val mensa = JsonMethods.parse(content.get).extract[MensaMoltke]
-      reply(MensaFormatter.format(mensa), parseMode = Some(ParseMode.HTML))
+      reply(mensa.toString, parseMode = Some(ParseMode.HTML))
     }
   }
 }
