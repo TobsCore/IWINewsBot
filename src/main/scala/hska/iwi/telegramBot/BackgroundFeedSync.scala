@@ -10,6 +10,7 @@ import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.ChatId
 
+import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -28,11 +29,29 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
 
   val feedProcessor = new FeedProcessor(FeedReader(FeedURL.bulletinBoard))
 
-  def entriesForSubscribers(
-      entries: Map[Course, Set[Entry]],
-      userConfig: Map[UserID, Option[Set[Course]]]): Map[UserID, Set[Entry]] = {
-    // TODO: Implement Method
-    Map()
+  /**
+    * In order to send the messages to the users that subsribed to the messages, each user is
+    * mapped to the news messages, that arrived. This is done by reading the users configuration
+    * and then selecting only the relevant entries to a set. Duplicates are eliminated, so if a
+    * user subscribed to both mkib and infb news and a new entry is posted for both infb and
+    * mkib, the subscribed users will only receive one message and not two.
+    *
+    * @param entries A map, which maps the course to a set of entries. The set with the entries
+    *                can be empty.
+    * @return A Map, where each users id is mapped to a set of new entries. This
+    */
+  def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Entry]] = {
+
+    val userConfig = redis.userConfig().filter(_._2.isDefined).mapValues(_.get)
+    userConfig.map(e => {
+      val userID = e._1
+      val subscribedCourses = e._2
+      val coursesForUser = mutable.Set.empty[Entry]
+      entries
+        .filter(e => subscribedCourses.contains(e._1))
+        .foreach(e => e._2.foreach(entry => coursesForUser += entry))
+      (userID, coursesForUser.toSet)
+    })
   }
 
   def saveEntries(allEntries: Map[Course, Set[Entry]]): Map[Course, Set[Entry]] = {
@@ -46,33 +65,22 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     * servers and should be avoided.
     */
   def start(): Unit = {
-    // Start searching 10 seconds after launch and then every 1 minute
-    backgroundActorSystem.scheduler.schedule(10 seconds, 1 minute) {
+    // Start searching 10 seconds after launch and then every 2 minutes
+    backgroundActorSystem.scheduler.schedule(10 seconds, 2 minutes) {
       logger.debug("Loading remote data.")
       val entries = feedProcessor.receiveEntries()
-      val userConfig = redis.userConfig()
       val newEntries = saveEntries(entries)
-      val subscriptionEntries = entriesForSubscribers(entries, userConfig)
-      sendPushMessageToSubscribers(newEntries)
+      val subscriptionEntries = entriesForSubscribers(newEntries)
+      sendPushMessageToSubscribers(subscriptionEntries)
     }
   }
 
-  private def sendPushMessageToSubscribers(newEntries: Map[Course, Set[Entry]]): Unit = {
-    newEntries
-      .filterKeys(_.equals(Course.INFM))
-      .foreach((f: (Course, Set[Entry])) => {
-
-        val entryList = f._2
-        entryList.foreach((entry: Entry) => {
-          redis.getAllUserIDs
-            .getOrElse(Set())
-            .foreach(userID => {
-              logger.debug(s"Sending reply to user $userID")
-              request(
-                SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
-            })
-        })
-      })
+  def sendPushMessageToSubscribers(userToEntryMap: Map[UserID, Set[Entry]]): Unit = {
+    for ((userID, entrySet) <- userToEntryMap) {
+      for (entry <- entrySet) {
+        request(SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
+      }
+    }
   }
 
 }
