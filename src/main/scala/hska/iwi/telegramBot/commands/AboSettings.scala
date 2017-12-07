@@ -1,6 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import hska.iwi.telegramBot.news._
+import hska.iwi.telegramBot.news.{Course, _}
 import hska.iwi.telegramBot.service.{Instances, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
@@ -27,11 +27,13 @@ trait AboSettings extends Commands with Callbacks with Instances {
       using(_.from) { user =>
         if (redis.isMember(UserID(user.id))) {
           logger.debug(s"User $user is changing settings.")
-          val config = redis.getConfigFor(UserID(user.id))
+          val userId = UserID(msg.chat.id.toInt)
+          val config = redis.getConfigFor(userId)
+          val facultyNewsConfigValue = redis.getFacultyConfigForUser(userId)
           if (config.isDefined) {
             reply(
               "Hier kannst Du festlegen, zu welchen Studiengängen Du Nachrichten erhalten möchtest.",
-              replyMarkup = Some(createInlineKeyboardMarkup(config.get))
+              replyMarkup = Some(createInlineKeyboardMarkup(config.get, facultyNewsConfigValue.get))
             )
           } else {
             logger.warn("Configuration for user cannot be received. He probably unsubscribed")
@@ -61,43 +63,49 @@ trait AboSettings extends Commands with Callbacks with Instances {
     }
   }
 
-  def callbackMethod(course: Course)(implicit cbq: CallbackQuery): Unit = {
-    val userID: UserID = UserID(cbq.message.get.chat.id.toInt)
-    val setValue: Boolean =
-      !redis.getConfigFor(userID).getOrElse(Map()).find(_._1 == course).head._2
-
-    logger.info(s"Setting $course to $setValue")
+  def callbackMethod(course: SubscribableMember)(implicit cbq: CallbackQuery): Unit = {
     if (cbq.message.isEmpty) {
       logger.error(
         "There was no content to the callback method. This shouldn't happen, as the user cannot " +
           "set the subscriptions correctly. If this error occurs, check this.")
     } else {
-      redis.setUserConfig(userID, course, setValue)
-      // Notification only shown to the user who pressed the button.
-      ackCallback(Some(notificationText(setValue, course)))
+
+      val userID: UserID = UserID(cbq.message.get.chat.id.toInt)
+      course match {
+        case course: Course =>
+          val setValue = !redis.getConfigFor(userID).getOrElse(Map()).find(_._1 == course).head._2
+          redis.setUserConfig(userID, course, setValue)
+          // Notification only shown to the user who pressed the button.
+          ackCallback(Some(notificationText(setValue, course)))
+        case faculty: Faculty.type =>
+          val setValue = !redis.getFacultyConfigForUser(userID).getOrElse(false)
+          redis.setFacultyConfigForUser(userID, setValue)
+          // Notification only shown to the user who pressed the button.
+          ackCallback(Some(notificationText4Faculty(setValue)))
+        case _ => throw new IllegalArgumentException(s"Type ${course.getClass} is not allowed")
+      }
       callback(cbq)
     }
   }
 
-  def callbackMethod(faculty: Faculty.type)(implicit cbq: CallbackQuery): Unit = {
-    // TODO: Implement this functionality
-    logger.info("Selected Factuly setting")
-  }
-
   private def callback(cbq: CallbackQuery): Unit =
     cbq.message.foreach(msg => {
-      val config = redis.getConfigFor(UserID(msg.chat.id.toInt))
+      val userId = UserID(msg.chat.id.toInt)
+      val config = redis.getConfigFor(userId)
+      val facultyNewsConfigValue = redis.getFacultyConfigForUser(userId)
       if (config.isDefined) {
         request(
-          EditMessageReplyMarkup(chatId = Some(ChatId(msg.source)),
-                                 messageId = Some(msg.messageId),
-                                 replyMarkup = Some(createInlineKeyboardMarkup(config.get))))
+          EditMessageReplyMarkup(
+            chatId = Some(ChatId(msg.source)),
+            messageId = Some(msg.messageId),
+            replyMarkup = Some(createInlineKeyboardMarkup(config.get, facultyNewsConfigValue.get))))
       } else {
         logger.error(s"Could not get configuration for user ${msg.chat.id}")
       }
     })
 
-  def createInlineKeyboardMarkup(config: Map[Course, Boolean]): InlineKeyboardMarkup = {
+  def createInlineKeyboardMarkup(config: Map[Course, Boolean],
+                                 facultyNewsValue: Boolean): InlineKeyboardMarkup = {
 
     InlineKeyboardMarkup.singleColumn(
       Seq(
@@ -107,7 +115,7 @@ trait AboSettings extends Commands with Callbacks with Instances {
                                           tagAbo(MKIBSelectionTAG)),
         InlineKeyboardButton.callbackData(buttonText(!config(INFM), INFM),
                                           tagAbo(INFMSelectionTAG)),
-        InlineKeyboardButton.callbackData(buttonText4Faculty(false),
+        InlineKeyboardButton.callbackData(buttonText4Faculty(!facultyNewsValue),
                                           tagAbo(FacultyNewsSelectionTAG))
       )
     )
@@ -122,12 +130,12 @@ trait AboSettings extends Commands with Callbacks with Instances {
 
   def buttonText4Faculty(value: Boolean): String =
     if (value) {
-      s"Fakultät abonnieren"
+      s"Fakultätsnachrichten abonnieren"
     } else {
-      s"Fakultät abbestellen"
+      s"Fakultätsnachrichten abbestellen"
     }
 
-  def notificationText(selection: Boolean, faculty: Faculty.type): String =
+  def notificationText4Faculty(selection: Boolean): String =
     if (selection) {
       s"Nachrichten der Fakultät sind abonniert"
     } else {

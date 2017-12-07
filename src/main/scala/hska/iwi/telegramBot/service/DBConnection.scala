@@ -135,4 +135,22 @@ trait DBConnection {
     */
   def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Set[Entry]
 
+  /**
+    * Setting the user configufation for the faculty setting.
+    *
+    * @param userID      Takes the userID in order to identify the setting in the DB.
+    * @param configValue The configuration value. {{{true}}} means, that the users subscribes to
+    *                    these messages, {{{false}}} if he does not.
+    */
+  def setFacultyConfigForUser(userID: UserID, configValue: Boolean): Unit
+
+  /**
+    * Get the user's setting for the subscription of faculty news.
+    *
+    * @param userID The user's ID, which is used to identify the setting
+    * @return The setting, which is {{{true}}} in case that the user is subscribed to faculty
+    *         news, {{{false}}} otherwise. This is wrapped in an Option, which will yield
+    *         {{{None}}}, if there is no value stored in the database for the given userID.
+    */
+  def getFacultyConfigForUser(userID: UserID): Option[Boolean]
 }

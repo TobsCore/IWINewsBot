@@ -54,6 +54,14 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     redis.hgetall1[Course, Boolean](s"config:${userID.id}")
   }
 
+  override def setFacultyConfigForUser(userID: UserID, configValue: Boolean): Unit = {
+    redis.set(s"config:faculty:${userID.id}", configValue)
+  }
+
+  override def getFacultyConfigForUser(userID: UserID): Option[Boolean] = {
+    redis.get[Boolean](s"config:faculty:${userID.id}")
+  }
+
   def getAllUserIDs: Option[Set[UserID]] = {
     val userList: Set[UserID] = redis.smembers[UserID]("users").getOrElse(Set()).flatten
     if (userList.isEmpty) {
@@ -110,6 +118,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     })
     resultSet.toSet
   }
+
 }
 
 object RedisInstance {
