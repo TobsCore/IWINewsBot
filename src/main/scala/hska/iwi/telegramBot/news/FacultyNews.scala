@@ -10,22 +10,23 @@ case class FacultyNews(date: String,
                        imageURL: String,
                        caption: String,
                        publicationDate: String,
-                       detailURLs: Set[String]) {
+                       detailUrls: List[String]) {
 
   override def toString: String = {
-    var links = this.detailURLs
-    var date = LocalDateTime.parseTimestamp(this.publicationDate)
-
-    s"""<b>${this.title}</b>
-       |
+    val date = LocalDateTime.parseTimestamp(this.publicationDate)
+    val resultText = new StringBuilder(s"""<b>${this.title}</b>
+         |
        |${this.description}
-       |
-       |Weitere Informationen unter:
-       |${for (url <- links) {
-         url
-       }}
-       |$date
-     """.stripMargin
+         |""".stripMargin)
+
+    if (detailUrls.size >= 1) {
+      resultText.append("\nWeitere Informationen unter:\n")
+      for (url <- detailUrls) {
+        resultText.append(url + "\n")
+      }
+    }
+    resultText.append(s"\n$date")
+    resultText.toString()
   }
 
 }
