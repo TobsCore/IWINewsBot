@@ -2,7 +2,7 @@ package hska.iwi.telegramBot.news
 
 import scala.collection.mutable
 
-class FeedProcessor(feedReader: FeedReader) {
+class FeedProcessor(courseNews: FeedReader, facultyNews: FeedReader) {
 
   /**
     * Takes the feed that were passed in as constructor arguments and checks the feed for its
@@ -13,7 +13,7 @@ class FeedProcessor(feedReader: FeedReader) {
     *         the feeds. Otherwise the set will be empty.
     */
   def receiveEntries(): Map[Course, Set[Entry]] = {
-    val entryList: Set[Entry] = feedReader.receiveEntryList().getOrElse(Set())
+    val entryList: Set[Entry] = courseNews.receiveEntryList().getOrElse(Set())
     val mutableResultMap: mutable.Map[Course, Set[Entry]] = mutable.Map.empty[Course, Set[Entry]]
 
     for (entry <- entryList) {
@@ -23,5 +23,9 @@ class FeedProcessor(feedReader: FeedReader) {
       }
     }
     mutableResultMap.toMap
+  }
+
+  def receiveFacultyNews(): Set[FacultyNews] = {
+    facultyNews.receiveFacultyNews().getOrElse(Set())
   }
 }

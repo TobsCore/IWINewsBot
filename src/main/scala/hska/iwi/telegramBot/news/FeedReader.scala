@@ -35,7 +35,18 @@ case class FeedReader(address: String) {
     } else {
       None
     }
+  }
 
+  def receiveFacultyNews(): Option[Set[FacultyNews]] = {
+    val content = HTTPGet.get(address)
+
+    if (content.isDefined) {
+      //parses the json entries and stores them in a set of entries
+      val entries = JsonMethods.parse(content.get).extract[Set[FacultyNews]]
+      Some(entries)
+    } else {
+      None
+    }
   }
 
 }

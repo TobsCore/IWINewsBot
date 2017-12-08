@@ -3,7 +3,7 @@ package hska.iwi.telegramBot
 import akka.actor.ActorSystem
 import com.redis.RedisClient
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.{Configuration, RedisInstance, UserID}
+import hska.iwi.telegramBot.service.{Configuration, FeedURL, RedisInstance, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
@@ -26,7 +26,30 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
   val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
 
-  val feedProcessor = new FeedProcessor(FeedReader(FeedURL.bulletinBoard))
+  val feedProcessor =
+    new FeedProcessor(FeedReader(FeedURL.bulletinBoard), FeedReader(FeedURL.facultyNews))
+
+  /**
+    * The background sync task is started by calling this method. Since this starts the
+    * background tasks, it should be
+    * noted, that calling this method multiple times will yield too many calls to the feed's
+    * servers and should be avoided.
+    */
+  def start(): Unit = {
+    // Start searching 10 seconds after launch and then every 2 minutes
+    backgroundActorSystem.scheduler.schedule(10 seconds, 2 minutes) {
+      logger.debug("Loading remote data.")
+      val entries = feedProcessor.receiveEntries()
+      val facultyNews = feedProcessor.receiveFacultyNews()
+      logger.debug(s"Received ${facultyNews.size} faculty news items")
+      val newEntries = saveEntries(entries)
+      val subscriptionEntries = entriesForSubscribers(newEntries)
+      val subscribedFacultyNews = subscribedFacultyNewsUsers()
+      logger.debug(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
+      sendPushMessageToSubscribers(subscriptionEntries)
+      sendFacultyNewsToSubscribers(subscribedFacultyNews, facultyNews)
+    }
+  }
 
   /**
     * In order to send the messages to the users that subsribed to the messages, each user is
@@ -40,7 +63,6 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     * @return A Map, where each users id is mapped to a set of new entries. This
     */
   def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Entry]] = {
-
     val userConfig = redis.userConfig().filter(_._2.isDefined).mapValues(_.get)
     userConfig.map(e => {
       val userID = e._1
@@ -53,25 +75,13 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     })
   }
 
-  def saveEntries(allEntries: Map[Course, Set[Entry]]): Map[Course, Set[Entry]] = {
-    allEntries.map((f: (Course, Set[Entry])) => f._1 -> redis.addNewsEntries(f._1, f._2))
+  def subscribedFacultyNewsUsers(): Set[UserID] = {
+    val userConfig: Map[UserID, Option[Boolean]] = redis.getFacultyConfig()
+    userConfig.filter(_._2.isDefined).mapValues(_.get).filter(_._2).keys.toSet
   }
 
-  /**
-    * The background sync task is started by calling this method. Since this starts the
-    * background tasks, it should be
-    * noted, that calling this method multiple times will yield too many calls to the feed's
-    * servers and should be avoided.
-    */
-  def start(): Unit = {
-    // Start searching 10 seconds after launch and then every 2 minutes
-    backgroundActorSystem.scheduler.schedule(10 seconds, 2 minutes) {
-      logger.debug("Loading remote data.")
-      val entries = feedProcessor.receiveEntries()
-      val newEntries = saveEntries(entries)
-      val subscriptionEntries = entriesForSubscribers(newEntries)
-      sendPushMessageToSubscribers(subscriptionEntries)
-    }
+  def saveEntries(allEntries: Map[Course, Set[Entry]]): Map[Course, Set[Entry]] = {
+    allEntries.map((f: (Course, Set[Entry])) => f._1 -> redis.addNewsEntries(f._1, f._2))
   }
 
   def sendPushMessageToSubscribers(userToEntryMap: Map[UserID, Set[Entry]]): Unit = {
@@ -80,6 +90,12 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
         request(SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
       }
     }
+  }
+
+  def sendFacultyNewsToSubscribers(subscribedUsers: Set[UserID], news: Set[FacultyNews]): Unit = {
+    subscribedUsers.foreach(userID => {
+      request(SendMessage(ChatId(userID.id), news.head.toString, parseMode = Some(ParseMode.HTML)))
+    })
   }
 
 }

@@ -1,4 +1,4 @@
-package hska.iwi.telegramBot.news
+package hska.iwi.telegramBot.service
 
 object FeedURL {
   val bulletinBoard = "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/newsbulletinboard"

@@ -2,7 +2,7 @@ package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.mensa.MensaMoltke
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.{HTTPGet, LocalDateTime}
+import hska.iwi.telegramBot.service.{FeedURL, HTTPGet, LocalDateTime}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.ParseMode

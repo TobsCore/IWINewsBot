@@ -1,8 +1,7 @@
 package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.lecturers.Lecturer
-import hska.iwi.telegramBot.news.FeedURL
-import hska.iwi.telegramBot.service.HTTPGet
+import hska.iwi.telegramBot.service.{FeedURL, HTTPGet}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
