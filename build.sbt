@@ -1,5 +1,5 @@
 name := "IWINewsBot"
-version := "0.3.3"
+version := "0.4"
 scalaVersion := "2.12.4"
 
 
@@ -29,6 +29,9 @@ libraryDependencies += "org.apache.commons" % "commons-text" % "1.1"
 
 // Date Formatter
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.18.0"
+
+// For hashing
+libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
 
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 

@@ -25,7 +25,7 @@ class FeedProcessor(courseNews: FeedReader, facultyNews: FeedReader) {
     mutableResultMap.toMap
   }
 
-  def receiveFacultyNews(): Set[FacultyNews] = {
-    facultyNews.receiveFacultyNews().getOrElse(Set())
+  def receiveFacultyNews(): List[FacultyNews] = {
+    facultyNews.receiveFacultyNews().getOrElse(List())
   }
 }

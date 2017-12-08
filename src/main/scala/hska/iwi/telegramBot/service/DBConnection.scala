@@ -1,6 +1,6 @@
 package hska.iwi.telegramBot.service
 
-import hska.iwi.telegramBot.news.{Course, Entry}
+import hska.iwi.telegramBot.news.{Course, Entry, FacultyNews}
 import info.mukel.telegrambot4s.models.User
 
 trait DBConnection {
@@ -170,6 +170,15 @@ trait DBConnection {
     *         setting could be found, {{{None}}} is returned.
     */
   def getFacultyConfig(): Map[UserID, Option[Boolean]]
+
+  /**
+    * Adds faculty news to the database. Accepts an empty Set of news articles. Returnes the news
+    * items, that are new, meaning that they haven't been stored in the database already.
+    *
+    * @param newsEntries A List of Faculty News entries.
+    * @return A list of new Faculty News entries.
+    */
+  def addFacultyNews(newsEntries: List[FacultyNews]): List[FacultyNews]
 
   /**
     * Checks, if the user is currently stored in the database. The user doesn't have to be

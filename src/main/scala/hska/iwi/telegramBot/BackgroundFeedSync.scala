@@ -43,11 +43,12 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
       val facultyNews = feedProcessor.receiveFacultyNews()
       logger.debug(s"Received ${facultyNews.size} faculty news items")
       val newEntries = saveEntries(entries)
+      val newFacultyNews = redis.addFacultyNews(facultyNews)
       val subscriptionEntries = entriesForSubscribers(newEntries)
       val subscribedFacultyNews = subscribedFacultyNewsUsers()
       logger.debug(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
       sendPushMessageToSubscribers(subscriptionEntries)
-      sendFacultyNewsToSubscribers(subscribedFacultyNews, facultyNews)
+      sendFacultyNewsToSubscribers(subscribedFacultyNews, newFacultyNews)
     }
   }
 
@@ -92,9 +93,11 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
     }
   }
 
-  def sendFacultyNewsToSubscribers(subscribedUsers: Set[UserID], news: Set[FacultyNews]): Unit = {
+  def sendFacultyNewsToSubscribers(subscribedUsers: Set[UserID], news: List[FacultyNews]): Unit = {
     subscribedUsers.foreach(userID => {
-      request(SendMessage(ChatId(userID.id), news.head.toString, parseMode = Some(ParseMode.HTML)))
+      for (entry <- news) {
+        request(SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
+      }
     })
   }
 
