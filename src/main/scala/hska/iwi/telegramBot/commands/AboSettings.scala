@@ -4,7 +4,7 @@ import hska.iwi.telegramBot.news.{Course, _}
 import hska.iwi.telegramBot.service.{Instances, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
-import info.mukel.telegrambot4s.methods.EditMessageReplyMarkup
+import info.mukel.telegrambot4s.methods.{EditMessageReplyMarkup, ParseMode}
 import info.mukel.telegrambot4s.models.{
   CallbackQuery,
   ChatId,
@@ -32,8 +32,9 @@ trait AboSettings extends Commands with Callbacks with Instances {
           val facultyNewsConfigValue = redis.getFacultyConfigForUser(userId)
           if (config.isDefined) {
             reply(
-              "Hier kannst Du festlegen, zu welchen Studiengängen Du Nachrichten erhalten möchtest.",
-              replyMarkup = Some(createInlineKeyboardMarkup(config.get, facultyNewsConfigValue.get))
+              s"Hier kannst Du festlegen, zu welchen Studiengängen (INFB, MKIB und INFM) Du Nachrichten des <i>Schwarzen Bretts</i> erhalten möchtest. Außerdem kannst Du Nachrichten der IWI-Fakultät abonnieren.",
+              replyMarkup = Some(createInlineKeyboardMarkup(config.get, facultyNewsConfigValue.get)),
+              parseMode = Some(ParseMode.HTML)
             )
           } else {
             logger.warn("Configuration for user cannot be received. He probably unsubscribed")
@@ -130,9 +131,9 @@ trait AboSettings extends Commands with Callbacks with Instances {
 
   def buttonText4Faculty(value: Boolean): String =
     if (value) {
-      s"Fakultätsnachrichten abonnieren"
+      s"IWI-Fakultät abonnieren"
     } else {
-      s"Fakultätsnachrichten abbestellen"
+      s"IWI-Fakultät abbestellen"
     }
 
   def notificationText4Faculty(selection: Boolean): String =
