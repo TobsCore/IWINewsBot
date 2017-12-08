@@ -153,4 +153,31 @@ trait DBConnection {
     *         {{{None}}}, if there is no value stored in the database for the given userID.
     */
   def getFacultyConfigForUser(userID: UserID): Option[Boolean]
+
+  /**
+    * Removes the configuration for the given userID.
+    *
+    * @param userID The userID, for which the faculty news settings should be removed.
+    * @return {{{true}}} if the settings have been removed, {{{false}}} otherwise.
+    */
+  def removeFacultyConfigForUser(userID: UserID): Boolean
+
+  /**
+    * Gets the faculty configuration for all users. The userID is then mapped to the option, if
+    * one exists.
+    *
+    * @return A map, in which the userID is mapped to the setting, the user selected. If no
+    *         setting could be found, {{{None}}} is returned.
+    */
+  def getFacultyConfig(): Map[UserID, Option[Boolean]]
+
+  /**
+    * Checks, if the user is currently stored in the database. The user doesn't have to be
+    * subscribed to anything, just known. This is important to notify the user about actions he
+    * cannot perform.
+    *
+    * @param userID The users id
+    * @return {{{true}}} if the user is a member, {{{false}}} otherwise.
+    */
+  def isMember(userID: UserID): Boolean
 }

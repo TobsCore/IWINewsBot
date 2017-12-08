@@ -29,6 +29,7 @@ trait Subscription extends Commands with Instances {
 
           // Update the user data
           redis.setUserData(userID, user)
+          redis.setFacultyConfigForUser(userID, configValue = true)
         } catch {
           case rte: RuntimeException =>
             logger.error("Cannot connect to redis server")
@@ -51,6 +52,7 @@ trait Subscription extends Commands with Instances {
             // Remove the user data from the database
             redis.removeUserData(userID)
             redis.removeUserConfig(userID)
+            redis.removeFacultyConfigForUser(userID)
           } else {
             reply("Du bist bereits abgemeldet.")
           }

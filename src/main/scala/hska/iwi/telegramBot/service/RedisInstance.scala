@@ -14,43 +14,43 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
 
   val logger = Logger(getClass)
 
-  def addUser(userID: UserID): Boolean = {
+  override def addUser(userID: UserID): Boolean = {
     redis.sadd("users", userID.id).getOrElse(0l).toInt == 1
   }
 
-  def removeUser(userID: UserID): Boolean = {
+  override def removeUser(userID: UserID): Boolean = {
     redis.srem("users", userID.id).getOrElse(0l).toInt == 1
   }
 
-  def isMember(userID: UserID): Boolean = {
+  override def isMember(userID: UserID): Boolean = {
     redis.sismember("users", userID.id)
   }
 
-  def setUserData(userID: UserID, user: User): Boolean = {
+  override def setUserData(userID: UserID, user: User): Boolean = {
     redis.set(s"user:${userID.id}", write(user))
   }
 
-  def getUserData(userID: UserID): Option[User] = {
+  override def getUserData(userID: UserID): Option[User] = {
     redis.get[User](s"user:${userID.id}")
   }
 
-  def removeUserData(userID: UserID): Boolean = {
+  override def removeUserData(userID: UserID): Boolean = {
     redis.del(s"user:${userID.id}").getOrElse(0l).toInt == 1
   }
 
-  def setUserConfig(userID: UserID, userConfig: Map[Course, Boolean]): Boolean = {
+  override def setUserConfig(userID: UserID, userConfig: Map[Course, Boolean]): Boolean = {
     redis.hmset(s"config:${userID.id}", userConfig)
   }
 
-  def setUserConfig(userID: UserID, course: Course, courseSetting: Boolean): Boolean = {
+  override def setUserConfig(userID: UserID, course: Course, courseSetting: Boolean): Boolean = {
     redis.hset(s"config:${userID.id}", course, courseSetting)
   }
 
-  def removeUserConfig(userID: UserID): Boolean = {
+  override def removeUserConfig(userID: UserID): Boolean = {
     redis.del(s"config:${userID.id}").getOrElse(0l).toInt == 1
   }
 
-  def getConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
+  override def getConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
     redis.hgetall1[Course, Boolean](s"config:${userID.id}")
   }
 
@@ -62,7 +62,16 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     redis.get[Boolean](s"config:faculty:${userID.id}")
   }
 
-  def getAllUserIDs: Option[Set[UserID]] = {
+  override def getFacultyConfig(): Map[UserID, Option[Boolean]] = {
+    val users = getAllUserIDs.getOrElse(Set())
+    users.map(userID => (userID, getFacultyConfigForUser(userID))).toMap
+  }
+
+  override def removeFacultyConfigForUser(userID: UserID): Boolean = {
+    redis.del(s"config:faculty:${userID.id}").getOrElse(0l).toInt == 1
+  }
+
+  override def getAllUserIDs: Option[Set[UserID]] = {
     val userList: Set[UserID] = redis.smembers[UserID]("users").getOrElse(Set()).flatten
     if (userList.isEmpty) {
       None
@@ -71,7 +80,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     }
   }
 
-  def userConfig(): Map[UserID, Option[Set[Course]]] = {
+  override def userConfig(): Map[UserID, Option[Set[Course]]] = {
     val userIDs = getAllUserIDs.getOrElse(Set())
     val userSet = userIDs
       .map(
@@ -91,7 +100,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     })
   }
 
-  def getConfigForUsers: Map[Course, Set[UserID]] = {
+  override def getConfigForUsers: Map[Course, Set[UserID]] = {
     val userToCourse = userConfig()
       .filter((p: (UserID, Option[Set[Course]])) => p._2.isDefined)
       .map((p: (UserID, Option[Set[Course]])) => p._2.get.toList.map(f => f -> p._1))
@@ -108,7 +117,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     mutableResultMap.toMap
   }
 
-  def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Set[Entry] = {
+  override def addNewsEntries(course: Course, newsEntrySet: Set[Entry]): Set[Entry] = {
     val resultSet: mutable.Set[Entry] = mutable.Set[Entry]()
 
     newsEntrySet.foreach(entry => {
