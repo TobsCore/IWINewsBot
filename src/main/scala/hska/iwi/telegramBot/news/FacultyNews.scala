@@ -1,7 +1,8 @@
 package hska.iwi.telegramBot.news
 
+import com.roundeights.hasher.Hasher
 import hska.iwi.telegramBot.service.LocalDateTime
-import com.roundeights.hasher.Implicits._
+
 import scala.language.postfixOps
 
 case class FacultyNews(date: String,
@@ -23,7 +24,7 @@ case class FacultyNews(date: String,
     *
     * @return A string representation of the object.
     */
-  def hashCode4DB(): String = (title + publicationDate).sha256.hex
+  def hashCode4DB(): String = Hasher(title + publicationDate).sha256.hex
 
   override def toString: String = {
     val date = LocalDateTime.parseTimestamp(this.publicationDate)
