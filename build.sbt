@@ -36,8 +36,8 @@ libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt
-fork in run := true
-test in assembly := {}
+run / fork := true
+assembly / test := {}
 
 // Stops the program from running in sbt (by calling ctrl+c) and doesn't stop sbt
-cancelable in Global := true
+Global / cancelable := true
