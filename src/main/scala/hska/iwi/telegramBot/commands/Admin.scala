@@ -11,6 +11,26 @@ import info.mukel.telegrambot4s.methods.ParseMode
 trait Admin extends Commands with Instances with ObjectSerialization with Admins {
   _: TelegramBot =>
 
+  onCommand("/admin") { implicit msg =>
+    {
+      using(_.from) { user =>
+        if (isAllowed(user)) {
+          reply("""Admin Functions:
+              |
+              |/list - Lists all subscribed users
+              |/subs - Lists all users for subscribed information channels (MKIB, etc.)
+              |/userconfig userID - Gets the userID's configuration
+              |
+              |/shutdown - Shuts down bot
+            """.stripMargin)
+        } else {
+          reply("Cannot list users - This is an admin feature")
+          logger.warn(s"User $user tried to list all users")
+        }
+      }
+    }
+  }
+
   onCommand("/list") { implicit msg =>
     {
       using(_.from) { user =>
