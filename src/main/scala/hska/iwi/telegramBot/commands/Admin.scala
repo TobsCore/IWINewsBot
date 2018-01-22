@@ -16,13 +16,13 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
       using(_.from) { user =>
         if (isAllowed(user)) {
           reply("""Admin Functions:
-              |
-              |/list - Lists all subscribed users
-              |/subs - Lists all users for subscribed information channels (MKIB, etc.)
-              |/userconfig userID - Gets the userID's configuration
-              |
-              |/shutdown - Shuts down bot
-            """.stripMargin)
+            |
+            |/list - Lists all subscribed users
+            |/subs - Lists all users for subscribed information channels (MKIB, etc.)
+            |/userconfig userID - Gets the userID's configuration
+            |
+            |/shutdown - Shuts down bot
+          """.stripMargin)
         } else {
           reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
@@ -35,19 +35,21 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
     {
       using(_.from) { user =>
         if (isAllowed(user)) {
-          reply(s"Total of ${redis.getAllUserIDs.size.toString.bold} users are subsribed",
-                parseMode = ParseMode.Markdown);
+          reply(s"Total of ${redis.getAllUserIDs.getOrElse(Set()).size.toString.bold} users are " +
+                  s"subsribed",
+                parseMode = ParseMode.Markdown)
+
+          val s: StringBuilder = new StringBuilder()
           redis.getAllUserIDs
             .getOrElse(Set())
             .map(userID => redis.getUserData(userID))
             .foreach(user => {
-              reply(
-                s"${user.get.firstName} ${user.get.lastName
-                  .getOrElse("")} - Username: ${user.get.username
-                  .getOrElse("not defined".italic)}  -  [${user.toString}]",
-                parseMode = ParseMode.Markdown
-              )
+              s.append(s"${user.get.firstName} ${user.get.lastName
+                .getOrElse("")} - Username: ${user.get.username
+                .getOrElse("<i>not defined</i>")}  -  [${user.toString}]")
+              s.append("\n")
             })
+          reply(s.toString(), parseMode = ParseMode.HTML)
         } else {
           reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
