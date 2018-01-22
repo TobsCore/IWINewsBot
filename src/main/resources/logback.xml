@@ -2,6 +2,8 @@
 <!--suppress XmlUnboundNsPrefix, XmlUnboundNsPrefix -->
 <configuration>
 
+    <logger name="com.redis.RedisClient" level="OFF"/>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>iwi-bot.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
