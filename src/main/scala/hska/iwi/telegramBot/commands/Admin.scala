@@ -15,12 +15,21 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
     {
       using(_.from) { user =>
         if (isAllowed(user)) {
+          reply(s"Total of ${redis.getAllUserIDs.size.toString.bold} users are subsribed",
+                parseMode = ParseMode.Markdown);
           redis.getAllUserIDs
             .getOrElse(Set())
             .map(userID => redis.getUserData(userID))
-            .foreach(userID => reply(userID.toString))
+            .foreach(user => {
+              reply(
+                s"${user.get.firstName} ${user.get.lastName
+                  .getOrElse("")} - Username: ${user.get.username
+                  .getOrElse("not defined".italic)}  -  [${user.toString}]",
+                parseMode = ParseMode.Markdown
+              )
+            })
         } else {
-          reply("Cannot list all users - This is an admin feature")
+          reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
         }
       }
@@ -75,7 +84,8 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
     using(_.from) { user: User =>
       if (isAllowed(user)) {
         val subscriptions = redis.getConfigForUsers
-        subscriptions.foreach(e => reply(e.toString()))
+        subscriptions
+          .foreach(e => reply(s"${e._1} ${e._2.size}: ${e._2.toString()}"))
       } else {
         reply("Cannot check subscriptions - This is an Admin feature")
         logger.warn(s"User $user tried to check all subscriptions")
