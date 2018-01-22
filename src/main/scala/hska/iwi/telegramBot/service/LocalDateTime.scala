@@ -12,6 +12,13 @@ object LocalDateTime {
     format.format(Calendar.getInstance().getTime())
   }
 
+  def getDateInFuture(daysInFuture: Int): String = {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
+    val format = new SimpleDateFormat("yyyy-MM-dd")
+    format.format(calendar.getTime())
+  }
+
   def formatPretty(date: Date): String = {
     val format = new SimpleDateFormat("EEEE, d. MMM yyyy", Locale.GERMANY)
     format.format(date)
@@ -20,6 +27,18 @@ object LocalDateTime {
   def formatPrettyCurrentDate(): String = {
     val currentDate = Calendar.getInstance().getTime()
     formatPretty(currentDate)
+  }
+
+  def formatPrettyDateInFuture(daysInFuture: Int): String = {
+    val calendar = Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
+    val date = calendar.getTime()
+    formatPretty(date)
+  }
+
+  def getWeekDayFromDate(date: Date): String = {
+    val format = new SimpleDateFormat("EEEE", Locale.GERMANY)
+    format.format(date)
   }
 
   def getWeekDay(day: Int): String = {
