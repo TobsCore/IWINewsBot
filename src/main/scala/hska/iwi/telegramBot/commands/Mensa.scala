@@ -30,14 +30,19 @@ trait Mensa extends Commands with Callbacks {
   }
 
   def createInlineKeyboardMarkup(): InlineKeyboardMarkup = {
-    //val today = LocalDateTime.getWeekDayFromDate(Calendar.getInstance().getTime())
+    val today = LocalDateTime.getDaysInFutureFromWeekday(0)
+    val tomorrow = LocalDateTime.getDaysInFutureFromWeekday(1)
+    val dayAfter = LocalDateTime.getDaysInFutureFromWeekday(2)
 
     val mensaToday =
-      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyCurrentDate(), tagMensa("0"))
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(today),
+                                        tagMensa("0"))
     val mensaTomorrow =
-      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(1), tagMensa("1"))
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(tomorrow + 1),
+                                        tagMensa("1"))
     val mensaDayAfter =
-      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(2), tagMensa("2"))
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(dayAfter + 2),
+                                        tagMensa("2"))
 
     val mensaDays = Seq[InlineKeyboardButton](mensaToday, mensaTomorrow, mensaDayAfter)
     InlineKeyboardMarkup.singleColumn(mensaDays)
@@ -45,25 +50,9 @@ trait Mensa extends Commands with Callbacks {
 
   onCallbackWithTag("Mensa") { implicit cbq: CallbackQuery =>
     val mensaDayID = cbq.data.get.toInt
-    var mensaUrl = FeedURL.mensa
-    var daysInFuture: Int = 0
+    val daysInFuture = LocalDateTime.getDaysInFutureFromWeekday(mensaDayID) + mensaDayID
 
-    //TODO days of future richtig setzen
-
-    mensaDayID match {
-      case 0 => {
-        mensaUrl += LocalDateTime.getCurrentDate()
-        daysInFuture = 0
-      }
-      case 1 => {
-        mensaUrl += LocalDateTime.getDateInFuture(1)
-        daysInFuture = 1
-      }
-      case 2 => {
-        mensaUrl += LocalDateTime.getDateInFuture(2)
-        daysInFuture = 2
-      }
-    }
+    val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
     val content = HTTPGet.get(mensaUrl)
     if (content.isDefined) {
       ackCallback()(cbq)

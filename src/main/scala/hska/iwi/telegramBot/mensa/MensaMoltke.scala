@@ -7,11 +7,7 @@ import hska.iwi.telegramBot.service.LocalDateTime
 case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String, date: String) {
 
   def toString(daysInFuture: Int): String = {
-    val date = daysInFuture match {
-      case 0 => LocalDateTime.formatPrettyCurrentDate()
-      case 1 => LocalDateTime.formatPrettyDateInFuture(1)
-      case _ => LocalDateTime.formatPrettyDateInFuture(2)
-    }
+    val date = LocalDateTime.formatPrettyDateInFuture(daysInFuture)
     val formattedMealGroups: String = formatMealGroups(this.mealGroups)
     s"""<b>${this.name}</b>
        |$date

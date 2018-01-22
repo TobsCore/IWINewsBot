@@ -3,6 +3,7 @@ package hska.iwi.telegramBot.service
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date, Locale}
 
+import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 
 object LocalDateTime {
@@ -13,10 +14,15 @@ object LocalDateTime {
   }
 
   def getDateInFuture(daysInFuture: Int): String = {
-    val calendar = Calendar.getInstance()
-    calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
-    val format = new SimpleDateFormat("yyyy-MM-dd")
-    format.format(calendar.getTime())
+    daysInFuture match {
+      case 0 => getCurrentDate()
+      case _ => {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
+        val format = new SimpleDateFormat("yyyy-MM-dd")
+        format.format(calendar.getTime())
+      }
+    }
   }
 
   def formatPretty(date: Date): String = {
@@ -30,15 +36,25 @@ object LocalDateTime {
   }
 
   def formatPrettyDateInFuture(daysInFuture: Int): String = {
-    val calendar = Calendar.getInstance()
-    calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
-    val date = calendar.getTime()
-    formatPretty(date)
+    daysInFuture match {
+      case 0 => formatPrettyCurrentDate()
+      case _ => {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
+        val date = calendar.getTime()
+        formatPretty(date)
+      }
+    }
   }
 
-  def getWeekDayFromDate(date: Date): String = {
-    val format = new SimpleDateFormat("EEEE", Locale.GERMANY)
-    format.format(date)
+  def getDaysInFutureFromWeekday(bonusDays: Int): Int = {
+    val dt = new DateTime()
+    val dayOfWeek = ((dt.getDayOfWeek + bonusDays - 1) % 7) + 1
+    dayOfWeek match {
+      case 6 => 2
+      case 7 => 1
+      case _ => 0
+    }
   }
 
   def getWeekDay(day: Int): String = {
