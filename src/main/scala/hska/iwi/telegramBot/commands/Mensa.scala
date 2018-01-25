@@ -22,6 +22,8 @@ trait Mensa extends Commands with Callbacks {
   _: TelegramBot =>
   implicit val jsonDefaultFormats = DefaultFormats
 
+  val daysToAdd: Array[Int] = new Array[Int](5)
+
   onCommand("/mensa") { implicit msg =>
     logger.debug(s"${msg.from.getOrElse("")} requested mensa data")
     logger.debug("received command 'mensa'")
@@ -30,27 +32,33 @@ trait Mensa extends Commands with Callbacks {
   }
 
   def createInlineKeyboardMarkup(): InlineKeyboardMarkup = {
-    val today = LocalDateTime.getDaysInFutureFromWeekday(0)
-    val tomorrow = LocalDateTime.getDaysInFutureFromWeekday(1)
-    val dayAfter = LocalDateTime.getDaysInFutureFromWeekday(2)
+    setDaysToAddArray
 
     val mensaToday =
-      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(today),
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(0)),
                                         tagMensa("0"))
     val mensaTomorrow =
-      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(tomorrow + 1),
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(1) + 1),
                                         tagMensa("1"))
     val mensaDayAfter =
-      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(dayAfter + 2),
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(2) + 2),
                                         tagMensa("2"))
+    val mensaDay4 =
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(3) + 3),
+                                        tagMensa("3"))
 
-    val mensaDays = Seq[InlineKeyboardButton](mensaToday, mensaTomorrow, mensaDayAfter)
+    val mensaDay5 =
+      InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(4) + 4),
+                                        tagMensa("4"))
+
+    val mensaDays =
+      Seq[InlineKeyboardButton](mensaToday, mensaTomorrow, mensaDayAfter, mensaDay4, mensaDay5)
     InlineKeyboardMarkup.singleColumn(mensaDays)
   }
 
   onCallbackWithTag("Mensa") { implicit cbq: CallbackQuery =>
     val mensaDayID = cbq.data.get.toInt
-    val daysInFuture = LocalDateTime.getDaysInFutureFromWeekday(mensaDayID) + mensaDayID
+    val daysInFuture = daysToAdd(mensaDayID) + mensaDayID
 
     val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
     val content = HTTPGet.get(mensaUrl)
@@ -67,4 +75,86 @@ trait Mensa extends Commands with Callbacks {
 
   def tagMensa: String => String = prefixTag("Mensa") _
 
+  def setDaysToAddArray: Unit = {
+    var found = false
+    if (LocalDateTime.getWeekDayPlusBonusDays(0) == 6) {
+      daysToAdd(0) = 2
+      daysToAdd(1) = 2
+      daysToAdd(2) = 2
+      daysToAdd(3) = 2
+      daysToAdd(4) = 2
+      found = true
+    } else if (LocalDateTime.getWeekDayPlusBonusDays(0) == 7) {
+      daysToAdd(0) = 1
+      daysToAdd(1) = 1
+      daysToAdd(2) = 1
+      daysToAdd(3) = 1
+      daysToAdd(4) = 1
+      found = true
+    }
+
+    if (LocalDateTime.getWeekDayPlusBonusDays(1) == 6 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 2
+      daysToAdd(2) = 2
+      daysToAdd(3) = 2
+      daysToAdd(4) = 2
+      found = true
+    } else if (LocalDateTime.getWeekDayPlusBonusDays(1) == 7 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 1
+      daysToAdd(2) = 1
+      daysToAdd(3) = 1
+      daysToAdd(4) = 1
+      found = true
+    }
+
+    if (LocalDateTime.getWeekDayPlusBonusDays(2) == 6 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 0
+      daysToAdd(2) = 2
+      daysToAdd(3) = 2
+      daysToAdd(4) = 2
+      found = true
+    } else if (LocalDateTime.getWeekDayPlusBonusDays(2) == 7 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 0
+      daysToAdd(2) = 1
+      daysToAdd(3) = 1
+      daysToAdd(4) = 1
+      found = true
+    }
+
+    if (LocalDateTime.getWeekDayPlusBonusDays(3) == 6 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 0
+      daysToAdd(2) = 0
+      daysToAdd(3) = 2
+      daysToAdd(4) = 2
+      found = true
+    } else if (LocalDateTime.getWeekDayPlusBonusDays(3) == 7 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 0
+      daysToAdd(2) = 0
+      daysToAdd(3) = 1
+      daysToAdd(4) = 1
+      found = true
+    }
+
+    if (LocalDateTime.getWeekDayPlusBonusDays(4) == 6 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 0
+      daysToAdd(2) = 0
+      daysToAdd(3) = 0
+      daysToAdd(4) = 2
+      found = true
+    } else if (LocalDateTime.getWeekDayPlusBonusDays(4) == 7 && !found) {
+      daysToAdd(0) = 0
+      daysToAdd(1) = 0
+      daysToAdd(2) = 0
+      daysToAdd(3) = 0
+      daysToAdd(4) = 1
+      found = true
+    }
+  }
 }

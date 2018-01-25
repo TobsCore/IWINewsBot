@@ -47,15 +47,8 @@ object LocalDateTime {
     }
   }
 
-  def getDaysInFutureFromWeekday(bonusDays: Int): Int = {
-    val dt = new DateTime()
-    val dayOfWeek = ((dt.getDayOfWeek + bonusDays - 1) % 7) + 1
-    dayOfWeek match {
-      case 6 => 2
-      case 7 => 1
-      case _ => 0
-    }
-  }
+  def getWeekDayPlusBonusDays(bonusDays: Int): Int =
+    ((new DateTime().getDayOfWeek + bonusDays - 1) % 7) + 1
 
   def getWeekDay(day: Int): String = {
     val weekDays =
