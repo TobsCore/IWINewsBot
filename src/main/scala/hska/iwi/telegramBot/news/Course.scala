@@ -18,13 +18,13 @@ trait Course extends SubscribableMember {
 object Course extends Course {}
 
 object MKIB extends Course {
-  override def toString(): String = "MKIB"
+  override def toString: String = "MKIB"
 }
 
 object INFB extends Course {
-  override def toString(): String = "INFB"
+  override def toString: String = "INFB"
 }
 
 object INFM extends Course {
-  override def toString(): String = "INFM"
+  override def toString: String = "INFM"
 }

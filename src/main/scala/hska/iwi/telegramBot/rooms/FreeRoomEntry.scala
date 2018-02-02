@@ -28,7 +28,7 @@ case class FreeRoomEntry(day: Int, endTime: Int, locations: Set[Room], startTime
 
       var lastBuilding = ""
       for (room <- locations) {
-        var currentBuilding = room.building
+        val currentBuilding = room.building
         if (currentBuilding != lastBuilding) {
           locationsString.append(s"Gebäude $currentBuilding:\n")
         }

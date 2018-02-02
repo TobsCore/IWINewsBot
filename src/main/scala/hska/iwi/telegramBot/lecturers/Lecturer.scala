@@ -37,13 +37,13 @@ case class Lecturer(id: Int,
     val sprechzeiten
       : Boolean = lecturer.consultationDay != -1 && lecturer.consultationStartTime != -1 && lecturer.consultationEndTime != -1
     if (sprechzeiten) {
-      var day = LocalDateTime.getWeekDay(lecturer.consultationDay)
+      val day = LocalDateTime.getWeekDay(lecturer.consultationDay)
       val startTime = LocalDateTime.prettyHourIntervall(lecturer.consultationStartTime)
       val endTime = LocalDateTime.prettyHourIntervall(lecturer.consultationEndTime)
       s"""|
          |
          |<b>Sprechzeiten:</b>
-          |$day, ${startTime} - ${endTime} Uhr""".stripMargin
+          |$day, $startTime - $endTime Uhr""".stripMargin
     } else ""
   }
 

@@ -77,7 +77,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
   }
 
   def subscribedFacultyNewsUsers(): Set[UserID] = {
-    val userConfig: Map[UserID, Option[Boolean]] = redis.getFacultyConfig()
+    val userConfig: Map[UserID, Option[Boolean]] = redis.getFacultyConfig
     userConfig.filter(_._2.isDefined).mapValues(_.get).filter(_._2).keys.toSet
   }
 

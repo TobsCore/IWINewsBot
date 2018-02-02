@@ -6,6 +6,7 @@ import hska.iwi.telegramBot.commands._
 import hska.iwi.telegramBot.service.Configuration
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
+import org.json4s.DefaultFormats
 
 import scala.io.Source
 import scala.language.postfixOps
@@ -24,7 +25,7 @@ class IWINewsBot()
     with Mensa
     with Lecturers {
 
-  override implicit val formats = org.json4s.DefaultFormats
+  override implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent
   // the token from leaking

@@ -62,7 +62,7 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     redis.get[Boolean](s"config:faculty:${userID.id}")
   }
 
-  override def getFacultyConfig(): Map[UserID, Option[Boolean]] = {
+  override def getFacultyConfig: Map[UserID, Option[Boolean]] = {
     val users = getAllUserIDs.getOrElse(Set())
     users.map(userID => (userID, getFacultyConfigForUser(userID))).toMap
   }

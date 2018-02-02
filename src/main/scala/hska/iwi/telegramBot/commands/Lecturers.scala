@@ -16,7 +16,7 @@ import org.json4s.jackson.JsonMethods
 
 trait Lecturers extends Commands with Callbacks {
   _: TelegramBot =>
-  implicit val formats: DefaultFormats.type = org.json4s.DefaultFormats
+  implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 
   var lecturers: Option[Seq[Lecturer]] = None
 

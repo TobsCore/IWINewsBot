@@ -6,7 +6,7 @@ import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
 
 case class FeedReader(address: String) {
-  implicit val jsonDefaultFormats = DefaultFormats
+  private implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
   val logger = Logger(getClass)
 
   /**

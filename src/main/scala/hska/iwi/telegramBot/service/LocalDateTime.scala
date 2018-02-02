@@ -8,20 +8,19 @@ import org.joda.time.format.DateTimeFormat
 
 object LocalDateTime {
 
-  def getCurrentDate(): String = {
+  def getCurrentDate: String = {
     val format = new SimpleDateFormat("yyyy-MM-dd")
-    format.format(Calendar.getInstance().getTime())
+    format.format(Calendar.getInstance().getTime)
   }
 
   def getDateInFuture(daysInFuture: Int): String = {
     daysInFuture match {
-      case 0 => getCurrentDate()
-      case _ => {
+      case 0 => getCurrentDate
+      case _ =>
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
         val format = new SimpleDateFormat("yyyy-MM-dd")
-        format.format(calendar.getTime())
-      }
+        format.format(calendar.getTime)
     }
   }
 
@@ -31,19 +30,18 @@ object LocalDateTime {
   }
 
   def formatPrettyCurrentDate(): String = {
-    val currentDate = Calendar.getInstance().getTime()
+    val currentDate = Calendar.getInstance().getTime
     formatPretty(currentDate)
   }
 
   def formatPrettyDateInFuture(daysInFuture: Int): String = {
     daysInFuture match {
       case 0 => formatPrettyCurrentDate()
-      case _ => {
+      case _ =>
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_YEAR, daysInFuture)
-        val date = calendar.getTime()
+        val date = calendar.getTime
         formatPretty(date)
-      }
     }
   }
 

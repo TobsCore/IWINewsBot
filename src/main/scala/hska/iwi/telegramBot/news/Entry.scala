@@ -31,6 +31,6 @@ case class Entry(title: String,
        |${this.content}
        |
        |<i>${this.nameOwner}</i> (${this.emailOwner})
-       |${date}""".stripMargin
+       |$date""".stripMargin
   }
 }

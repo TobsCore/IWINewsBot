@@ -169,7 +169,7 @@ trait DBConnection {
     * @return A map, in which the userID is mapped to the setting, the user selected. If no
     *         setting could be found, {{{None}}} is returned.
     */
-  def getFacultyConfig(): Map[UserID, Option[Boolean]]
+  def getFacultyConfig: Map[UserID, Option[Boolean]]
 
   /**
     * Adds faculty news to the database. Accepts an empty Set of news articles. Returnes the news

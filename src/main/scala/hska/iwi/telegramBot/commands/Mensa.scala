@@ -1,10 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import java.util.Calendar
-
-import hska.iwi.telegramBot.lecturers.Lecturer
 import hska.iwi.telegramBot.mensa.MensaMoltke
-import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.{FeedURL, HTTPGet, LocalDateTime}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
@@ -20,7 +16,7 @@ import org.json4s.{DefaultFormats, _}
 
 trait Mensa extends Commands with Callbacks {
   _: TelegramBot =>
-  implicit val jsonDefaultFormats = DefaultFormats
+  implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
 
   val daysToAdd: Array[Int] = new Array[Int](5)
 
@@ -32,7 +28,7 @@ trait Mensa extends Commands with Callbacks {
   }
 
   def createInlineKeyboardMarkup(): InlineKeyboardMarkup = {
-    setDaysToAddArray
+    setDaysToAddArray()
 
     val mensaToday =
       InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(0)),
@@ -73,9 +69,9 @@ trait Mensa extends Commands with Callbacks {
     }
   }
 
-  def tagMensa: String => String = prefixTag("Mensa") _
+  def tagMensa: String => String = prefixTag("Mensa")
 
-  def setDaysToAddArray: Unit = {
+  def setDaysToAddArray(): Unit = {
     var found = false
     if (LocalDateTime.getWeekDayPlusBonusDays(0) == 6) {
       daysToAdd(0) = 2

@@ -53,11 +53,10 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     val emojiString: StringBuilder = new StringBuilder()
     for (food <- meal.foodAdditiveNumbers) {
       food match {
-        case "Fi" | "27" | "98" => {
+        case "Fi" | "27" | "98" =>
           if (!emojiString.toString().contains("\uD83D\uDC1F")) {
             emojiString.append("\uD83D\uDC1F ")
-          }
-        } //Fisch
+          } //Fisch
         case "93" | "94" =>
           if (!emojiString.toString().contains("\ud83d\udc04")) {
             emojiString.append("\ud83d\udc04 ")

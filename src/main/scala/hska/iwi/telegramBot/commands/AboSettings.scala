@@ -78,7 +78,7 @@ trait AboSettings extends Commands with Callbacks with Instances {
           redis.setUserConfig(userID, course, setValue)
           // Notification only shown to the user who pressed the button.
           ackCallback(Some(notificationText(setValue, course)))
-        case faculty: Faculty.type =>
+        case _: Faculty.type =>
           val setValue = !redis.getFacultyConfigForUser(userID).getOrElse(false)
           redis.setFacultyConfigForUser(userID, setValue)
           // Notification only shown to the user who pressed the button.

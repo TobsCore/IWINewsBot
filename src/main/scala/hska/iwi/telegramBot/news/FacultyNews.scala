@@ -33,7 +33,7 @@ case class FacultyNews(date: String,
        |${this.description}
          |""".stripMargin)
 
-    if (detailUrls.size >= 1) {
+    if (detailUrls.nonEmpty) {
       resultText.append("\nWeitere Informationen unter:\n")
       for (url <- detailUrls) {
         resultText.append(url + "\n")
