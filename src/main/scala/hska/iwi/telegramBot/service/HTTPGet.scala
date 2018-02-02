@@ -1,8 +1,8 @@
 package hska.iwi.telegramBot.service
 
 import java.net.{HttpURLConnection, URL}
-
 import com.typesafe.scalalogging.Logger
+import java.nio.charset.{Charset, CodingErrorAction}
 
 object HTTPGet {
 
@@ -13,17 +13,16 @@ object HTTPGet {
           readTimeout: Int = 5000,
           requestMethod: String = "GET"): Option[String] = {
     try {
-      import java.nio.charset.{Charset, CodingErrorAction}
       val decoder = Charset.forName("UTF-8").newDecoder()
       decoder.onMalformedInput(CodingErrorAction.IGNORE)
 
-      val connection = (new URL(address)).openConnection.asInstanceOf[HttpURLConnection]
+      val connection = new URL(address).openConnection.asInstanceOf[HttpURLConnection]
       connection.setConnectTimeout(connectTimeout)
       connection.setReadTimeout(readTimeout)
       connection.setRequestMethod(requestMethod)
       val inputStream = connection.getInputStream
       val content = io.Source.fromInputStream(inputStream)(decoder).mkString
-      if (inputStream != null) inputStream.close
+      if (inputStream != null) inputStream.close()
       Some(content)
     } catch {
       case ste: java.net.SocketTimeoutException =>
