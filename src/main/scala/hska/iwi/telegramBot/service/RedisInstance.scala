@@ -74,7 +74,9 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
   override def addFacultyNews(newsEntries: List[FacultyNews]): List[FacultyNews] = {
     val newNews = mutable.Set.empty[FacultyNews]
     for (newsItem <- newsEntries) {
-      if (redis.sadd("facultyNews", newsItem.hashCode4DB()).getOrElse(0l).toInt == 1) {
+      val newsHash = newsItem.hashCode4DB()
+      if (redis.sadd("facultyNews", newsHash).getOrElse(0l).toInt == 1) {
+        redis.set(s"facultyNews:$newsHash", newsItem.title)
         newNews += newsItem
       }
     }

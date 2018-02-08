@@ -3,7 +3,7 @@ package hska.iwi.telegramBot
 import akka.actor.ActorSystem
 import com.redis.RedisClient
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.{Configuration, FeedURL, RedisInstance, UserID}
+import hska.iwi.telegramBot.service.{Admins, Configuration, FeedURL, RedisInstance, UserID}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
@@ -21,7 +21,7 @@ import scala.language.postfixOps
   *              the bot's token, which should be defined in the bot.token file and be read by
   *              the main class.
   */
-case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
+case class BackgroundFeedSync(token: String) extends TelegramBot with Commands with Admins {
 
   val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
@@ -44,11 +44,24 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands {
       logger.trace(s"Received ${facultyNews.size} faculty news items")
       val newEntries = saveEntries(entries)
       val newFacultyNews = redis.addFacultyNews(facultyNews)
+      newFacultyNews.foreach(news =>
+        logger.info(s"""New Faculty News received: ${news.hashCode4DB()}
+          |${news.title}
+          |${news.publicationDate}
+          |${news.description}""".stripMargin))
       val subscriptionEntries = entriesForSubscribers(newEntries)
       val subscribedFacultyNews = subscribedFacultyNewsUsers()
       logger.trace(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
       sendPushMessageToSubscribers(subscriptionEntries)
-      sendFacultyNewsToSubscribers(subscribedFacultyNews, newFacultyNews)
+      // This is the original method, but in order to avoid sending out outdated faculty news,
+      // the new faculty news gets replaced by an empty list, which will result in no messages sent.
+      // sendFacultyNewsToSubscribers(subscribedFacultyNews, newFacultyNews)
+
+      // Debug purpose
+      sendFacultyNewsToSubscribers(subscribedFacultyNews, List())
+      newFacultyNews.foreach(news =>
+        notifyAdmins(s"New faculty News entry with Hash ${news.hashCode4DB()}"))
+
     }
   }
 
