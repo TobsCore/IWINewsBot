@@ -101,5 +101,24 @@ Die Ergebnisse der REST-Abfragen sind als JSON kodiert. Zur Deserialisierung wer
 Zuletzt gibt es das Unterpackage \texttt{service} in der allerlei Helferklassen zusammengefasst werden. Neben der Auslagerung der einzelnen Web-Adressen der Fakultät wird dort die Datenbankanbindung und Wrapper für die HTTP-Requests gespeichert.
 
 \subsection{Main Klasse}\label{sec:Programmstart}
+Betrachtet man die Datei \texttt{IWINewsBot.scala}, so sieht man dort einmal die Klassendefinition von \texttt{IWINewsBot}, am Ende der Datei wird zudem aber auch ein \emph{object} mit dem Namen \texttt{IWINewsBot} erstellt, welches von \texttt{App} erbt. Bei diesem \emph{object} handelt es sich um die Main Klasse, also jene Klasse, die beim Aufruf des Programms gestartet wird. Alles im Rumpf des IWINewsBot-Objekts wird dabei ausgeführt. Wie man darin erkennen kann, wird einen Klasseninstanz von \texttt{IWINewsBot} erstellt und gestartet.
 
+Die \texttt{IWINewsBot}-Klasse erbt von ganz vielen Klassen. Bei Scala wird die Mehrfachvererbung unterstützt, wobei die typischen Konflikte vermieden werden, indem es eine \emph{Hauptklasse} gibt, von der die primären Methoden stammen. Diese wird durch \emph{extends} hinzugefügt, alle anderen über \emph{with}. Die Bibliohtek \emph{Telegrambot4s} basiert auf dem Cake-Pattern\footnote{Wie \emph{Telegrambot4s} das Cake Pattern umsetzt, wird auf \url{https://github.com/mukel/telegrambot4s/wiki/Design} beschrieben}, sodass verschiedene Funktionen über Vererbung einfügt werden, als Komposition.
+
+Wie auf die einzelnen Befehle eines Users reagiert werden soll, ist in den Klassen aus dem Package \texttt{commands} definiert. Diese Funktion wird auch über Vererbung in den Bot eingefügt. Um die Funktionen besser zu kapseln wurden diese in verschiedene Klassen unterteilt, konkret in die Folgenden:
+
+\begin{description}
+  \item[Subscription] Generelle Abonnement-Befehle (\texttt{/start} und \texttt{/stop})
+  \item[Mensa] \texttt{/mensa}-Befehl
+  \item[Lecturers] \texttt{/profs}-Befehl
+  \item[AboSettings] \texttt{/abo}-Befehl
+  \item[About] Informationen zum Bot, \texttt[/about]-Befehl
+  \item[Admin] Admin-Funktionen, die von normalen Nutzern des Bots nicht ausgeführt werden können.
+\end{description}
+
+Sollte man eine weiter Klasse hinzufügen wollen, die auf bestimmte Befehle reagiert, so muss diese auch über das Cake-Pattern der Hauptklasse bekannt gemacht werden, also über \texttt{with Klassenname} hinzugefügt werden.
+
+Damit ist erklärt, wie der Telegram-Bot auf Kommandos reagiert. Das Überprüfen auf neue Nachrichten soll, wie bereits beschrieben, im Hintergrund passieren. Die Klasse \texttt{BackgroundFeedSync} kümmert sich darum und wird deswegen auch in der Hauptklasse gestartet.
+
+Zuguterletzt muss das Bot-Token vom IWINewsBot geladen werden, weil es für die  Authetifizierung genutzt wird. Das Framework \emph{Telegrambot4s} regelt dies automatisch ab, es muss lediglich das Token in dem Value \texttt{token} gespeichert werden. Da das Token geheim bleiben muss, wird es aus der Datei \texttt{bot.token} gelesen.
 \subsection{Start und Stop Befehle}\label{sec:StartStopCommands}
