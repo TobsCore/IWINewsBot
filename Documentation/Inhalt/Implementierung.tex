@@ -16,7 +16,7 @@ Es wurde entschieden, den Bot in Scala zu programmieren, da dies eine interessan
 
 Um das Projekt zuverlässig bauen zu können und Abhängigkeiten zu verwalten, wird das Scala-Build-Tool (kurz \emph{SBT}) eingesetzt. Dieses Build-Tool gilt als Standard-Build-Tool für Scala Projekte. Um das Projekt besser kennen lernen zu können, soll an dieser Stelle die \texttt{build.sbt} des Projekts gezeigt werden, anhand derer SBT vorgestellt werden soll.
 
-\lstinputlisting{build.sbt}
+\lstinputlisting[language=scala, style=scala, caption=Übersicht der build.sbt]{build.sbt}
 
 Am Anfang der Datei werden Informationen zu dem Projekt festgelegt, wie der Name und die Version. Außerdem kann an dieser Stelle die Scala-Version festgelegt werden.
 
@@ -129,7 +129,7 @@ Der Aufbau soll anhand des erfunden \emph{Help}-Kommandons erklärt werden. Der 
 
 Das Trait \texttt{Help} würde dann wie folgt definiert:
 
-\begin{lstlisting}[language=scala]
+\begin{lstlisting}[language=scala,style=scala,caption=Grundstruktur eines eigenen Kommandos]
 trait Help extends Commands {
   _: TelegramBot =>
 
@@ -138,12 +138,12 @@ trait Help extends Commands {
 
 Um auf Befehle zu reagieren, wird die \texttt{onCommand} Methode genutzt. In unserem Beispiel, bei dem der User \texttt{/help} absendet, würde das dann wie folgt aussehen:
 
-\begin{lstlisting}[language=scala]
+\begin{lstlisting}[language=scala, style=scala, caption=Reaktion auf den help-Befehl]
 trait Help extends Commands {
   _: TelegramBot =>
 
   onCommand("/help") { implicit msg =>
-   val helpMessage = "Über die reply() Methode wird eine einfache Antwort an den User geschickt."
+   val helpMessage = "Über die reply() Methode wird eine Antwort verschickt."
    reply(helpMessage)
  }
 }
@@ -151,14 +151,78 @@ trait Help extends Commands {
 
 Zuguterletzt neben dem Absenden des Hilfetexts das Ereignis geloggt werden. Hierzu soll auf das Userobjekt zugegriffen werden, der den Befehl an den Bot geschickt hat. Hier bietet das Framework die nützliche \texttt{using}-Funktion.
 
-\begin{lstlisting}[language=scala]
+\begin{lstlisting}[language=scala, style=scala, caption=Zugriff auf das User Objekt]
 onCommand("/help") { implicit msg =>
     using(_.from) { user =>
       val userID = UserID(user.id)
       logger.info(s"User ${userID} requested help.")
-      reply("message")
+      // Weitere Funktionen können hier folgen
     }
 }
 \end{lstlisting}
 
 \subsection{Start und Stop Befehle}\label{sec:StartStopCommands}
+Wenn man den Bot initial aufruft, wird die Unterhaltung über den Befehl \texttt{/start} gestartet. Diese Methode wird ausführlicher beschrieben, da an dieser Stelle auch die Persistenzschicht beschrieben wird.
+
+\begin{lstlisting}[language=scala, style=scala, caption=Reagieren auf Start-Befehl]
+onCommand("/start") { implicit msg =>
+  using(_.from) { user =>
+    {
+      val userID = UserID(user.id)
+      try {
+        if (redis.addUser(userID)) {
+          reply(
+            """Du erhältst ab jetzt alle Nachrichten des schwarzen Bretts und der Fakultät IWI an der HSKA.
+            |Um Deine Einstellungen anzupassen, wähle /abo aus.""".stripMargin)
+          logger.info(s"${user.firstName} ${user.lastName.getOrElse("")} added to subscriptions.")
+          logger.debug(s"$user is stored in Database")
+
+          // Set configuration. Everything is set to true, since the user subscribes to all
+          // subjects by default.
+          redis.setUserConfig(userID, Map(INFB -> true, MKIB -> true, INFM -> true))
+        } else {
+          reply("Du erhälst bereits Nachrichten.")
+        }
+
+        // Update the user data
+        redis.setUserData(userID, user)
+        redis.setFacultyConfigForUser(userID, configValue = true)
+      } catch {
+        case rte: RuntimeException =>
+          logger.error("Cannot connect to redis server")
+          logger.debug(rte.getMessage)
+      }
+    }
+  }
+}
+\end{lstlisting}
+
+Interessant an dieser Stelle ist die Zeile 6, in der die UserID der Redis-Datenbank übergeben wird. Existiert der User bereits, so wird er entsprechend darüber informiert (dies kann auftreten, wenn er mehr als 1x den \texttt{/start}-Befehl abschickt). Ist der User noch nicht registriert, so wird automatisch eine intiale Konfiguration gespeichert (Zeile 15). Für diese beiden Teile soll der entsprechende Code gezeigt werden:
+
+\begin{lstlisting}[language=scala, style=scala, caption=Hinzufügen eines Users zur Datenbank]
+override def addUser(userID: UserID): Boolean = {
+  redis.sadd("users", userID.id).getOrElse(0l).toInt == 1
+}
+\end{lstlisting}
+
+Redis wird also über die selben Befehle aufgerufen, die auch in der offiziellen Dokumentation aufgeführt werden\footnote{Offizielle Redis Dokumentation: \url{https://redis.io/commands}}.
+
+Über \texttt{sadd()} werden die UserIDs einem Set hinzugefügt. Somit dürfen UserIDs auch nur einmal in diesem Set auftauchen, weswegen die \texttt{sadd()}-Methode 1 zurück gibt, wenn eine UserID hinzugefügt werden kann und 0, wenn die UserID nicht hinzugefügt wird (da diese UserID bereits existiert).
+
+Der Code für das Speichern der Konfiguration sieht wie folgt aus:
+
+\begin{lstlisting}[language=scala, style=scala, caption=Setzen der Userkonfiguration]
+override def setUserConfig(userID: UserID, userConfig: Map[Course, Boolean]): Boolean = {
+  redis.hmset(s"config:${userID.id}", userConfig)
+}
+\end{lstlisting}
+
+Die Konfiguration wird als HashSet gespeichert, wobei der Schlüssel des HashSets die UserID mit einem vorangestellten \textit{config:}. Startet ein User mit der ID \texttt{1234567} den Bot, so wird seine Konfiguration also unter \texttt{config:1234567} abgespeichert und kann über \texttt{hmgetall()} abgerufen werden.
+
+\begin{lstlisting}[language=scala, style=scala, caption=Abrufen der Userkonfiguration]
+override def getConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
+  redis.hgetall1[Course, Boolean](s"config:${userID.id}")
+}
+\end{lstlisting}
+
+Wenn ein User keine weieren Nachrichten mehr erhalten möchte, so kann er durch den \texttt{/stop}-Befehl sein Abonnement beenden, dabei wird dann seine UserID aus dem Set aller UserIDs entfernt und auch die Konfiguration wird gelöscht.
