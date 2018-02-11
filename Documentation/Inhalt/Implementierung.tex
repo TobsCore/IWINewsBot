@@ -1,5 +1,5 @@
 \chapter{Implementierung}
-Nachdem nun die erwarteten Funktionen vorgestellt wurden, soll in diesem Kapitel die genauere Implementierung vorgestellt werden. Hierbei ist der Fokus auf eine mögliche Erweiterbarkeit des Bots gerichtet.
+Nachdem nun die erwarteten Funktionen festgelegt sind, soll in diesem Kapitel die genauere Implementierung vorgestellt werden. Hierbei wird auch auf eine mögliche Erweiterbarkeit des Bots eingegangen.
 
 Der Source Code des Bots ist auf Github über die Adresse \url{https://github.com/TobsCore/IWINewsBot} zu finden. Von dort aus kann der Code über den folgenden Befehl geladen werden.
 
@@ -7,33 +7,33 @@ Der Source Code des Bots ist auf Github über die Adresse \url{https://github.co
 git clone https://github.com/TobsCore/IWINewsBot
 \end{lstlisting}
 
-In dem geladenen Ordner \texttt{IWINewsBot} befinden sich dabei die folgenden drei Ordner: \texttt{src}, \texttt{project} und \texttt{Documentation}. In \texttt{src/} sind die Dateien für den Bot enthalten, in \texttt{project/} befinden sich Informationen zu dem SBT Projekt und in \texttt{Documentation} sind die Quelldateien für diese Dokumentation enthalten.
+In dem geladenen Ordner \texttt{IWINewsBot} befinden sich dabei die folgenden drei Ordner: \texttt{src}, \texttt{project} und \texttt{Documentation}. In \texttt{src/} sind die Dateien für den Bot enthalten, in \texttt{project/} befinden sich Informationen zu dem SBT-Projekt und in \texttt{Documentation} sind die Quelldateien für diese Dokumentation enthalten.
 
-Damit der Bot korrekt starten kann, ist ein Token notwendig, hierzu legt man im Root Ordner die Datei \texttt{bot.token} an und speichert in dieser Datei das vom BotFather generierte Token. Der Bot wird diese Datei dann nutzen um sich zu verfizieren. Aus Sicherheitsgründen ist das Token nicht im Repository gespeichert.
+Damit der Bot korrekt starten kann, ist ein Token notwendig, hierzu legt man im Root-Ordner die Datei \texttt{bot.token} an und speichert in dieser Datei das vom BotFather generierte Token. Der Bot wird diese Datei dann nutzen, um sich zu verfizieren. Aus Sicherheitsgründen ist das Token nicht im Repository gespeichert.
 
 \section{Scala und das Scala Build Tool}
-Es wurde entschieden, den Bot in Scala zu programmieren, da dies eine interessante Programmiersprache ist, mit der man als Student nicht zu viele Berührungspunkte hat. Scala bietet durch die Objektorientierung vertraute Konzepte, jedoch sind viele Konzepte der funktionalen Programmierung in der Sprache vorhanden. Auf eine genau Einführung der Programmiersprache soll an dieser Stelle verzichtet werden, da dies den Rahmen sprengen würde.
+Es wurde entschieden, den Bot in Scala zu programmieren, da dies eine interessante Programmiersprache ist, mit der man als Studierender nicht viele Berührungspunkte hat. Scala bietet durch die Objektorientierung vertraute Konzepte, jedoch sind viele Konzepte der funktionalen Programmierung in der Sprache vorhanden.
 
-Um das Projekt zuverlässig bauen zu können und Abhängigkeiten zu verwalten, wird das Scala Build Tool (kurz \emph{SBT}) eingesetzt. Dieses Build Tool gilt als Standard-Build-Tool für Scala Projekte. Um das Projekt besser kennen lernen zu können, soll an dieser Stelle die \texttt{build.sbt} des Projekts gezeigt werden, anhand derer SBT vorgestellt werden soll.
+Um das Projekt zuverlässig bauen zu können und Abhängigkeiten zu verwalten, wird das Scala-Build-Tool (kurz \emph{SBT}) eingesetzt. Dieses Build-Tool gilt als Standard-Build-Tool für Scala Projekte. Um das Projekt besser kennen lernen zu können, soll an dieser Stelle die \texttt{build.sbt} des Projekts gezeigt werden, anhand derer SBT vorgestellt werden soll.
 
 \lstinputlisting{build.sbt}
 
-Am Anfang der Datei werden Informationen zu dem Projekt festgelegt, wie der Name und die Version. Außerdem kann an dieser Stelle die Scala Version festgelegt werden.
+Am Anfang der Datei werden Informationen zu dem Projekt festgelegt, wie der Name und die Version. Außerdem kann an dieser Stelle die Scala-Version festgelegt werden.
 
-Im Anschluss werden dann die Scala Abhängigkeiten verwaltet. Wie man feststellt setzet der Telegram Bot Bibliotheken wie \emph{Scala Test}, \emph{Telegrambot4s} und die Logging-Engine \emph{Logback} ein. Diese Abhängigkeiten werden über den \texttt{+=} an \texttt{libraryDependencies} angehängt.
+Im Anschluss werden die Scala-Abhängigkeiten verwaltet. Wie man feststellt setzt der Telegram-Bot Bibliotheken wie \emph{Scala Test}, \emph{Telegrambot4s} und die Logging-Engine \emph{Logback} ein. Diese Abhängigkeiten werden über den \texttt{+=} an \texttt{libraryDependencies} angehängt.
 
 Außerdem kann festgelegt werden, in welcher Datei sich die Main-Methode befindet, also die Methode, mit der das Programm gestartet werden soll. Wie man an der \texttt{build.sbt} erkennt, befindet sich diese in der Klasse \texttt{IWINewsBot} und ist im Package \texttt{hska\allowbreak.iwi\allowbreak.telegramBot}.
 
-Außerdem wurden noch ein paar Regeln festgelegt, die die Benutztung vereinfachen; diese sind am Ende der Datei definiert.
+Außerdem wurden noch ein paar Regeln festgelegt, die die Benutzung vereinfachen. Diese sind am Ende der Datei definiert.
 
 \subsection{Kompilieren und Fat-Jar Generierung}
-Um SBT nutzen zu können, muss dies natürlich installiert sein. Interessant ist, dass Scala nicht auf dem Computer installiert sein muss, es kann auch nachträglich von SBT bezogen und installiert werden. Um das Projekt zu kompilieren, muss man im Terminal in den Projektorder navigieren. Wenn man sich dort befindet, kann man sbt über den Befehlt
+Um SBT nutzen zu können, muss dies installiert sein. Interessant ist, dass Scala nicht auf dem Computer installiert sein muss, es kann auch nachträglich von SBT bezogen und installiert werden. Um das Projekt zu kompilieren, wird im Terminal in den Projektorder navigiert. Folgender Befehl lässt sich dann ausführen:
 
 \begin{lstlisting}[language=bash]
 > sbt
 \end{lstlisting}
 
-Dadurch startet sich ein SBT Server. Über diesen Server kann dann das Projekt einfach kompiliert und gestartet werden.
+Dadurch startet sich ein SBT-Server. Über diesen Server kann dann das Projekt einfach kompiliert und gestartet werden.
 
 \begin{lstlisting}[language=bash]
 sbt:IWINewsBot> compile
@@ -43,15 +43,15 @@ sbt:IWINewsBot> compile
 sbt:IWINewsBot> run
 \end{lstlisting}
 
-Da einige Klassen auch durch Unit-Tests getestet werden, kann dies auch direkt über den SBT Server gestartet werden (mittels \texttt{test}). Der SBT Server kann über \texttt{exit} beendet werden. Die Nutzung des Servers ist dahingehend sinnvoll, dass viele Dinge gecached werden können und das Projekt nicht jedes Mal neu geladen werden muss. Natürlich ist es auch möglich, das Projekt zu kompilieren, ohne den SBT Server zu starten. Man kann aus der Kommandozeile auch folgendes eingeben:
+Da einige Klassen auch durch Unit-Tests getestet werden, kann dies auch direkt über den SBT-Server gestartet werden (mittels \texttt{test}). Der SBT-Server kann über \texttt{exit} beendet werden. Die Nutzung des Servers ist dahingehend sinnvoll, dass viele Dateien gecached werden können und das Projekt nicht jedes Mal neu geladen werden muss. Natürlich ist es auch möglich, das Projekt zu kompilieren, ohne den SBT-Server zu starten. Man kann aus der Kommandozeile auch folgendes eingeben:
 
 \begin{lstlisting}[language=bash]
 > sbt compile
 \end{lstlisting}
 
-Um das Programm dann jedoch auf einen Server zu spielen und dort zu starten, ist es sinnvoll, wenn man eine ausführbare Datei hätte. Scala erzeugt JVM-Code, also gilt es eine \texttt{JAR}-Datei zu generieren. Um dieses JAR auf beliebigen Rechnern lauffähig zu machen, also auch auf Computern und Servern, die neben der JVM kein Scala installiert haben und zugleich auch alle Abhängigkeiten dazu zu packen, ist die Generierung eines sogenannten Fat-JARs notwendig.
+Um das Programm dann jedoch auf einen Server zu spielen und dort zu starten, ist es sinnvoll, eine ausführbare Datei zu haben. Scala erzeugt JVM-Code, also gilt es eine \texttt{JAR}-Datei zu generieren. Um dieses JAR auf beliebigen Rechnern lauffähig zu machen, also auch auf Computern und Servern, die neben der JVM kein Scala installiert haben und zugleich auch alle Abhängigkeiten dazu zu packen, ist die Generierung eines sogenannten Fat-JARs notwendig.
 
-Über das \emph{Assembly}-Plugin kann man genau dies tun. Wenn man SBT gestartet hat, reicht die Ausführung des folgenden Befehls:
+Über das \emph{Assembly}-Plugin kann man genau dies umsetzen. Wenn man SBT gestartet hat, reicht die Ausführung des folgenden Befehls:
 
 \begin{lstlisting}[language=bash]
 > sbt assembly
@@ -59,10 +59,10 @@ Um das Programm dann jedoch auf einen Server zu spielen und dort zu starten, ist
 
 Hierdurch wird das Programm \texttt{IWINewsBot\allowbreak-assembly\allowbreak-0.4\allowbreak.jar} in dem Ordner \texttt{target\allowbreak/scala-2.12/} generiert. Navigiert man in diesen Ordner, kann das Programm dann durch Ausführung des Befehls \texttt{java -jar IWINewsBot-assembly-0.4.jar} der Bot gestartet werden.
 
-\textbf{Wichtig:} Damit der Bot starten kann, ist es absolut notwendig, dass in dem selben Ordner die \texttt{bot.token} Datei mit dem validen Token für den Bot liegt. Man müsste also die \texttt{bot.token} Datei in den Ordner \texttt{./target/scala-2.12/} kopieren, damit man die JAR-Datei erfolgreich ausführen kann.
+\textbf{Wichtig:} Damit der Bot starten kann, ist es absolut notwendig, dass in dem selben Ordner die \texttt{bot.token}-Datei mit dem validen Token für den Bot liegt. Man müsste also die \texttt{bot.token}-Datei in den Ordner \texttt{./target/scala-2.12/} kopieren, damit man die JAR-Datei erfolgreich ausführen kann.
 
 \subsection{Scalafmt}
-Um einen einheitlichen Code zu schreiben wird das Scalafmt\footnote{Siehe \url{http://scalameta.org/scalafmt/}} Tool benutzt. Hierbei kann eine Konfiguration benutzt werden, um eigene Regeln festzulegen, ansonsten werden Standard-Regeln zu Formatierung des Codes eingesetzt. Die eigenen Regeln befinden sich in der Datei \texttt{.scalafmt.conf}. Für dieses Projekt wird das \emph{neo-sbt-scalafmt}-Plugin\footnote{Weitere Informationen zu dem Projekt findet man unter \url{https://github.com/lucidsoftware/neo-sbt-scalafmt}} eingesetzt.
+Um einen einheitlichen Code zu schreiben wird das Scalafmt\footnote{Siehe \url{http://scalameta.org/scalafmt/}}-Tool benutzt. Hierbei kann eine Konfiguration benutzt werden, um eigene Regeln festzulegen, ansonsten werden Standard-Regeln zu Formatierung des Codes eingesetzt. Die eigenen Regeln befinden sich in der Datei \texttt{.scalafmt.conf}. Für dieses Projekt wird das \emph{neo-sbt-scalafmt}-Plugin\footnote{Weitere Informationen zu dem Projekt findet man unter \url{https://github.com/lucidsoftware/neo-sbt-scalafmt}} eingesetzt.
 
 Sollte der Bot mit einer IDE weiterentwickelt werden, so empfiehlt es sich ein Plugin zur automatischen Formatierung mit Scalafmt einzusetzen\footnote{Für die bisherige Entwicklung wurde IntelliJ eingesetzt, hierfür kann das Scalafmt Plugin von Olafur Pall Geirsson eingesetzt werden: \url{https://github.com/scalameta/scalafmt}}. Alternativ kann das Programm über die Kommandozeile in der SBT Shell (also über den SBT Server) ausgeführt werden:
 
