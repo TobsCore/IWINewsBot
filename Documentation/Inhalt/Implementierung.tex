@@ -70,9 +70,36 @@ Sollte der Bot mit einer IDE weiterentwickelt werden, so empfiehlt es sich ein P
 sbt:IWINewsBot> scalafmt
 \end{lstlisting}
 
+\section{Bot starten}
+Nachdem nun die wichtigen Technologien vorgestellt wurden, soll erklärt werden, welche Schritte notwendig sind, damit der Bot gestartet werden kann.
 
+Scala setzt auf die JVM als Laufzeitumgebung, weswegen es wichtig ist, dass ein JDK installiert ist, da die Software nicht nur lauffähig sein soll, sondern auch gebaut und gebündelt werden soll.
 
+Um den Bot starten zu können, muss ein Bot bei Telegram erstellt werden, über den BotFather. Hier erhält man dann im Anschluss das Token. Nun erstellt man im Hauptprojektordner (dem Ordner, in dem sich auch die \texttt{build.sbt}) eine neue Datei \texttt{bot.token} in der man das Token ohne nachfolgende Leerzeichen speichert.
 
+Damit der Bot ohne Fehler starten kann, muss eine Redis Instanz gestartet werden, auf dem Port 6379, was der Standardport für Redis ist. Bei Redis handelt es sich um eine sehr einfach gehaltene In-Memory Datenbank mit Persistenzmöglichkeit. Der Redis-Server wird über den Befehl
 
+\begin{lstlisting}
+> redis-server
+\end{lstlisting}
 
-\section{Start und Stop Befehle}\label{sec:StartStopCommands}
+gestartet.
+
+Über den bereits besprochenen Befehl \texttt{sbt run} kann der Bot dann gestartet werden.
+
+\section{Projektstruktur}
+Das eigentliche Projekt befindet sich unter \texttt{src/}, wobei unter Projektcode (in dem Unterordner \texttt{main/}) und Testcode (in dem Unterordner \texttt{test/}) unterschieden wird. Wie auch bei Java werden in Scala Packages genutzt um Namespaces nachzubilden. Somit ist es möglich Klassen mit gleichen Namen in einem Projekt zu nutzen. Für den Telegram-Bot wurde das Package \texttt{hska.iwi.telegramBot} gewählt. In diesem Package liegen direkt die Main-Klasse \texttt{IWINewsBot}, welche den Bot startet (siehe~\autoref{sec:Programmstart}).
+
+Der Bot kommuniziert auf 2 Arten mit dem Nutzer. Zum einen kann der Nutzer den Bot über bestimmte Befehle direkt ansprechen, worauf dieser dann antwortet. Zum anderen verschickt der Bot automatisch Nachrichten an alle Subscriber, falls es neue Nachrichten gibt.
+
+Für den ersten Fall gibt es die Klassen in dem Package \texttt{hska\allowbreak.iwi\allowbreak.telegramBot\allowbreak.commands}, bei denen definiert wird, wie reagiert wird, wenn ein bestimmter Befehl an den Bot geschickt wird, wobei Befehle mit ein Slash beginnen müssen. Hierbei kann es sich um öffentliche Befehle handeln, also Befehle, die dem BotFather mitgeteilt werden, damit dieser die Befehle vorschlagen kann, es ist aber auch möglich, auf Befehle zu reagieren, die dem BotFather nicht bekannt gemacht wurden. Dies wurde vor allem während der Entwicklung genutzt um bestimmte Funktionalitäten zu nutzen, die noch nicht ganz fertig waren, beispielsweise dem Setzen von Einstellungen, als die Inline-Buttons für diese Funktion noch nicht fertig implementiert waren.
+
+Neben den Commands wird im Hintergrund der Fakultätsserver regelmäßig nach neuen Nachrichten abgefragt. Hierfür existiert die Klasse \texttt{BackgroundFeedSync}, die einen Actor\footnote{Actors sind eine moderne Abstraktionsschicht für nebenläufiges Verhalten, für mehr Informationen siehe: \url{http://danielwestheide.com/blog/2013/02/27/the-neophytes-guide-to-scala-part-14-the-actor-approach-to-concurrency.html}} startet, der im Hintergrund die Fakultätsserver abfragt, auf die Datenbank zugreift und im Falle einer neuen Nachricht die jeweiligen Subscriber benachrichtigt.
+
+Die Ergebnisse der REST-Abfragen sind als JSON kodiert. Zur Deserialisierung werden Case-Klassen eingesetzt, die mithilfe von der \emph{JSON4S}- und \emph{Jackson}-Bibliothek gefüllt werden. Diese Case-Klassen befinden sich in verschiedenen Unterpackages, beispielsweise \texttt{mensa}, \texttt{news} oder \texttt{rooms}.
+
+Zuletzt gibt es das Unterpackage \texttt{service} in der allerlei Helferklassen zusammengefasst werden. Neben der Auslagerung der einzelnen Web-Adressen der Fakultät wird dort die Datenbankanbindung und Wrapper für die HTTP-Requests gespeichert.
+
+\subsection{Main Klasse}\label{sec:Programmstart}
+
+\subsection{Start und Stop Befehle}\label{sec:StartStopCommands}
