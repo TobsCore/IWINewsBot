@@ -62,7 +62,7 @@ Hierdurch wird das Programm \texttt{IWINewsBot\allowbreak-assembly\allowbreak-0.
 \textbf{Wichtig:} Damit der Bot starten kann, ist es absolut notwendig, dass in dem selben Ordner die \texttt{bot.token}-Datei mit dem validen Token für den Bot liegt. Man müsste also die \texttt{bot.token}-Datei in den Ordner \texttt{./target/scala-2.12/} kopieren, damit man die JAR-Datei erfolgreich ausführen kann.
 
 \subsection{Scalafmt}
-Um einen einheitlichen Code zu schreiben wird das Scalafmt\footnote{Siehe \url{http://scalameta.org/scalafmt/}}-Tool benutzt. Hierbei kann eine Konfiguration benutzt werden, um eigene Regeln festzulegen, ansonsten werden Standard-Regeln zu Formatierung des Codes eingesetzt. Die eigenen Regeln befinden sich in der Datei \texttt{.scalafmt.conf}. Für dieses Projekt wird das \emph{neo-sbt-scalafmt}-Plugin\footnote{Weitere Informationen zu dem Projekt findet man unter \url{https://github.com/lucidsoftware/neo-sbt-scalafmt}} eingesetzt.
+Um einen einheitlichen Code zu schreiben, wird das Scalafmt\footnote{Siehe \url{http://scalameta.org/scalafmt/}}-Tool benutzt. Hierbei kann eine Konfiguration benutzt werden, um eigene Regeln festzulegen, ansonsten werden Standard-Regeln zu Formatierung des Codes eingesetzt. Die eigenen Regeln befinden sich in der Datei \texttt{.scalafmt.conf}. Für dieses Projekt wird das \emph{neo-sbt-scalafmt}-Plugin\footnote{Weitere Informationen zu dem Projekt findet man unter \url{https://github.com/lucidsoftware/neo-sbt-scalafmt}} eingesetzt.
 
 Sollte der Bot mit einer IDE weiterentwickelt werden, so empfiehlt es sich ein Plugin zur automatischen Formatierung mit Scalafmt einzusetzen\footnote{Für die bisherige Entwicklung wurde IntelliJ eingesetzt, hierfür kann das Scalafmt Plugin von Olafur Pall Geirsson eingesetzt werden: \url{https://github.com/scalameta/scalafmt}}. Alternativ kann das Programm über die Kommandozeile in der SBT Shell (also über den SBT Server) ausgeführt werden:
 
@@ -71,13 +71,13 @@ sbt:IWINewsBot> scalafmt
 \end{lstlisting}
 
 \section{Bot starten}
-Nachdem nun die wichtigen Technologien vorgestellt wurden, soll erklärt werden, welche Schritte notwendig sind, damit der Bot gestartet werden kann.
+Im Folgenden wird erklärt, welche Schritte notwendig sind, damit der Bot gestartet werden kann.
 
 Scala setzt auf die JVM als Laufzeitumgebung, weswegen es wichtig ist, dass ein JDK installiert ist, da die Software nicht nur lauffähig sein soll, sondern auch gebaut und gebündelt werden soll.
 
 Um den Bot starten zu können, muss ein Bot bei Telegram erstellt werden, über den BotFather. Hier erhält man dann im Anschluss das Token. Nun erstellt man im Hauptprojektordner (dem Ordner, in dem sich auch die \texttt{build.sbt}) eine neue Datei \texttt{bot.token} in der man das Token ohne nachfolgende Leerzeichen speichert.
 
-Damit der Bot ohne Fehler starten kann, muss eine Redis Instanz gestartet werden, auf dem Port 6379, was der Standardport für Redis ist. Bei Redis handelt es sich um eine sehr einfach gehaltene In-Memory Datenbank mit Persistenzmöglichkeit. Der Redis-Server wird über den Befehl
+Damit der Bot ohne Fehler starten kann, muss eine Redis-Instanz, auf dem Port 6379, gestartet werden, was der Standardport für Redis ist. Bei Redis handelt es sich um eine sehr einfach gehaltene In-Memory Datenbank mit Persistenzmöglichkeit. Der Redis-Server wird über den Befehl
 
 \begin{lstlisting}
 > redis-server
@@ -90,9 +90,9 @@ gestartet.
 \section{Projektstruktur}
 Das eigentliche Projekt befindet sich unter \texttt{src/}, wobei unter Projektcode (in dem Unterordner \texttt{main/}) und Testcode (in dem Unterordner \texttt{test/}) unterschieden wird. Wie auch bei Java werden in Scala Packages genutzt um Namespaces nachzubilden. Somit ist es möglich Klassen mit gleichen Namen in einem Projekt zu nutzen. Für den Telegram-Bot wurde das Package \texttt{hska.iwi.telegramBot} gewählt. In diesem Package liegen direkt die Main-Klasse \texttt{IWINewsBot}, welche den Bot startet (siehe~\autoref{sec:Programmstart}).
 
-Der Bot kommuniziert auf 2 Arten mit dem Nutzer. Zum einen kann der Nutzer den Bot über bestimmte Befehle direkt ansprechen, worauf dieser dann antwortet. Zum anderen verschickt der Bot automatisch Nachrichten an alle Subscriber, falls es neue Nachrichten gibt.
+Der Bot kommuniziert auf zwei Arten mit dem Nutzer. Zum einen kann der Nutzer den Bot über bestimmte Befehle direkt ansprechen, worauf dieser dann antwortet. Zum anderen verschickt der Bot automatisch Nachrichten an alle Subscriber, falls es neue Nachrichten gibt.
 
-Für den ersten Fall gibt es die Klassen in dem Package \texttt{hska\allowbreak.iwi\allowbreak.telegramBot\allowbreak.commands}, bei denen definiert wird, wie reagiert wird, wenn ein bestimmter Befehl an den Bot geschickt wird, wobei Befehle mit ein Slash beginnen müssen. Hierbei kann es sich um öffentliche Befehle handeln, also Befehle, die dem BotFather mitgeteilt werden, damit dieser die Befehle vorschlagen kann, es ist aber auch möglich, auf Befehle zu reagieren, die dem BotFather nicht bekannt gemacht wurden. Dies wurde vor allem während der Entwicklung genutzt um bestimmte Funktionalitäten zu nutzen, die noch nicht ganz fertig waren, beispielsweise dem Setzen von Einstellungen, als die Inline-Buttons für diese Funktion noch nicht fertig implementiert waren.
+Für den ersten Fall gibt es die Klassen in dem Paket \texttt{hska\allowbreak.iwi\allowbreak.telegramBot\allowbreak.commands}, bei denen definiert wird, wie reagiert wird, wenn ein bestimmter Befehl an den Bot geschickt wird, wobei Befehle mit ein Slash beginnen müssen. Hierbei kann es sich um öffentliche Befehle handeln, also Befehle, die dem BotFather mitgeteilt werden, damit dieser die Befehle vorschlagen kann, es ist aber auch möglich, auf Befehle zu reagieren, die dem BotFather nicht bekannt gemacht wurden. Dies wurde vor allem während der Entwicklung genutzt um bestimmte Funktionalitäten zu nutzen, die noch nicht ganz fertig waren, beispielsweise dem Setzen von Einstellungen, als die Inline-Buttons für diese Funktion noch nicht fertig implementiert waren.
 
 Neben den Commands wird im Hintergrund der Fakultätsserver regelmäßig nach neuen Nachrichten abgefragt. Hierfür existiert die Klasse \texttt{BackgroundFeedSync}, die einen Actor\footnote{Actors sind eine moderne Abstraktionsschicht für nebenläufiges Verhalten, für mehr Informationen siehe: \url{http://danielwestheide.com/blog/2013/02/27/the-neophytes-guide-to-scala-part-14-the-actor-approach-to-concurrency.html}} startet, der im Hintergrund die Fakultätsserver abfragt, auf die Datenbank zugreift und im Falle einer neuen Nachricht die jeweiligen Subscriber benachrichtigt.
 
