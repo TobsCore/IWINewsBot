@@ -121,4 +121,44 @@ Sollte man eine weiter Klasse hinzufügen wollen, die auf bestimmte Befehle reag
 Damit ist erklärt, wie der Telegram-Bot auf Kommandos reagiert. Das Überprüfen auf neue Nachrichten soll, wie bereits beschrieben, im Hintergrund passieren. Die Klasse \texttt{BackgroundFeedSync} kümmert sich darum und wird deswegen auch in der Hauptklasse gestartet.
 
 Zuguterletzt muss das Bot-Token vom IWINewsBot geladen werden, weil es für die  Authetifizierung genutzt wird. Das Framework \emph{Telegrambot4s} regelt dies automatisch ab, es muss lediglich das Token in dem Value \texttt{token} gespeichert werden. Da das Token geheim bleiben muss, wird es aus der Datei \texttt{bot.token} gelesen.
+
+\section{Kommandos}
+Bevor auf die einzelnen Kommandos eingegangen wird und wie diese implementiert wurden, soll die generelle Konzeption der Kommando-Klasse eingegangen werden. Aus Übersichtlichkeitsgründen sollten diese Klassen im \texttt{commands}-Package abgelegt werden und als Trait implementiert werden, damit diese für das Cake Pattern genutzt werden können. Bei Traits handelt es sich um Interfaces mit konkreter Implementierung, damit wird die Mehrfachvererbung auf der JVM ermöglicht.
+
+Der Aufbau soll anhand des erfunden \emph{Help}-Kommandons erklärt werden. Der Nutzer soll durch das Abschicken eines \texttt{/help}-Befehls einen Hilfetext angezeigt bekommen.
+
+Das Trait \texttt{Help} würde dann wie folgt definiert:
+
+\begin{lstlisting}[language=scala]
+trait Help extends Commands {
+  _: TelegramBot =>
+
+}
+\end{lstlisting}
+
+Um auf Befehle zu reagieren, wird die \texttt{onCommand} Methode genutzt. In unserem Beispiel, bei dem der User \texttt{/help} absendet, würde das dann wie folgt aussehen:
+
+\begin{lstlisting}[language=scala]
+trait Help extends Commands {
+  _: TelegramBot =>
+
+  onCommand("/help") { implicit msg =>
+   val helpMessage = "Über die reply() Methode wird eine einfache Antwort an den User geschickt."
+   reply(helpMessage)
+ }
+}
+\end{lstlisting}
+
+Zuguterletzt neben dem Absenden des Hilfetexts das Ereignis geloggt werden. Hierzu soll auf das Userobjekt zugegriffen werden, der den Befehl an den Bot geschickt hat. Hier bietet das Framework die nützliche \texttt{using}-Funktion.
+
+\begin{lstlisting}[language=scala]
+onCommand("/help") { implicit msg =>
+    using(_.from) { user =>
+      val userID = UserID(user.id)
+      logger.info(s"User ${userID} requested help.")
+      reply("message")
+    }
+}
+\end{lstlisting}
+
 \subsection{Start und Stop Befehle}\label{sec:StartStopCommands}
