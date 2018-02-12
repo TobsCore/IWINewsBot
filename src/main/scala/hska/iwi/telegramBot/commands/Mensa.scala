@@ -2,15 +2,10 @@ package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.mensa.MensaMoltke
 import hska.iwi.telegramBot.service.{FeedURL, HTTPGet, LocalDateTime}
-import info.mukel.telegrambot4s.api.TelegramBot
+import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
-import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
-import info.mukel.telegrambot4s.models.{
-  CallbackQuery,
-  ChatId,
-  InlineKeyboardButton,
-  InlineKeyboardMarkup
-}
+import info.mukel.telegrambot4s.methods.{EditMessageText, ParseMode, SendMessage}
+import info.mukel.telegrambot4s.models._
 import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
 
@@ -59,14 +54,20 @@ trait Mensa extends Commands with Callbacks {
 
     val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
     val content = HTTPGet.get(mensaUrl)
+
+    val messageId = cbq.message.get.messageId
+    val chatId = ChatId(cbq.message.get.chat.id)
+
     if (content.isDefined) {
       ackCallback()(cbq)
       //parses the json entries and stores them in a MensaMoltke object
       val mensa = JsonMethods.parse(content.get).extract[MensaMoltke]
       request(
-        SendMessage(ChatId(cbq.message.get.chat.id),
-                    mensa.toString(daysInFuture),
-                    parseMode = Some(ParseMode.HTML)))
+        EditMessageText(Some(chatId),
+                        Some(messageId),
+                        replyMarkup = Some(createInlineKeyboardMarkup()),
+                        text = mensa.toString(daysInFuture),
+                        parseMode = Some(ParseMode.HTML)))
     }
   }
 
