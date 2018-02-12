@@ -4,7 +4,7 @@ import hska.iwi.telegramBot.lecturers.Lecturer
 import hska.iwi.telegramBot.service.{FeedURL, HTTPGet}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
-import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
+import info.mukel.telegrambot4s.methods.{EditMessageText, ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.{
   CallbackQuery,
   ChatId,
@@ -30,7 +30,7 @@ trait Lecturers extends Commands with Callbacks {
 
       logger.info(s"Received ${lecturers.get.size} Lecturers.")
 
-      reply("Wähle einen Professor aus, zu dem Du genauere Informationen erhalten möchtest.",
+      reply("Zu wem möchtest Du genauere Informationen erhalten?",
             replyMarkup = Some(createInlineKeyboardMarkup(lecturers.get)))
     }
   }
@@ -40,20 +40,31 @@ trait Lecturers extends Commands with Callbacks {
       lecturersSet
         .map(lec => InlineKeyboardButton.callbackData(lec.lastname, tagLecturer(lec.id.toString)))
 
-    InlineKeyboardMarkup.singleColumn(buttonSeq)
+    InlineKeyboardMarkup(buttonSeq.sliding(2, 2).toSeq)
   }
 
   onCallbackWithTag("Lecturer") { implicit cbq: CallbackQuery =>
     val lecturerID = cbq.data.get.toInt
     logger.info(s"Received lecturer with ID: $lecturerID")
 
+    val chatId = ChatId(cbq.message.get.chat.id)
+    val messageId = cbq.message.get.messageId
+
     if (lecturers.isDefined) {
       val selectedLecturer = lecturers.get.find(lec => lec.id == lecturerID)
       if (selectedLecturer.isDefined) {
         ackCallback()(cbq)
         request(
-          SendMessage(ChatId(cbq.message.get.chat.id),
-                      s"${selectedLecturer.get.toString}",
+          EditMessageText(
+            Some(chatId),
+            Some(messageId),
+            text = "Hier sind die Informationen:",
+            parseMode = Some(ParseMode.HTML)
+          ))
+
+        request(
+          SendMessage(chatId,
+                      text = s"${selectedLecturer.get.toString}",
                       parseMode = Some(ParseMode.HTML)))
       } else {
         logger.warn(s"No information received about lecturer with id: $lecturerID")
