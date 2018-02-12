@@ -24,7 +24,7 @@ trait Lecturers extends Commands with Callbacks {
     logger.debug(s"${msg.from.getOrElse("")} requested data about lecturers")
     val content = HTTPGet.get(FeedURL.lecturer)
     if (content.isDefined) {
-      //parses the json entries and stores them in a MensaMoltke object
+      //parses the json entries and stores them in a lecturers object
       lecturers = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
       //reply(RoomFormatter.format(lecturers), parseMode = Some(ParseMode.HTML))
 
@@ -44,6 +44,8 @@ trait Lecturers extends Commands with Callbacks {
   }
 
   onCallbackWithTag("Lecturer") { implicit cbq: CallbackQuery =>
+    // Always needs to acknowledge the callback
+    ackCallback()(cbq)
     val lecturerID = cbq.data.get.toInt
     logger.info(s"Received lecturer with ID: $lecturerID")
 
@@ -53,7 +55,6 @@ trait Lecturers extends Commands with Callbacks {
     if (lecturers.isDefined) {
       val selectedLecturer = lecturers.get.find(lec => lec.id == lecturerID)
       if (selectedLecturer.isDefined) {
-        ackCallback()(cbq)
         request(
           EditMessageText(
             Some(chatId),

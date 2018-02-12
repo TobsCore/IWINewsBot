@@ -67,6 +67,8 @@ trait Mensa extends Commands with Callbacks with Instances {
   }
 
   onCallbackWithTag("Mensa") { implicit cbq: CallbackQuery =>
+    ackCallback()(cbq)
+
     val mensaDayID = cbq.data.get.toInt
     val daysToAdd = setDaysToAddArray()
     val daysInFuture = daysToAdd(mensaDayID) + mensaDayID
@@ -81,7 +83,6 @@ trait Mensa extends Commands with Callbacks with Instances {
     val content = HTTPGet.get(mensaUrl)
 
     if (content.isDefined) {
-      ackCallback()(cbq)
       //parses the json entries and stores them in a MensaMoltke object
       val mensa = JsonMethods.parse(content.get).extract[MensaMoltke]
       val currentContent = cbq.message.get.text.getOrElse("")

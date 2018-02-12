@@ -54,6 +54,8 @@ trait AboSettings extends Commands with Callbacks with Instances {
   }
 
   onCallbackWithTag("Abo") { implicit cbq: CallbackQuery =>
+    callback(cbq)
+
     val tag = cbq.data
     if (tag.isDefined) {
       tag.get match {
@@ -87,7 +89,6 @@ trait AboSettings extends Commands with Callbacks with Instances {
           ackCallback(Some(notificationText4Faculty(setValue)))
         case _ => throw new IllegalArgumentException(s"Type ${course.getClass} is not allowed")
       }
-      callback(cbq)
     }
   }
 
