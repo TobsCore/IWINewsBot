@@ -141,6 +141,13 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     resultSet.toSet
   }
 
+  override def setPriceConfigForUser(priceConfig: PriceConfig, userID: UserID): Unit = {
+    redis.set(s"config:price:${userID.id}", priceConfig.configValue)
+  }
+
+  override def getPriceConfigForUser(userID: UserID): PriceConfig = {
+    PriceConfig(redis.get[String](s"config:price:${userID.id}").getOrElse("both"))
+  }
 }
 
 object RedisInstance {

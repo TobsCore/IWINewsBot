@@ -185,8 +185,22 @@ trait DBConnection {
     * subscribed to anything, just known. This is important to notify the user about actions he
     * cannot perform.
     *
-    * @param userID The users id
+    * @param userID The user's id
     * @return {{{true}}} if the user is a member, {{{false}}} otherwise.
     */
   def isMember(userID: UserID): Boolean
+
+  /**
+    * Sets the user's preference about showing the mensa prices. It is stored through its userID.
+    * @param priceConfig The new price preference which is set here
+    * @param userID The id of the user
+    */
+  def setPriceConfigForUser(priceConfig: PriceConfig, userID: UserID): Unit
+
+  /**
+    * Gets the price preference of the mensa feature through the userID
+    * @param userID The user's id
+    * @return
+    */
+  def getPriceConfigForUser(userID: UserID): PriceConfig
 }
