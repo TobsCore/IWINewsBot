@@ -48,20 +48,20 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     val formattedMeals: StringBuilder = new StringBuilder()
     if (priceConfig.configValue == "student") {
       for (meal <- meals) {
-        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
-               |${formatter.format(meal.priceStudent)}
+        formattedMeals.append(
+          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceStudent)}
                |""".stripMargin)
       }
     } else if (priceConfig.configValue == "employee") {
       for (meal <- meals) {
-        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
-               |${formatter.format(meal.priceEmployee)}
+        formattedMeals.append(
+          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceEmployee)}
                |""".stripMargin)
       }
     } else {
       for (meal <- meals) {
-        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
-                 |${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
+        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(
+                                   meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
                  |""".stripMargin)
       }
     }
