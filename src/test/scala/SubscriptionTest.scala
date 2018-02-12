@@ -1,5 +1,5 @@
 import com.redis.RedisClient
-import hska.iwi.telegramBot.news.Course
+import hska.iwi.telegramBot.news.{Course, INFB, INFM, MKIB}
 import hska.iwi.telegramBot.service.{Configuration, RedisInstance, UserID}
 import info.mukel.telegrambot4s.models.User
 import ch.qos.logback.classic.{Level, Logger}
@@ -21,7 +21,7 @@ class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
   val user1ID = UserID(user1.id)
   val user2ID = UserID(user2.id)
 
-  val config = Map(Course.INFB -> true, Course.MKIB -> true, Course.INFM -> true)
+  val config = Map(INFB -> true, MKIB -> true, INFM -> true)
 
   override def beforeAll() {
     redisClient.flushall
@@ -46,9 +46,9 @@ class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
 
   test("Userconfig for two users") {
     assertResult(
-      Map(Course.INFM -> Set(user1ID, user2ID),
-          Course.MKIB -> Set(user1ID, user2ID),
-          Course.INFB -> Set(user1ID, user2ID))) {
+      Map(INFM -> Set(user1ID, user2ID),
+          MKIB -> Set(user1ID, user2ID),
+          INFB -> Set(user1ID, user2ID))) {
       redis.getConfigForUsers
     }
   }
