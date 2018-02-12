@@ -161,7 +161,7 @@ onCommand("/help") { implicit msg =>
 }
 \end{lstlisting}
 
-\subsection{Start und Stop Befehle}\label{sec:StartStopCommands}
+\subsection{Start- und Stop-Befehle}\label{sec:StartStopCommands}
 Wenn man den Bot initial aufruft, wird die Unterhaltung über den Befehl \texttt{/start} gestartet. Diese Methode wird ausführlicher beschrieben, da an dieser Stelle auch die Persistenzschicht beschrieben wird.
 
 \begin{lstlisting}[language=scala, style=scala, caption=Reagieren auf Start-Befehl]
@@ -226,3 +226,71 @@ override def getConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
 \end{lstlisting}
 
 Wenn ein User keine weieren Nachrichten mehr erhalten möchte, so kann er durch den \texttt{/stop}-Befehl sein Abonnement beenden, dabei wird dann seine UserID aus dem Set aller UserIDs entfernt und auch die Konfiguration wird gelöscht.
+
+\subsection{Der Profs-Befehl}
+Der Profs-Befehl gibt eine Liste aller Professoren als klickbare Inline-Buttons aus. Wird einer dieser Button angeklickt, so werden Informationen zu dem entsprechenden Professor angezeigt. In diesem Teil der Dokumentation wird der Fokus auf diese Inline-Buttons gelegt, aber auch wie die Requests an den Server gestellt werden. Auf Redis soll nicht weiter im Detail eingegangen werden, da die Befehle alle dem offiziellen Muster folgen.
+
+\begin{lstlisting}[language=scala, style=scala, caption=Reaktion auf das /profs Kommando, label={code:profsCommand}]
+var lecturers: Option[Seq[Lecturer]] = None
+
+onCommand("/profs") { implicit msg =>
+  logger.debug(s"${msg.from.getOrElse("")} requested data about lecturers")
+  val content = HTTPGet.get(FeedURL.lecturer)
+  if (content.isDefined) {
+    //parses the json entries and stores them in a lecturers object
+    lecturers = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
+    //reply(RoomFormatter.format(lecturers), parseMode = Some(ParseMode.HTML))
+
+    logger.info(s"Received ${lecturers.get.size} Lecturers.")
+
+    reply("Wähle einen Professor aus, zu dem Du genauere Informationen erhalten möchtest.",
+          replyMarkup = Some(createInlineKeyboardMarkup(lecturers.get)))
+  }
+}
+\end{lstlisting}
+
+Mit dem Befehl \texttt{/profs} wird der Fakultätsserver nach Informationen zu den Professoren gefragt. Dieser Antwortet mit einem JSON, das in dem Value \texttt{content} gespeichert wird. Das JSON wird dann über \texttt{JsonMethods.parse} geparsed und in lecturers gespeichert, einer Liste von Professoren. Der relevante Teil bei dieser Methode befindet sich jedoch am Ende, hier wird in die Antwort zusätzlich das \texttt{replyMarkup} gesetzt, indem die \texttt{createInlineKeyboardMarkup}-Methode angerufen wird.
+
+\begin{lstlisting}[language=scala, style=scala, caption=Erstellen der Professor-Button]
+def createInlineKeyboardMarkup(lecturersSet: Seq[Lecturer]): InlineKeyboardMarkup = {
+  val buttonSeq =
+    lecturersSet
+      .map(lec => InlineKeyboardButton.callbackData(lec.lastname, tagLecturer(lec.id.toString)))
+
+  InlineKeyboardMarkup.singleColumn(buttonSeq)
+}
+\end{lstlisting}
+
+Die Telegram API bietet verschiedene Arten der Darstellung von InlineButtons an, in dem Profs-Beispiel sollen mehrere Buttons untereinander aufgelistet werden. Dies wird über die Factory-Methode \texttt{InlineKeyboardMarkup.singleColumn} ermöglicht. Für jeden Professor soll ein eigener Button erstellt werden, welche dann als Liste in \texttt{buttonSeq} landen.
+
+Um auf das Anklicken der Buttons zu reagieren, werden diese noch mit einem Tag versehen, hierzu wird die \texttt{prefixTag}-Funktion des Telegrambot4s-Framework genutzt.
+
+\begin{lstlisting}[language=scala, style=scala, caption=Benutzung von Tags zur Identifikation von Callback-Methoden]
+def tagLecturer: String => String = prefixTag("Lecturer")
+\end{lstlisting}
+
+Diese Tags werden dann zur Identifikation der entsprechenden Callback-Methode genutzt, also jener Methode, die beim Anklicken eines Buttons aufgerufen wird.
+
+\begin{lstlisting}[language=scala, style=scala, caption=Callback-Funktionalität bei Inline-Buttons, label=code:InlineCallback]
+onCallbackWithTag("Lecturer") { implicit cbq: CallbackQuery =>
+  val lecturerID = cbq.data.get.toInt
+  logger.info(s"Received lecturer with ID: $lecturerID")
+
+  if (lecturers.isDefined) {
+    val selectedLecturer = lecturers.get.find(lec => lec.id == lecturerID)
+    if (selectedLecturer.isDefined) {
+      ackCallback()(cbq)
+      request(
+        SendMessage(ChatId(cbq.message.get.chat.id),
+                    s"${selectedLecturer.get.toString}",
+                    parseMode = Some(ParseMode.HTML)))
+    } else {
+      logger.warn(s"No information received about lecturer with id: $lecturerID")
+    }
+  }
+}
+\end{lstlisting}
+
+Wie man an~\autoref{code:InlineCallback} erkennt, wird auf den Callback reagiert, so als wäre eine Methode auferufen wird, wobei auf das den \texttt{CallbackQuery} einfach zugegriffen werden kann. Als Antwort wird eine \texttt{SendMessage} geschickt mit den Informationen zu dem ausgewählten Professor, der über die ID identifiziert wird.
+
+Die Verbindung mit dem Server der Fakultät wird über den Aufruf von \texttt{HTTPGet.get(FeedURL.lecturer)} aufgenommen (siehe~\autoref{code:profsCommand}). Hierbei ist die URL in \texttt{FeedURL.lecturer} gespeichert und kann an dieser Stelle angepasst werden, sollte sich das URL-Schema der Fakultät ändern. \texttt{HTTPGet.get} kümmert sich um den Verbindungsaufbau, indem dort alle nötigen Parameter gesetzt werden können und Fehler behandelt werden, sodass ein \texttt{Option[String]} zurück gegeben werden kann, wobei \texttt{None} zurückgegeben wird, wenn ein Fehler auftrat. 
