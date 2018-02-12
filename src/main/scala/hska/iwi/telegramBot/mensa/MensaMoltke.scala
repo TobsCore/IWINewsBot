@@ -4,7 +4,8 @@ import java.util.{Currency, Locale}
 
 import hska.iwi.telegramBot.service.{LocalDateTime, PriceConfig}
 
-import scala.annotation.switch
+import java.text.NumberFormat
+import java.util.Locale
 
 case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String, date: String) {
 
@@ -41,27 +42,28 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
   }
 
   private def formatMeals(meals: Set[Meal], priceConfig: PriceConfig): String = {
-    val deCurrency = Currency.getInstance(new Locale("de", "DE"))
-    val formatter = java.text.NumberFormat.getCurrencyInstance
-    formatter.setCurrency(deCurrency)
+    val locale = Locale.GERMAN
+    val formatter = NumberFormat.getNumberInstance(locale)
+    formatter.setMaximumFractionDigits(2)
+    formatter.setMinimumFractionDigits(2)
 
     val formattedMeals: StringBuilder = new StringBuilder()
     if (priceConfig.configValue == "student") {
       for (meal <- meals) {
         formattedMeals.append(
-          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceStudent)}
+          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceStudent)}€
                |""".stripMargin)
       }
     } else if (priceConfig.configValue == "employee") {
       for (meal <- meals) {
         formattedMeals.append(
-          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceEmployee)}
+          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceEmployee)}€
                |""".stripMargin)
       }
     } else {
       for (meal <- meals) {
         formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(
-                                   meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
+                                   meal.priceStudent)}€ / ${formatter.format(meal.priceEmployee)}€
                  |""".stripMargin)
       }
     }

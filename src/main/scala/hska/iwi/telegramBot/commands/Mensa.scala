@@ -26,7 +26,7 @@ trait Mensa extends Commands with Callbacks with Instances {
     using(_.from) { user =>
       {
         logger.info("User selected /settings")
-        reply("Aus welcher Sicht möchtest du die Mensapreise anzeigen lassen?",
+        reply("Aus welcher Sicht möchtest Du die Mensapreise anzeigen lassen?",
               replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(UserID(user.id))))
       }
     }
@@ -115,7 +115,7 @@ trait Mensa extends Commands with Callbacks with Instances {
         Some(chatId),
         Some(messageId),
         replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(userId)),
-        text = "Aus welcher Sicht möchtest du die Mensapreise anzeigen lassen?",
+        text = "Aus welcher Sicht möchtest Du die Mensapreise anzeigen lassen?",
         parseMode = Some(ParseMode.HTML)
       ))
   }
