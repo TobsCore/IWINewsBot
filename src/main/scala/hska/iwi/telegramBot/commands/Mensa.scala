@@ -18,8 +18,6 @@ trait Mensa extends Commands with Callbacks {
   _: TelegramBot =>
   implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
 
-  val daysToAdd: Array[Int] = new Array[Int](5)
-
   onCommand("/mensa") { implicit msg =>
     logger.debug(s"${msg.from.getOrElse("")} requested mensa data")
     logger.debug("received command 'mensa'")
@@ -28,7 +26,7 @@ trait Mensa extends Commands with Callbacks {
   }
 
   def createInlineKeyboardMarkup(): InlineKeyboardMarkup = {
-    setDaysToAddArray()
+    val daysToAdd = setDaysToAddArray()
 
     val mensaToday =
       InlineKeyboardButton.callbackData(LocalDateTime.formatPrettyDateInFuture(daysToAdd(0)),
@@ -54,6 +52,7 @@ trait Mensa extends Commands with Callbacks {
 
   onCallbackWithTag("Mensa") { implicit cbq: CallbackQuery =>
     val mensaDayID = cbq.data.get.toInt
+    val daysToAdd = setDaysToAddArray()
     val daysInFuture = daysToAdd(mensaDayID) + mensaDayID
 
     val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
@@ -71,86 +70,121 @@ trait Mensa extends Commands with Callbacks {
 
   def tagMensa: String => String = prefixTag("Mensa")
 
-  def setDaysToAddArray(): Unit = {
-    var found = false
-    if (LocalDateTime.getWeekDayPlusBonusDays(0) == 6) {
-      daysToAdd(0) = 2
-      daysToAdd(1) = 2
-      daysToAdd(2) = 2
-      daysToAdd(3) = 2
-      daysToAdd(4) = 2
-      found = true
-    } else if (LocalDateTime.getWeekDayPlusBonusDays(0) == 7) {
-      daysToAdd(0) = 1
-      daysToAdd(1) = 1
-      daysToAdd(2) = 1
-      daysToAdd(3) = 1
-      daysToAdd(4) = 1
-      found = true
+  def setDaysToAddArray(): Array[Int] = {
+    var daysToAdd = new Array[Int](5)
+    for (bonusDays <- 0 to 4) {
+      val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
+      logger.info(s"Wochentag: $weekDay")
+      logger.info(s"bonusDays $bonusDays")
+      bonusDays match {
+        case 0 => {
+          weekDay match {
+            case 6 => {
+              daysToAdd(0) = 2
+              daysToAdd(1) = 2
+              daysToAdd(2) = 2
+              daysToAdd(3) = 2
+              daysToAdd(4) = 2
+              return daysToAdd
+            }
+            case 7 => {
+              daysToAdd(0) = 1
+              daysToAdd(1) = 1
+              daysToAdd(2) = 1
+              daysToAdd(3) = 1
+              daysToAdd(4) = 1
+              return daysToAdd
+            }
+            case _ =>
+          }
+        }
+        case 1 => {
+          weekDay match {
+            case 6 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 2
+              daysToAdd(2) = 2
+              daysToAdd(3) = 2
+              daysToAdd(4) = 2
+              return daysToAdd
+            }
+            case 7 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 1
+              daysToAdd(2) = 1
+              daysToAdd(3) = 1
+              daysToAdd(4) = 1
+              return daysToAdd
+            }
+            case _ =>
+          }
+        }
+        case 2 => {
+          weekDay match {
+            case 6 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 0
+              daysToAdd(2) = 2
+              daysToAdd(3) = 2
+              daysToAdd(4) = 2
+              return daysToAdd
+            }
+            case 7 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 0
+              daysToAdd(2) = 1
+              daysToAdd(3) = 1
+              daysToAdd(4) = 1
+              return daysToAdd
+            }
+            case _ =>
+          }
+        }
+        case 3 => {
+          weekDay match {
+            case 6 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 0
+              daysToAdd(2) = 0
+              daysToAdd(3) = 2
+              daysToAdd(4) = 2
+              return daysToAdd
+            }
+            case 7 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 0
+              daysToAdd(2) = 0
+              daysToAdd(3) = 1
+              daysToAdd(4) = 1
+              return daysToAdd
+            }
+            case _ =>
+          }
+        }
+        case 4 => {
+          weekDay match {
+            case 6 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 0
+              daysToAdd(2) = 0
+              daysToAdd(3) = 0
+              daysToAdd(4) = 2
+              return daysToAdd
+            }
+            case 7 => {
+              daysToAdd(0) = 0
+              daysToAdd(1) = 0
+              daysToAdd(2) = 0
+              daysToAdd(3) = 0
+              daysToAdd(4) = 1
+              return daysToAdd
+            }
+            case _ =>
+          }
+        }
+        case _ =>
+      }
     }
-
-    if (LocalDateTime.getWeekDayPlusBonusDays(1) == 6 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 2
-      daysToAdd(2) = 2
-      daysToAdd(3) = 2
-      daysToAdd(4) = 2
-      found = true
-    } else if (LocalDateTime.getWeekDayPlusBonusDays(1) == 7 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 1
-      daysToAdd(2) = 1
-      daysToAdd(3) = 1
-      daysToAdd(4) = 1
-      found = true
-    }
-
-    if (LocalDateTime.getWeekDayPlusBonusDays(2) == 6 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 0
-      daysToAdd(2) = 2
-      daysToAdd(3) = 2
-      daysToAdd(4) = 2
-      found = true
-    } else if (LocalDateTime.getWeekDayPlusBonusDays(2) == 7 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 0
-      daysToAdd(2) = 1
-      daysToAdd(3) = 1
-      daysToAdd(4) = 1
-      found = true
-    }
-
-    if (LocalDateTime.getWeekDayPlusBonusDays(3) == 6 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 0
-      daysToAdd(2) = 0
-      daysToAdd(3) = 2
-      daysToAdd(4) = 2
-      found = true
-    } else if (LocalDateTime.getWeekDayPlusBonusDays(3) == 7 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 0
-      daysToAdd(2) = 0
-      daysToAdd(3) = 1
-      daysToAdd(4) = 1
-      found = true
-    }
-
-    if (LocalDateTime.getWeekDayPlusBonusDays(4) == 6 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 0
-      daysToAdd(2) = 0
-      daysToAdd(3) = 0
-      daysToAdd(4) = 2
-      found = true
-    } else if (LocalDateTime.getWeekDayPlusBonusDays(4) == 7 && !found) {
-      daysToAdd(0) = 0
-      daysToAdd(1) = 0
-      daysToAdd(2) = 0
-      daysToAdd(3) = 0
-      daysToAdd(4) = 1
-      found = true
-    }
+    return daysToAdd
   }
 }
