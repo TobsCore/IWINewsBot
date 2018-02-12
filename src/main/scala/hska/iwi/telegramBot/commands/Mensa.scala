@@ -1,7 +1,7 @@
 package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.mensa.MensaMoltke
-import hska.iwi.telegramBot.service.{FeedURL, HTTPGet, LocalDateTime}
+import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.methods.{EditMessageText, ParseMode, SendMessage}
@@ -11,7 +11,7 @@ import org.json4s.{DefaultFormats, _}
 
 import scala.annotation.switch
 
-trait Mensa extends Commands with Callbacks {
+trait Mensa extends Commands with Callbacks with Instances {
   _: TelegramBot =>
   implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
 
@@ -20,6 +20,25 @@ trait Mensa extends Commands with Callbacks {
     logger.debug("received command 'mensa'")
     reply("Für welchen Tag soll das Mensaangebot ausgegeben werden?",
           replyMarkup = Some(createInlineKeyboardMarkup()))
+  }
+
+  onCommand("/settings") { implicit msg =>
+    using(_.from) { user =>
+      {
+        logger.info("User selected /settings")
+        reply("Aus welcher Sicht möchtest du die Mensapreise anzeigen lassen?",
+              replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(UserID(user.id))))
+      }
+    }
+  }
+
+  def createInlineKeyboardMarkupPriceConfig(userID: UserID): InlineKeyboardMarkup = {
+    val priceConfig = redis.getPriceConfigForUser(userID)
+    val config =
+      InlineKeyboardButton.callbackData(priceConfig.toString(), tagPriceConfig("0"))
+
+    val priceConfigButton = Seq[InlineKeyboardButton](config)
+    InlineKeyboardMarkup.singleColumn(priceConfigButton)
   }
 
   def createInlineKeyboardMarkup(): InlineKeyboardMarkup = {
@@ -52,26 +71,58 @@ trait Mensa extends Commands with Callbacks {
     val daysToAdd = setDaysToAddArray()
     val daysInFuture = daysToAdd(mensaDayID) + mensaDayID
 
-    val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
-    val content = HTTPGet.get(mensaUrl)
-
     val messageId = cbq.message.get.messageId
     val chatId = ChatId(cbq.message.get.chat.id)
+
+    val userId = UserID(cbq.from.id)
+    val priceConfig = redis.getPriceConfigForUser(userId)
+
+    val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
+    val content = HTTPGet.get(mensaUrl)
 
     if (content.isDefined) {
       ackCallback()(cbq)
       //parses the json entries and stores them in a MensaMoltke object
       val mensa = JsonMethods.parse(content.get).extract[MensaMoltke]
       request(
-        EditMessageText(Some(chatId),
-                        Some(messageId),
-                        replyMarkup = Some(createInlineKeyboardMarkup()),
-                        text = mensa.toString(daysInFuture),
-                        parseMode = Some(ParseMode.HTML)))
+        EditMessageText(
+          Some(chatId),
+          Some(messageId),
+          replyMarkup = Some(createInlineKeyboardMarkup()),
+          text = mensa.toString(daysInFuture, priceConfig),
+          parseMode = Some(ParseMode.HTML)
+        ))
     }
   }
 
+  onCallbackWithTag("PriceConfig") { implicit cbq: CallbackQuery =>
+    val messageId = cbq.message.get.messageId
+    val chatId = cbq.message.get.chat.id
+    val userId = UserID(cbq.from.id)
+    val priceConfig = redis.getPriceConfigForUser(userId)
+    val newConfig = priceConfig.configValue match {
+      case "student"  => "employee"
+      case "employee" => "both"
+      case _          => "student"
+    }
+    redis.setPriceConfigForUser(new PriceConfig(newConfig), userId)
+
+    val text = s"Preise für ${new PriceConfig(newConfig).toString} sind ausgewählt"
+    ackCallback(Some(text))
+
+    request(
+      EditMessageText(
+        Some(chatId),
+        Some(messageId),
+        replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(userId)),
+        text = "Aus welcher Sicht möchtest du die Mensapreise anzeigen lassen?",
+        parseMode = Some(ParseMode.HTML)
+      ))
+  }
+
   def tagMensa: String => String = prefixTag("Mensa")
+
+  def tagPriceConfig: String => String = prefixTag("PriceConfig")
 
   def setDaysToAddArray(): Array[Int] = {
     val daysToAdd = Array.fill[Int](5)(0)
