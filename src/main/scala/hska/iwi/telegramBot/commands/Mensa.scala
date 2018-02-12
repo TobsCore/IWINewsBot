@@ -74,8 +74,6 @@ trait Mensa extends Commands with Callbacks {
     var daysToAdd = new Array[Int](5)
     for (bonusDays <- 0 to 4) {
       val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
-      logger.info(s"Wochentag: $weekDay")
-      logger.info(s"bonusDays $bonusDays")
       bonusDays match {
         case 0 => {
           weekDay match {
