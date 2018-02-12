@@ -4,8 +4,8 @@ scalaVersion := "2.12.4"
 
 
 // Scala Test
-libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.4"
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test"
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 // Logback logging engine
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
@@ -15,17 +15,14 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.14"
 
 // Redis as persistence
-libraryDependencies += "net.debasishg" %% "redisclient" % "3.4"
+libraryDependencies += "net.debasishg" %% "redisclient" % "3.5"
 
-// ScalaJ-HTTP for accessing feed
+// ScalaJ-HTTP for accessing remotes
 libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0"
 
 // Serialization and Deserialization
 val json4sNative = "org.json4s" %% "json4s-native" % "3.6.0-M1"
 val json4sJackson = "org.json4s" %% "json4s-jackson" % "3.6.0-M1"
-
-// Removing encodings in rss feeds
-libraryDependencies += "org.apache.commons" % "commons-text" % "1.1"
 
 // Date Formatter
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.18.0"
