@@ -14,6 +14,8 @@ import info.mukel.telegrambot4s.models.{
 import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
 
+import scala.annotation.switch
+
 trait Mensa extends Commands with Callbacks {
   _: TelegramBot =>
   implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
@@ -78,9 +80,9 @@ trait Mensa extends Commands with Callbacks {
 
       for (bonusDays <- 0 to 4) {
         val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
-        bonusDays match {
+        (bonusDays: @switch) match {
           case 0 => {
-            weekDay match {
+            (weekDay: @switch) match {
               case 6 => {
                 daysToAdd(0) = 2
                 daysToAdd(1) = 2
@@ -102,7 +104,6 @@ trait Mensa extends Commands with Callbacks {
           }
           case 1 => {
             if (weekDay == 6) {
-              daysToAdd(0) = 0
               daysToAdd(1) = 2
               daysToAdd(2) = 2
               daysToAdd(3) = 2
@@ -112,8 +113,6 @@ trait Mensa extends Commands with Callbacks {
           }
           case 2 => {
             if (weekDay == 6) {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 0
               daysToAdd(2) = 2
               daysToAdd(3) = 2
               daysToAdd(4) = 2
@@ -122,9 +121,6 @@ trait Mensa extends Commands with Callbacks {
           }
           case 3 => {
             if (weekDay == 6) {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 0
-              daysToAdd(2) = 0
               daysToAdd(3) = 2
               daysToAdd(4) = 2
               return daysToAdd
@@ -132,10 +128,6 @@ trait Mensa extends Commands with Callbacks {
           }
           case 4 => {
             if (weekDay == 6) {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 0
-              daysToAdd(2) = 0
-              daysToAdd(3) = 0
               daysToAdd(4) = 2
               return daysToAdd
             }
