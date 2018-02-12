@@ -2,31 +2,36 @@ package hska.iwi.telegramBot.mensa
 
 import java.util.{Currency, Locale}
 
-import hska.iwi.telegramBot.service.LocalDateTime
+import hska.iwi.telegramBot.service.{LocalDateTime, PriceConfig}
+
+import scala.annotation.switch
 
 case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String, date: String) {
 
-  def toString(daysInFuture: Int): String = {
+  def toString(daysInFuture: Int, priceConfig: PriceConfig): String = {
     val date = LocalDateTime.formatPrettyDateInFuture(daysInFuture)
-    val formattedMealGroups: String = formatMealGroups(this.mealGroups)
+    val formattedMealGroups: String = formatMealGroups(mealGroups, priceConfig)
+
+    val config = priceConfig.toString
+
     s"""<b>${this.name}</b>
        |$date
+       |
+       |Preise für $config, zum Ändern /settings aufrufen.
        |
        |""".stripMargin + {
       if (formattedMealGroups.isEmpty) {
         "Kein Speiseplan verfügbar"
       } else {
-        s"""$formattedMealGroups
-           |<i>Preise: Studierende / Mitarbeiter(innen)</i>
-           |""".stripMargin
+        formattedMealGroups
       }
     }
   }
 
-  private def formatMealGroups(mealGroups: Set[MealGroup]): String = {
+  private def formatMealGroups(mealGroups: Set[MealGroup], priceConfig: PriceConfig): String = {
     val formattedGroups: StringBuilder = new StringBuilder()
     for (mealGroup <- mealGroups) {
-      val meals = formatMeals(mealGroup.meals)
+      val meals = formatMeals(mealGroup.meals, priceConfig)
       formattedGroups.append(s"""<b>${mealGroup.title}</b>
                            |$meals
                            |""".stripMargin)
@@ -35,16 +40,30 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     formattedGroups.toString()
   }
 
-  private def formatMeals(meals: Set[Meal]): String = {
+  private def formatMeals(meals: Set[Meal], priceConfig: PriceConfig): String = {
     val deCurrency = Currency.getInstance(new Locale("de", "DE"))
     val formatter = java.text.NumberFormat.getCurrencyInstance
     formatter.setCurrency(deCurrency)
 
     val formattedMeals: StringBuilder = new StringBuilder()
-    for (meal <- meals) {
-      formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
-         |${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
-         |""".stripMargin)
+    if (priceConfig.configValue == "student") {
+      for (meal <- meals) {
+        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
+               |${formatter.format(meal.priceStudent)}
+               |""".stripMargin)
+      }
+    } else if (priceConfig.configValue == "employee") {
+      for (meal <- meals) {
+        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
+               |${formatter.format(meal.priceEmployee)}
+               |""".stripMargin)
+      }
+    } else {
+      for (meal <- meals) {
+        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i>
+                 |${formatter.format(meal.priceStudent)} / ${formatter.format(meal.priceEmployee)}
+                 |""".stripMargin)
+      }
     }
     formattedMeals.toString()
   }
