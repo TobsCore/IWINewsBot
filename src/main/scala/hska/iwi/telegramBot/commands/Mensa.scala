@@ -71,34 +71,37 @@ trait Mensa extends Commands with Callbacks {
   def tagMensa: String => String = prefixTag("Mensa")
 
   def setDaysToAddArray(): Array[Int] = {
-    var daysToAdd = new Array[Int](5)
-    for (bonusDays <- 0 to 4) {
-      val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
-      bonusDays match {
-        case 0 => {
-          weekDay match {
-            case 6 => {
-              daysToAdd(0) = 2
-              daysToAdd(1) = 2
-              daysToAdd(2) = 2
-              daysToAdd(3) = 2
-              daysToAdd(4) = 2
-              return daysToAdd
+    val daysToAdd = Array.fill[Int](5)(0)
+
+    //breaks on mondays
+    if (LocalDateTime.getWeekDayPlusBonusDays(0) + 4 < 6) { return daysToAdd } else {
+
+      for (bonusDays <- 0 to 4) {
+        val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
+        bonusDays match {
+          case 0 => {
+            weekDay match {
+              case 6 => {
+                daysToAdd(0) = 2
+                daysToAdd(1) = 2
+                daysToAdd(2) = 2
+                daysToAdd(3) = 2
+                daysToAdd(4) = 2
+                return daysToAdd
+              }
+              case 7 => {
+                daysToAdd(0) = 1
+                daysToAdd(1) = 1
+                daysToAdd(2) = 1
+                daysToAdd(3) = 1
+                daysToAdd(4) = 1
+                return daysToAdd
+              }
+              case _ =>
             }
-            case 7 => {
-              daysToAdd(0) = 1
-              daysToAdd(1) = 1
-              daysToAdd(2) = 1
-              daysToAdd(3) = 1
-              daysToAdd(4) = 1
-              return daysToAdd
-            }
-            case _ =>
           }
-        }
-        case 1 => {
-          weekDay match {
-            case 6 => {
+          case 1 => {
+            if (weekDay == 6) {
               daysToAdd(0) = 0
               daysToAdd(1) = 2
               daysToAdd(2) = 2
@@ -106,12 +109,9 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(4) = 2
               return daysToAdd
             }
-            case _ =>
           }
-        }
-        case 2 => {
-          weekDay match {
-            case 6 => {
+          case 2 => {
+            if (weekDay == 6) {
               daysToAdd(0) = 0
               daysToAdd(1) = 0
               daysToAdd(2) = 2
@@ -119,12 +119,9 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(4) = 2
               return daysToAdd
             }
-            case _ =>
           }
-        }
-        case 3 => {
-          weekDay match {
-            case 6 => {
+          case 3 => {
+            if (weekDay == 6) {
               daysToAdd(0) = 0
               daysToAdd(1) = 0
               daysToAdd(2) = 0
@@ -132,12 +129,9 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(4) = 2
               return daysToAdd
             }
-            case _ =>
           }
-        }
-        case 4 => {
-          weekDay match {
-            case 6 => {
+          case 4 => {
+            if (weekDay == 6) {
               daysToAdd(0) = 0
               daysToAdd(1) = 0
               daysToAdd(2) = 0
@@ -145,12 +139,11 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(4) = 2
               return daysToAdd
             }
-            case _ =>
           }
+          case _ =>
         }
-        case _ =>
       }
+      return daysToAdd
     }
-    return daysToAdd
   }
 }
