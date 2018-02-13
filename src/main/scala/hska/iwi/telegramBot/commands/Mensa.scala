@@ -10,6 +10,7 @@ import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
 
 import scala.annotation.switch
+import scala.util.Failure
 
 trait Mensa extends Commands with Callbacks with Instances {
   _: TelegramBot =>
@@ -84,14 +85,29 @@ trait Mensa extends Commands with Callbacks with Instances {
       ackCallback()(cbq)
       //parses the json entries and stores them in a MensaMoltke object
       val mensa = JsonMethods.parse(content.get).extract[MensaMoltke]
-      request(
-        EditMessageText(
-          Some(chatId),
-          Some(messageId),
-          replyMarkup = Some(createInlineKeyboardMarkup()),
-          text = mensa.toString(daysInFuture, priceConfig),
-          parseMode = Some(ParseMode.HTML)
-        ))
+      val currentContent = cbq.message.get.text.getOrElse("")
+      val newContent = mensa.toString(daysInFuture, priceConfig)
+
+      //Since the currentContent doesn't include any html entities, such as <b>...</b> but the
+      // newContent does, only the dates, which are in the second line, are compared.
+      val currentContentDateLine: Array[String] = currentContent.split("\n")
+      val newContentDateLine: Array[String] = newContent.split("\n")
+
+      if (currentContentDateLine.length > 1 && newContentDateLine.length > 1 &&
+          currentContentDateLine(1) == newContentDateLine(1)) {
+        logger.debug("User clicked on the same date, as is displayed.")
+        logger.debug("Don't update message.")
+      } else {
+        request(
+          EditMessageText(
+            Some(chatId),
+            Some(messageId),
+            replyMarkup = Some(createInlineKeyboardMarkup()),
+            text = newContent,
+            parseMode = Some(ParseMode.HTML)
+          ))
+      }
+
     }
   }
 
@@ -128,7 +144,9 @@ trait Mensa extends Commands with Callbacks with Instances {
     val daysToAdd = Array.fill[Int](5)(0)
 
     //breaks on mondays
-    if (LocalDateTime.getWeekDayPlusBonusDays(0) + 4 < 6) { return daysToAdd } else {
+    if (LocalDateTime.getWeekDayPlusBonusDays(0) + 4 < 6) {
+      return daysToAdd
+    } else {
 
       for (bonusDays <- 0 to 4) {
         val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
