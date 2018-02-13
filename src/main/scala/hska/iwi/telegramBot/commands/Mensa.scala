@@ -2,15 +2,14 @@ package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.mensa.MensaMoltke
 import hska.iwi.telegramBot.service._
-import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
+import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
-import info.mukel.telegrambot4s.methods.{EditMessageText, ParseMode, SendMessage}
+import info.mukel.telegrambot4s.methods.{EditMessageText, ParseMode}
 import info.mukel.telegrambot4s.models._
 import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
 
 import scala.annotation.switch
-import scala.util.Failure
 
 trait Mensa extends Commands with Callbacks with Instances {
   _: TelegramBot =>
@@ -36,7 +35,7 @@ trait Mensa extends Commands with Callbacks with Instances {
   def createInlineKeyboardMarkupPriceConfig(userID: UserID): InlineKeyboardMarkup = {
     val priceConfig = redis.getPriceConfigForUser(userID)
     val config =
-      InlineKeyboardButton.callbackData(priceConfig.toString(), tagPriceConfig("0"))
+      InlineKeyboardButton.callbackData(priceConfig.toString, tagPriceConfig("0"))
 
     val priceConfigButton = Seq[InlineKeyboardButton](config)
     InlineKeyboardMarkup.singleColumn(priceConfigButton)
@@ -121,9 +120,9 @@ trait Mensa extends Commands with Callbacks with Instances {
       case "employee" => "both"
       case _          => "student"
     }
-    redis.setPriceConfigForUser(new PriceConfig(newConfig), userId)
+    redis.setPriceConfigForUser(PriceConfig(newConfig), userId)
 
-    val text = s"Preise für ${new PriceConfig(newConfig).toString} sind ausgewählt"
+    val text = s"Preise für ${PriceConfig(newConfig).toString} sind ausgewählt"
     ackCallback(Some(text))
 
     request(
@@ -145,34 +144,31 @@ trait Mensa extends Commands with Callbacks with Instances {
 
     //breaks on mondays
     if (LocalDateTime.getWeekDayPlusBonusDays(0) + 4 < 6) {
-      return daysToAdd
+      daysToAdd
     } else {
 
       for (bonusDays <- 0 to 4) {
         val weekDay = LocalDateTime.getWeekDayPlusBonusDays(bonusDays)
         (bonusDays: @switch) match {
-          case 0 => {
+          case 0 =>
             (weekDay: @switch) match {
-              case 6 => {
+              case 6 =>
                 daysToAdd(0) = 2
                 daysToAdd(1) = 2
                 daysToAdd(2) = 2
                 daysToAdd(3) = 2
                 daysToAdd(4) = 2
                 return daysToAdd
-              }
-              case 7 => {
+              case 7 =>
                 daysToAdd(0) = 1
                 daysToAdd(1) = 1
                 daysToAdd(2) = 1
                 daysToAdd(3) = 1
                 daysToAdd(4) = 1
                 return daysToAdd
-              }
               case _ =>
             }
-          }
-          case 1 => {
+          case 1 =>
             if (weekDay == 6) {
               daysToAdd(1) = 2
               daysToAdd(2) = 2
@@ -180,32 +176,28 @@ trait Mensa extends Commands with Callbacks with Instances {
               daysToAdd(4) = 2
               return daysToAdd
             }
-          }
-          case 2 => {
+          case 2 =>
             if (weekDay == 6) {
               daysToAdd(2) = 2
               daysToAdd(3) = 2
               daysToAdd(4) = 2
               return daysToAdd
             }
-          }
-          case 3 => {
+          case 3 =>
             if (weekDay == 6) {
               daysToAdd(3) = 2
               daysToAdd(4) = 2
               return daysToAdd
             }
-          }
-          case 4 => {
+          case 4 =>
             if (weekDay == 6) {
               daysToAdd(4) = 2
               return daysToAdd
             }
-          }
           case _ =>
         }
       }
-      return daysToAdd
+      daysToAdd
     }
   }
 }

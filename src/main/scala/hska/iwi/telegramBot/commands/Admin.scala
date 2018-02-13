@@ -2,11 +2,11 @@ package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.news.Course
 import hska.iwi.telegramBot.service._
+import info.mukel.telegrambot4s.Implicits._
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
-import info.mukel.telegrambot4s.models.User
-import info.mukel.telegrambot4s.Implicits._
 import info.mukel.telegrambot4s.methods.ParseMode
+import info.mukel.telegrambot4s.models.User
 
 trait Admin extends Commands with Instances with ObjectSerialization with Admins {
   _: TelegramBot =>
@@ -49,7 +49,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
                 .getOrElse("<i>not defined</i>")}  -  [${user.toString}]")
               s.append("\n")
             })
-          reply(s.toString(), parseMode = ParseMode.HTML)
+          reply(s.toString, parseMode = ParseMode.HTML)
         } else {
           reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
@@ -107,7 +107,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
       if (isAllowed(user)) {
         val subscriptions = redis.getConfigForUsers
         subscriptions
-          .foreach(e => reply(s"${e._1} ${e._2.size}: ${e._2.toString()}"))
+          .foreach(e => reply(s"${e._1} ${e._2.size}: ${e._2.toString}"))
       } else {
         reply("Cannot check subscriptions - This is an Admin feature")
         logger.warn(s"User $user tried to check all subscriptions")

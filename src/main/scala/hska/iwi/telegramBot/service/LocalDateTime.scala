@@ -72,7 +72,7 @@ object LocalDateTime {
     val minutes = time % 60
     val timeString: StringBuilder = new StringBuilder()
     timeString.append("%02d".format(hours) + ":" + "%02d".format(minutes))
-    timeString.toString()
+    timeString.toString
   }
 
 }

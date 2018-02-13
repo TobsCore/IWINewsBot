@@ -1,7 +1,7 @@
 package hska.iwi.telegramBot.service
 
-import org.json4s.{DateFormat, Formats, NoTypeHints, TypeHints}
 import org.json4s.jackson.Serialization
+import org.json4s.{DateFormat, Formats, NoTypeHints, TypeHints}
 
 //noinspection ScalaUnusedSymbol,ScalaUnusedSymbol
 trait ObjectSerialization {

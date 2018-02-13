@@ -32,7 +32,9 @@ trait AboSettings extends Commands with Callbacks with Instances {
           val facultyNewsConfigValue = redis.getFacultyConfigForUser(userId)
           if (config.isDefined) {
             reply(
-              s"Hier kannst Du festlegen, zu welchen Studiengängen (INFB, MKIB und INFM) Du Nachrichten des <i>Schwarzen Bretts</i> erhalten möchtest. Außerdem kannst Du Nachrichten der IWI-Fakultät abonnieren.",
+              s"Hier kannst Du festlegen, zu welchen Studiengängen (INFB, MKIB und INFM) Du " +
+                s"Nachrichten des <i>Schwarzen Bretts</i> erhalten möchtest. Außerdem kannst Du " +
+                s"Nachrichten der IWI-Fakultät abonnieren.",
               replyMarkup = Some(createInlineKeyboardMarkup(config.get, facultyNewsConfigValue.get)),
               parseMode = Some(ParseMode.HTML)
             )

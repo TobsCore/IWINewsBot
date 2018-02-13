@@ -40,7 +40,7 @@ case class FacultyNews(date: String,
       }
     }
     resultText.append(s"\n$date")
-    resultText.toString()
+    resultText.toString
   }
 
 }

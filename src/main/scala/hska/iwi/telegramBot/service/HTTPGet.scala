@@ -1,8 +1,9 @@
 package hska.iwi.telegramBot.service
 
 import java.net.{HttpURLConnection, URL}
-import com.typesafe.scalalogging.Logger
 import java.nio.charset.{Charset, CodingErrorAction}
+
+import com.typesafe.scalalogging.Logger
 
 object HTTPGet {
 

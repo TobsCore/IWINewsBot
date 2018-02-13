@@ -3,7 +3,7 @@ package hska.iwi.telegramBot
 import akka.actor.ActorSystem
 import com.redis.RedisClient
 import hska.iwi.telegramBot.news._
-import hska.iwi.telegramBot.service.{Admins, Configuration, FeedURL, RedisInstance, UserID}
+import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}

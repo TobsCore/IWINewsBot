@@ -1,10 +1,10 @@
+import ch.qos.logback.classic.{Level, Logger}
 import com.redis.RedisClient
-import hska.iwi.telegramBot.news.{Course, INFB, INFM, MKIB}
+import hska.iwi.telegramBot.news.{INFB, INFM, MKIB}
 import hska.iwi.telegramBot.service.{Configuration, RedisInstance, UserID}
 import info.mukel.telegrambot4s.models.User
-import ch.qos.logback.classic.{Level, Logger}
-import org.slf4j.LoggerFactory
 import org.scalatest.{BeforeAndAfterAll, FunSuite}
+import org.slf4j.LoggerFactory
 
 class SubscriptionTest extends FunSuite with BeforeAndAfterAll {
 

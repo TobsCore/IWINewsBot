@@ -1,11 +1,9 @@
 package hska.iwi.telegramBot.mensa
 
-import java.util.{Currency, Locale}
-
-import hska.iwi.telegramBot.service.{LocalDateTime, PriceConfig}
-
 import java.text.NumberFormat
 import java.util.Locale
+
+import hska.iwi.telegramBot.service.{LocalDateTime, PriceConfig}
 
 case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String, date: String) {
 
@@ -45,7 +43,7 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
              |""".stripMargin)
       }
     }
-    formattedGroups.toString()
+    formattedGroups.toString
   }
 
   private def formatMeals(meals: Set[Meal], priceConfig: PriceConfig): String = {
@@ -74,7 +72,7 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
                  |""".stripMargin)
       }
     }
-    formattedMeals.toString()
+    formattedMeals.toString
   }
 
   private def getEmojis(meal: Meal): String = {
@@ -82,11 +80,11 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     for (food <- meal.foodAdditiveNumbers) {
       food match {
         case "Fi" | "27" | "98" =>
-          if (!emojiString.toString().contains("\uD83D\uDC1F")) {
+          if (!emojiString.toString.contains("\uD83D\uDC1F")) {
             emojiString.append("\uD83D\uDC1F ")
           } //Fisch
         case "93" | "94" =>
-          if (!emojiString.toString().contains("\ud83d\udc04")) {
+          if (!emojiString.toString.contains("\ud83d\udc04")) {
             emojiString.append("\ud83d\udc04 ")
           } //Rind
         case "95" => emojiString.append("\ud83d\udc16 ") //Schwein
@@ -96,7 +94,7 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
         case _    => emojiString.append("")
       }
     }
-    emojiString.toString()
+    emojiString.toString
   }
 
 }

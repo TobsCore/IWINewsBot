@@ -37,7 +37,7 @@ case class FreeRoomEntry(day: Int, endTime: Int, locations: Set[Room], startTime
         else locationsString.append("\n")
         lastBuilding = currentBuilding
       }
-      locationsString.toString()
+      locationsString.toString
     }
   }
 }
