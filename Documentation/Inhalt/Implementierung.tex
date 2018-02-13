@@ -9,7 +9,7 @@ git clone https://github.com/TobsCore/IWINewsBot
 
 In dem geladenen Ordner \texttt{IWINewsBot} befinden sich dabei die folgenden drei Ordner: \texttt{src}, \texttt{project} und \texttt{Documentation}. In \texttt{src/} sind die Dateien für den Bot enthalten, in \texttt{project/} befinden sich Informationen zu dem SBT-Projekt und in \texttt{Documentation} sind die Quelldateien für diese Dokumentation enthalten.
 
-Damit der Bot korrekt starten kann, ist ein Token notwendig, hierzu legt man im Root-Ordner die Datei \texttt{bot.token} an und speichert in dieser Datei das vom BotFather generierte Token. Der Bot wird diese Datei dann nutzen, um sich zu verfizieren. Aus Sicherheitsgründen ist das Token nicht im Repository gespeichert.
+Damit der Bot korrekt starten kann, ist ein Token notwendig, hierzu legt man im Root-Ordner die Datei \texttt{bot.token} an und speichert in dieser Datei das vom BotFather generierte Token. Der Bot wird diese Datei dann nutzen, um sich zu verifizieren. Aus Sicherheitsgründen ist das Token nicht im Repository gespeichert.
 
 \section{Scala und das Scala Build Tool}
 Es wurde entschieden, den Bot in Scala zu programmieren, da dies eine interessante Programmiersprache ist, mit der man als Studierender nicht viele Berührungspunkte hat. Scala bietet durch die Objektorientierung vertraute Konzepte, jedoch sind viele Konzepte der funktionalen Programmierung in der Sprache vorhanden.
@@ -43,13 +43,13 @@ sbt:IWINewsBot> compile
 sbt:IWINewsBot> run
 \end{lstlisting}
 
-Da einige Klassen auch durch Unit-Tests getestet werden, kann dies auch direkt über den SBT-Server gestartet werden (mittels \texttt{test}). Der SBT-Server kann über \texttt{exit} beendet werden. Die Nutzung des Servers ist dahingehend sinnvoll, dass viele Dateien gecached werden können und das Projekt nicht jedes Mal neu geladen werden muss. Natürlich ist es auch möglich, das Projekt zu kompilieren, ohne den SBT-Server zu starten. Man kann aus der Kommandozeile auch folgendes eingeben:
+Da einige Klassen auch durch Unit-Tests getestet werden, kann dies auch direkt über den SBT-Server gestartet werden (mittels \texttt{test}). Der SBT-Server kann über \texttt{exit} beendet werden. Die Nutzung des Servers ist dahingehend sinnvoll, dass viele Dateien gecachet werden können und das Projekt nicht jedes Mal neu geladen werden muss. Natürlich ist es auch möglich, das Projekt zu kompilieren, ohne den SBT-Server zu starten. Man kann aus der Kommandozeile auch folgendes eingeben:
 
 \begin{lstlisting}[language=bash]
 > sbt compile
 \end{lstlisting}
 
-Um das Programm dann jedoch auf einen Server zu spielen und dort zu starten, ist es sinnvoll, eine ausführbare Datei zu haben. Scala erzeugt JVM-Code, also gilt es eine \texttt{JAR}-Datei zu generieren. Um dieses JAR auf beliebigen Rechnern lauffähig zu machen, also auch auf Computern und Servern, die neben der JVM kein Scala installiert haben und zugleich auch alle Abhängigkeiten dazu zu packen, ist die Generierung eines sogenannten Fat-JARs notwendig.
+Um das Programm dann jedoch auf einen Server zu spielen und dort zu starten, ist es sinnvoll, eine ausführbare Datei zu haben. Scala erzeugt JVM-Code, also gilt es eine \texttt{JAR}-Datei zu generieren. Um dieses JAR auf beliebigen Rechnern lauffähig zu machen, also auch auf Computern und Servern, die neben der JVM kein Scala installiert haben und zugleich auch alle Abhängigkeiten dazu zu packen, ist die Generierung eines sogenannten \emph{Fat-JAR}s notwendig.
 
 Über das \emph{Assembly}-Plugin kann man genau dies umsetzen. Wenn man SBT gestartet hat, reicht die Ausführung des folgenden Befehls:
 
@@ -77,7 +77,7 @@ Scala setzt auf die JVM als Laufzeitumgebung, weswegen es wichtig ist, dass ein 
 
 Um den Bot starten zu können, muss ein Bot bei Telegram erstellt werden, über den BotFather. Hier erhält man dann im Anschluss das Token. Nun erstellt man im Hauptprojektordner (dem Ordner, in dem sich auch die \texttt{build.sbt}) eine neue Datei \texttt{bot.token} in der man das Token ohne nachfolgende Leerzeichen speichert.
 
-Damit der Bot ohne Fehler starten kann, muss eine Redis-Instanz, auf dem Port 6379, gestartet werden, was der Standardport für Redis ist. Bei Redis handelt es sich um eine sehr einfach gehaltene In-Memory Datenbank mit Persistenzmöglichkeit. Der Redis-Server wird über den Befehl
+Damit der Bot ohne Fehler starten kann, muss eine Rudis-Instanz, auf dem Port 6379, gestartet werden, was der Standardport für Redis ist. Bei Redis handelt es sich um eine sehr einfach gehaltene In-Memory Datenbank mit Persistenzmöglichkeit. Der Redis-Server wird über den Befehl
 
 \begin{lstlisting}
 > redis-server
@@ -103,7 +103,7 @@ Zuletzt gibt es das Unterpackage \texttt{service} in der allerlei Helferklassen 
 \subsection{Main Klasse}\label{sec:Programmstart}
 Betrachtet man die Datei \texttt{IWINewsBot.scala}, so sieht man dort einmal die Klassendefinition von \texttt{IWINewsBot}, am Ende der Datei wird zudem aber auch ein \emph{object} mit dem Namen \texttt{IWINewsBot} erstellt, welches von \texttt{App} erbt. Bei diesem \emph{object} handelt es sich um die Main Klasse, also jene Klasse, die beim Aufruf des Programms gestartet wird. Alles im Rumpf des IWINewsBot-Objekts wird dabei ausgeführt. Wie man darin erkennen kann, wird einen Klasseninstanz von \texttt{IWINewsBot} erstellt und gestartet.
 
-Die \texttt{IWINewsBot}-Klasse erbt von ganz vielen Klassen. Bei Scala wird die Mehrfachvererbung unterstützt, wobei die typischen Konflikte vermieden werden, indem es eine \emph{Hauptklasse} gibt, von der die primären Methoden stammen. Diese wird durch \emph{extends} hinzugefügt, alle anderen über \emph{with}. Die Bibliohtek \emph{Telegrambot4s} basiert auf dem Cake-Pattern\footnote{Wie \emph{Telegrambot4s} das Cake Pattern umsetzt, wird auf \url{https://github.com/mukel/telegrambot4s/wiki/Design} beschrieben}, sodass verschiedene Funktionen über Vererbung einfügt werden, als Komposition.
+Die \texttt{IWINewsBot}-Klasse erbt von ganz vielen Klassen. Bei Scala wird die Mehrfachvererbung unterstützt, wobei die typischen Konflikte vermieden werden, indem es eine \emph{Hauptklasse} gibt, von der die primären Methoden stammen. Diese wird durch \emph{extends} hinzugefügt, alle anderen über \emph{with}. Die Bibliothek \emph{Telegrambot4s} basiert auf dem Cake-Pattern\footnote{Wie \emph{Telegrambot4s} das Cake Pattern umsetzt, wird auf \url{https://github.com/mukel/telegrambot4s/wiki/Design} beschrieben}, sodass verschiedene Funktionen über Vererbung einfügt werden, als Komposition.
 
 Wie auf die einzelnen Befehle eines Users reagiert werden soll, ist in den Klassen aus dem Package \texttt{commands} definiert. Diese Funktion wird auch über Vererbung in den Bot eingefügt. Um die Funktionen besser zu kapseln wurden diese in verschiedene Klassen unterteilt, konkret in die Folgenden:
 
@@ -120,12 +120,12 @@ Sollte man eine weiter Klasse hinzufügen wollen, die auf bestimmte Befehle reag
 
 Damit ist erklärt, wie der Telegram-Bot auf Kommandos reagiert. Das Überprüfen auf neue Nachrichten soll, wie bereits beschrieben, im Hintergrund passieren. Die Klasse \texttt{BackgroundFeedSync} kümmert sich darum und wird deswegen auch in der Hauptklasse gestartet.
 
-Zuguterletzt muss das Bot-Token vom IWINewsBot geladen werden, weil es für die  Authetifizierung genutzt wird. Das Framework \emph{Telegrambot4s} regelt dies automatisch ab, es muss lediglich das Token in dem Value \texttt{token} gespeichert werden. Da das Token geheim bleiben muss, wird es aus der Datei \texttt{bot.token} gelesen.
+Zu guter Letzt muss das Bot-Token vom IWINewsBot geladen werden, weil es für die  Authentifizierung genutzt wird. Das Framework \emph{Telegrambot4s} regelt dies automatisch ab, es muss lediglich das Token in dem Value \texttt{token} gespeichert werden. Da das Token geheim bleiben muss, wird es aus der Datei \texttt{bot.token} gelesen.
 
 \section{Kommandos}
 Bevor auf die einzelnen Kommandos eingegangen wird und wie diese implementiert wurden, soll die generelle Konzeption der Kommando-Klasse eingegangen werden. Aus Übersichtlichkeitsgründen sollten diese Klassen im \texttt{commands}-Package abgelegt werden und als Trait implementiert werden, damit diese für das Cake Pattern genutzt werden können. Bei Traits handelt es sich um Interfaces mit konkreter Implementierung, damit wird die Mehrfachvererbung auf der JVM ermöglicht.
 
-Der Aufbau soll anhand des erfunden \emph{Help}-Kommandons erklärt werden. Der Nutzer soll durch das Abschicken eines \texttt{/help}-Befehls einen Hilfetext angezeigt bekommen.
+Der Aufbau soll anhand des erfunden \emph{Help}-Kommandos erklärt werden. Der Nutzer soll durch das Abschicken eines \texttt{/help}-Befehls einen Hilfetext angezeigt bekommen.
 
 Das Trait \texttt{Help} würde dann wie folgt definiert:
 
@@ -149,7 +149,7 @@ trait Help extends Commands {
 }
 \end{lstlisting}
 
-Zuguterletzt neben dem Absenden des Hilfetexts das Ereignis geloggt werden. Hierzu soll auf das Userobjekt zugegriffen werden, der den Befehl an den Bot geschickt hat. Hier bietet das Framework die nützliche \texttt{using}-Funktion.
+Zu guter Letzt neben dem Absenden des Hilfetexts das Ereignis geloggt werden. Hierzu soll auf das Userobjekt zugegriffen werden, der den Befehl an den Bot geschickt hat. Hier bietet das Framework die nützliche \texttt{using}-Funktion.
 
 \begin{lstlisting}[language=scala, style=scala, caption=Zugriff auf das User Objekt]
 onCommand("/help") { implicit msg =>
@@ -197,7 +197,7 @@ onCommand("/start") { implicit msg =>
 }
 \end{lstlisting}
 
-Interessant an dieser Stelle ist die Zeile 6, in der die UserID der Redis-Datenbank übergeben wird. Existiert der User bereits, so wird er entsprechend darüber informiert (dies kann auftreten, wenn er mehr als 1x den \texttt{/start}-Befehl abschickt). Ist der User noch nicht registriert, so wird automatisch eine intiale Konfiguration gespeichert (Zeile 15). Für diese beiden Teile soll der entsprechende Code gezeigt werden:
+Interessant an dieser Stelle ist die Zeile 6, in der die UserID der Redis-Datenbank übergeben wird. Existiert der User bereits, so wird er entsprechend darüber informiert (dies kann auftreten, wenn er mehr als 1x den \texttt{/start}-Befehl abschickt). Ist der User noch nicht registriert, so wird automatisch eine initiale Konfiguration gespeichert (Zeile 15). Für diese beiden Teile soll der entsprechende Code gezeigt werden:
 
 \begin{lstlisting}[language=scala, style=scala, caption=Hinzufügen eines Users zur Datenbank]
 override def addUser(userID: UserID): Boolean = {
@@ -225,10 +225,10 @@ override def getConfigFor(userID: UserID): Option[Map[Course, Boolean]] = {
 }
 \end{lstlisting}
 
-Wenn ein User keine weieren Nachrichten mehr erhalten möchte, so kann er durch den \texttt{/stop}-Befehl sein Abonnement beenden, dabei wird dann seine UserID aus dem Set aller UserIDs entfernt und auch die Konfiguration wird gelöscht.
+Wenn ein User keine weiteren Nachrichten mehr erhalten möchte, so kann er durch den \texttt{/stop}-Befehl sein Abonnement beenden, dabei wird dann seine UserID aus dem Set aller UserIDs entfernt und auch die Konfiguration wird gelöscht.
 
 \subsection{Der Profs-Befehl}
-Der Profs-Befehl gibt eine Liste aller Professoren als klickbare Inline-Buttons aus. Wird einer dieser Button angeklickt, so werden Informationen zu dem entsprechenden Professor angezeigt. In diesem Teil der Dokumentation wird der Fokus auf diese Inline-Buttons gelegt, aber auch wie die Requests an den Server gestellt werden. Auf Redis soll nicht weiter im Detail eingegangen werden, da die Befehle alle dem offiziellen Muster folgen.
+Der Profs-Befehl gibt eine Liste aller Professoren als anklickbare Inline-Buttons aus. Wird einer dieser Button angeklickt, so werden Informationen zu dem entsprechenden Professor angezeigt. In diesem Teil der Dokumentation wird der Fokus auf diese Inline-Buttons gelegt, aber auch wie die Requests an den Server gestellt werden. Auf Redis soll nicht weiter im Detail eingegangen werden, da die Befehle alle dem offiziellen Muster folgen.
 
 \begin{lstlisting}[language=scala, style=scala, caption=Reaktion auf das /profs Kommando, label={code:profsCommand}]
 var lecturers: Option[Seq[Lecturer]] = None
@@ -249,7 +249,7 @@ onCommand("/profs") { implicit msg =>
 }
 \end{lstlisting}
 
-Mit dem Befehl \texttt{/profs} wird der Fakultätsserver nach Informationen zu den Professoren gefragt. Dieser Antwortet mit einem JSON, das in dem Value \texttt{content} gespeichert wird. Das JSON wird dann über \texttt{JsonMethods.parse} geparsed und in lecturers gespeichert, einer Liste von Professoren. Der relevante Teil bei dieser Methode befindet sich jedoch am Ende, hier wird in die Antwort zusätzlich das \texttt{replyMarkup} gesetzt, indem die \texttt{createInlineKeyboardMarkup}-Methode angerufen wird.
+Mit dem Befehl \texttt{/profs} wird der Fakultätsserver nach Informationen zu den Professoren gefragt. Dieser Antwortet mit einem JSON, das in dem Value \texttt{content} gespeichert wird. Das JSON wird dann über \texttt{JsonMethods.parse} geparset und in \texttt{lecturers} gespeichert, einer Liste von Professoren. Der relevante Teil bei dieser Methode befindet sich jedoch am Ende, hier wird in die Antwort zusätzlich das \texttt{replyMarkup} gesetzt, indem die \texttt{createInlineKeyboardMarkup}-Methode angerufen wird.
 
 \begin{lstlisting}[language=scala, style=scala, caption=Erstellen der Professor-Button]
 def createInlineKeyboardMarkup(lecturersSet: Seq[Lecturer]): InlineKeyboardMarkup = {
@@ -291,6 +291,6 @@ onCallbackWithTag("Lecturer") { implicit cbq: CallbackQuery =>
 }
 \end{lstlisting}
 
-Wie man an~\autoref{code:InlineCallback} erkennt, wird auf den Callback reagiert, so als wäre eine Methode auferufen wird, wobei auf das den \texttt{CallbackQuery} einfach zugegriffen werden kann. Als Antwort wird eine \texttt{SendMessage} geschickt mit den Informationen zu dem ausgewählten Professor, der über die ID identifiziert wird.
+Wie man an~\autoref{code:InlineCallback} erkennt, wird auf den Callback reagiert, so als wäre eine Methode aufgerufen worden, wobei auf das \texttt{CallbackQuery} einfach zugegriffen werden kann. Als Antwort wird eine \texttt{SendMessage} geschickt mit den Informationen zu dem ausgewählten Professor, der über die ID identifiziert wird.
 
-Die Verbindung mit dem Server der Fakultät wird über den Aufruf von \texttt{HTTPGet\allowbreak.get(\allowbreak FeedURL\allowbreak.lecturer)} aufgenommen (siehe~\autoref{code:profsCommand}). Hierbei ist die URL in \texttt{FeedURL\allowbreak.lecturer} gespeichert und kann an dieser Stelle angepasst werden, sollte sich das URL-Schema der Fakultät ändern. \texttt{HTTPGet.get} kümmert sich um den Verbindungsaufbau, indem dort alle nötigen Parameter gesetzt werden können und Fehler behandelt werden, sodass ein \texttt{Option[String]} zurück gegeben werden kann, wobei \texttt{None} zurückgegeben wird, wenn ein Fehler auftrat. 
+Die Verbindung mit dem Server der Fakultät wird über den Aufruf von \texttt{HTTPGet\allowbreak.get(\allowbreak FeedURL\allowbreak.lecturer)} aufgenommen (siehe~\autoref{code:profsCommand}). Hierbei ist die URL in \texttt{FeedURL\allowbreak.lecturer} gespeichert und kann an dieser Stelle angepasst werden, sollte sich das URL-Schema der Fakultät ändern. \texttt{HTTPGet.get} kümmert sich um den Verbindungsaufbau, indem dort alle nötigen Parameter gesetzt werden können und Fehler behandelt werden, sodass ein \texttt{Option[String]} zurück gegeben werden kann, wobei \texttt{None} zurückgegeben wird, wenn ein Fehler auftrat.

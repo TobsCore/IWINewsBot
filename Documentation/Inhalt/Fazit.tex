@@ -2,30 +2,28 @@
 Am Ende dieser Arbeit wird aus den gewonnenen Erfahrung mit der Telegram-Bot-API ein Resumee gezogen. Zuletzt werden Anstöße zur weiteren Entwicklung des Hochschul-Bots gegeben.
 
 \section{Bewertung}
-Es bleibt festzuhalten, dass mithilfe der Telegram-API schnell ein funktionales Programm zu erstellen ist, das durch seine Plattformunabhängigkeit eine weite Reichweite bietet und somit viele Benutzer abholt. So werden zum Beispiel WindowsPhone-Benutzer, die oft bei App-Entwicklungen vernachlässigt werden, ebenfalls integriert.
+Es bleibt festzuhalten, dass mithilfe der Telegram-API schnell ein funktionales Programm zu erstellen ist, das durch seine Plattformunabhängigkeit eine weite Reichweite bietet und somit viele Benutzer abholt. So werden zum Beispiel WindowsPhone-Benutzer, die oft bei App-Entwicklungen vernachlässigt werden, ebenfalls bedient.
 
-Die Telegram-API ist in einigen Programmiersprachen verfügbar, darunter PHP, Java und Scala, Node.js, Go und viele weitere. Telegram selbst bietet keine Bots an. Alle Bots und die Wrapper für die verschiedenen Programmiersprachen werden von der Community angeboten, die jedoch sehr aktuell und engagiert arbeitet. Der Einstieg fällt durch die Vielzahl an Sprachen sehr leicht.
+Die Telegram-API ist in einigen Programmiersprachen verfügbar, darunter PHP, Java ,Scala, Node.js, Go und viele weitere. Alle Bots und die Wrapper für die verschiedenen Programmiersprachen werden von der Community angeboten, die jedoch sehr aktuell und engagiert arbeitet. Der Einstieg fällt durch die Vielzahl an Sprachen sehr leicht.
 
-Durch das CAKE-Pattern wird die API sehr mächtig, da man Funktionen leicht hinzufügen kann.
-%TODO hier noch zwei Sätze @Toby
+Durch das CAKE-Pattern ist die API sehr mächtig, da man Funktionen leicht hinzufügen kann. Somit sind sehr komplexe Anwendungen möglich, die beliebig erweitert werden können.
 
-Ein Telegram-Bot ist für eine reine Anfrage- und Antwortanwendung wie geschaffen, da es klar definierte Entscheidungsmöglichkeiten für den Benutzer gibt und daher auch für die Entwickler berechenbar zu programmieren ist. Die Usereingaben sind also vom Bot, zum Beispiel durch Buttons, vordefiniert und daher ist es leicht, damit umzugehen. Es gibt also keine Kommunikation im Sinne, dass der Bot fragt, der User anwortet und die Unterhaltung so hin- und herwandert, sondern der User fragt und der Bot anwortet.
-Der Sinn des IWINewsBot erfüllt voll und ganz diese Bedingung.
+Ein Telegram-Bot ist für eine reine Anfrage- und Antwortanwendung wie geschaffen, da es klar definierte Entscheidungsmöglichkeiten für den Benutzer gibt und daher auch für die Entwickler einfach zu programmieren ist. Die Usereingaben sind vom Bot, zum Beispiel durch Buttons, vordefiniert und daher ist es leicht, damit umzugehen.
 
-Wünschenswert wären jedoch weitere Gestaltungsmöglichkeiten für Texte. Im Moment sind nur die Basisfunktionalitäten für Markdown und HTML vorhanden, welche zum Beispiel \emph{bold}, \emph{kursiv} und Highlighting von Links enthalten.
+Wünschenswert wären jedoch weitere Gestaltungsmöglichkeiten für Texte. Im Moment sind nur die Basisfunktionalitäten für Markdown und HTML vorhanden, welche zum Beispiel \emph{bold}, \emph{kursiv} und das Highlighting von Links enthalten.
 Für eine übersichtliche und abwechslungsreiche Darstellung für den User werden vor allem Aufzählungspunkte schmerzlich vermisst.
 
 Es bestehen aber nicht nur Einschränkungen beim Aussehen des Textes, sondern auch bei der Platzierung der Textausgabe des Bots.
-Bei dem Mensaplan, wäre es zum Beispiel sinnvoller nicht den Text über den Buttons zu ersetzen, sondern den unter den Buttons. Damit wäre auch gleich noch das Problem gelöst, dass beim Ersetzen von Text keine Notification einer neuen Nachricht eintritt. Somit kann es vom User leicht übersehen werden, da es nicht vollständig klar ist, dass sich etwas geändert hat.
+Bei dem Mensaplan, wäre es zum Beispiel sinnvoller, nicht den Text über den Buttons zu ersetzen, sondern unter den Buttons. Damit wäre auch gleich noch das Problem gelöst, dass beim Ersetzen von Text keine Notification einer neuen Nachricht eintritt. Neue Nachrichten werden somit vom User möglicherweise übersehen.
 
 \section{Ausblick}
 Der Bot enthält nun eine gewisse Basisfunktionalität. Es muss die Entscheidung getroffen werden, ob eine Ergänzung weiterer Features einen Mehrwert bietet. Dafür gilt es zu berücksichtigen, wie der Bot angenommen wird. Wenn ihn keiner nutzt, muss er also auch nicht verbessert werden. \\
-Außerdem ist eine Anwendung, die alle Funktionalitäten abdeckt, nicht unbedingt eine gute Anwendung. Es muss also beschlossen werden, ob eine Anwendung, die reduziert, aber sehr funktional und effizient arbeitet, nicht genau so arbeitet, wie es arbeiten soll. Zu viele Funktionalitäten könnten dabei Benutzer abschrecken.
+Außerdem ist eine Anwendung, die alle Funktionalitäten abdeckt, nicht unbedingt eine gute Anwendung. Zu viele Funktionalitäten könnten dabei Benutzer abschrecken.
 
-Alle Funktionen, die von der REST-API der Fakultät IWI angeboten werden, könnten auch in diesem Bot integriert werden. Darunter fällt zum Beispiel eine Notenübersicht und Stunden- und Semesterpläne. Die Anwendung sollte jedoch nicht mit Features überladen werden, nur weil es möglich ist.
+Alle Funktionen, die von der REST-API der Fakultät IWI angeboten werden, können auch in diesen Bot integriert werden. Darunter fällt zum Beispiel eine Notenübersicht und Stunden- und Semesterpläne. Die Anwendung sollte jedoch nicht mit Features überladen werden, nur weil es möglich ist.
 
-Auch eine Integration von abweichenden Funktionen ist denkbar. So ist es für viele interessant, die mit dem Auto zur Hochschule kommen,wie die aktuelle Verkehrlage auf dem Weg ist. Dies könnte der Bot mit einer Webanfrage an Google Maps beantworten.
+Auch eine Integration von abweichenden Funktionen ist denkbar. So ist es für viele interessant, die mit dem Auto zur Hochschule kommen, wie die aktuelle Verkehrslage auf dem Weg ist. Dies könnte der Bot mit einer Webanfrage an Google Maps beantworten.
 
-Ein Alleinstellungsmerkmal für den Bot könnte zum Beispiel das Senden von Nachrichten an das Schwarze Brett durch Professoren/innen sein. Dafür müsste aber sicher gestellt werden, dass nicht Studierende diese Funktion nutzen können. Aus datenschutztechnischen Gründen dürfen in dem Telegram-Bot keine Daten der Hochschule gespeichert werden. Eine Lösung wäre durch die REST-API der Fakultät umsetzbar, die eine Basic-Authentification anbietet. So könnten nur Professoren/Professorinnen Nachrichten verfassen.
+Ein Alleinstellungsmerkmal für den Bot könnte zum Beispiel das Senden von Nachrichten an das Schwarze Brett durch Professoren/innen sein. Dafür müsste aber sicher gestellt werden, dass nicht Studierende diese Funktion nutzen können. Aus datenschutztechnischen Gründen dürfen in dem Telegram-Bot keine Daten der Hochschule gespeichert werden. Eine Lösung wäre durch die REST-API der Fakultät umsetzbar, die eine eigene Authentifikation anbietet. So könnten nur Professoren/Professorinnen Nachrichten verfassen.
 
 Auch könnte die Kommunikation zwischen Studierenden und Lehrenden durch Telegram stark vereinfacht werden, indem man in der \emph{/profs}-Funktion, die Telegram-Accounts der Lehrenden verlinkt. So könnten Studierende direkt eine private Konversation mit Lehrenden aufbauen. Dies führt zu schnellerer und klarerer Kommunikation, ohne Wartezeiten zwischen E-Mails.
