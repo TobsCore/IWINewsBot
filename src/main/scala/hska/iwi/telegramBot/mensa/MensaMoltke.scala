@@ -18,7 +18,8 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     s"""<b>${this.name}</b>
        |$date
        |
-       |Preise für $config, zum Ändern /settings aufrufen.
+       |Preise für $config,
+       |zum Ändern /settings aufrufen.
        |
        |""".stripMargin + {
       if (formattedMealGroups.isEmpty) {
@@ -32,11 +33,17 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
   private def formatMealGroups(mealGroups: Set[MealGroup], priceConfig: PriceConfig): String = {
     val formattedGroups: StringBuilder = new StringBuilder()
     for (mealGroup <- mealGroups) {
-      val meals = formatMeals(mealGroup.meals, priceConfig)
-      formattedGroups.append(s"""<b>${mealGroup.title}</b>
-                           |$meals
-                           |""".stripMargin)
-
+      if (mealGroup.meals.isEmpty) {
+        formattedGroups.append(s"""<b>${mealGroup.title}</b>
+                                  |geschlossen
+                                  |
+                                  |""".stripMargin)
+      } else {
+        val meals = formatMeals(mealGroup.meals, priceConfig)
+        formattedGroups.append(s"""<b>${mealGroup.title}</b>
+             |$meals
+             |""".stripMargin)
+      }
     }
     formattedGroups.toString()
   }
