@@ -20,7 +20,7 @@ Um das Projekt zuverlässig bauen zu können und Abhängigkeiten zu verwalten, w
 
 Am Anfang der Datei werden Informationen zu dem Projekt festgelegt, wie der Name und die Version. Außerdem kann an dieser Stelle die Scala-Version festgelegt werden.
 
-Im Anschluss werden die Scala-Abhängigkeiten verwaltet. Wie man feststellt setzt der Telegram-Bot Bibliotheken wie \emph{Scala Test}, \emph{Telegrambot4s} und die Logging-Engine \emph{Logback} ein. Diese Abhängigkeiten werden über den \texttt{+=} an \texttt{libraryDependencies} angehängt.
+Im Anschluss werden die Scala-Abhängigkeiten verwaltet. Wie man feststellt, setzt der Telegram-Bot Bibliotheken wie \emph{Scala Test}, \emph{Telegrambot4s} und die Logging-Engine \emph{Logback} ein. Diese Abhängigkeiten werden über den \texttt{+=} an \texttt{libraryDependencies} angehängt.
 
 Außerdem kann festgelegt werden, in welcher Datei sich die Main-Methode befindet, also die Methode, mit der das Programm gestartet werden soll. Wie man an der \texttt{build.sbt} erkennt, befindet sich diese in der Klasse \texttt{IWINewsBot} und ist im Package \texttt{hska\allowbreak.iwi\allowbreak.telegramBot}.
 
@@ -57,7 +57,7 @@ Um das Programm dann jedoch auf einen Server zu spielen und dort zu starten, ist
 > sbt assembly
 \end{lstlisting}
 
-Hierdurch wird das Programm \texttt{IWINewsBot\allowbreak-assembly\allowbreak-0.4\allowbreak.jar} in dem Ordner \texttt{target\allowbreak/scala-2.12/} generiert. Navigiert man in diesen Ordner, kann das Programm dann durch Ausführung des Befehls \texttt{java -jar IWINewsBot-assembly-0.4.jar} der Bot gestartet werden.
+Hierdurch wird das Programm \texttt{IWINewsBot\allowbreak-assembly\allowbreak-0.4\allowbreak.jar} in dem Ordner \texttt{target\allowbreak/scala-2.12/} generiert, wobei 0.4 für die (in der \texttt{build.sbt} eingestellten) Version steht. Navigiert man in diesen Ordner, kann das Programm dann durch Ausführung des Befehls \texttt{java -jar IWINewsBot-assembly-0.4.jar} der Bot gestartet werden.
 
 \textbf{Wichtig:} Damit der Bot starten kann, ist es absolut notwendig, dass in dem selben Ordner die \texttt{bot.token}-Datei mit dem validen Token für den Bot liegt. Man müsste also die \texttt{bot.token}-Datei in den Ordner \texttt{./target/scala-2.12/} kopieren, damit man die JAR-Datei erfolgreich ausführen kann.
 
@@ -75,7 +75,7 @@ Im Folgenden wird erklärt, welche Schritte notwendig sind, damit der Bot gestar
 
 Scala setzt auf die JVM als Laufzeitumgebung, weswegen es wichtig ist, dass ein JDK installiert ist, da die Software nicht nur lauffähig sein soll, sondern auch gebaut und gebündelt werden soll.
 
-Um den Bot starten zu können, muss ein Bot bei Telegram erstellt werden, über den BotFather. Hier erhält man dann im Anschluss das Token. Nun erstellt man im Hauptprojektordner (dem Ordner, in dem sich auch die \texttt{build.sbt}) eine neue Datei \texttt{bot.token} in der man das Token ohne nachfolgende Leerzeichen speichert.
+Um den Bot starten zu können, muss ein Bot bei Telegram über den BotFather erstellt werden. Hier erhält man dann im Anschluss das Token. Nun erstellt man im Hauptprojektordner eine neue Datei \texttt{bot.token} in der man das Token ohne nachfolgende Leerzeichen speichert.
 
 Damit der Bot ohne Fehler starten kann, muss eine Rudis-Instanz, auf dem Port 6379, gestartet werden, was der Standardport für Redis ist. Bei Redis handelt es sich um eine sehr einfach gehaltene In-Memory Datenbank mit Persistenzmöglichkeit. Der Redis-Server wird über den Befehl
 
@@ -88,11 +88,12 @@ gestartet.
 Über den bereits besprochenen Befehl \texttt{sbt run} kann der Bot dann gestartet werden.
 
 \section{Projektstruktur}
-Das eigentliche Projekt befindet sich unter \texttt{src/}, wobei unter Projektcode (in dem Unterordner \texttt{main/}) und Testcode (in dem Unterordner \texttt{test/}) unterschieden wird. Wie auch bei Java werden in Scala Packages genutzt um Namespaces nachzubilden. Somit ist es möglich Klassen mit gleichen Namen in einem Projekt zu nutzen. Für den Telegram-Bot wurde das Package \texttt{hska.iwi.telegramBot} gewählt. In diesem Package liegen direkt die Main-Klasse \texttt{IWINewsBot}, welche den Bot startet (siehe~\autoref{sec:Programmstart}).
+Das eigentliche Projekt befindet sich unter \texttt{src/}, wobei unter Projektcode (in dem Unterordner \texttt{main/}) und Testcode (in dem Unterordner \texttt{test/}) unterschieden wird. Wie auch bei Java werden in Scala Packages genutzt um Namespaces nachzubilden. Somit ist es möglich, Klassen mit gleichen Namen in einem Projekt zu nutzen. Für den Telegram-Bot wurde das Package \texttt{hska.iwi.telegramBot} gewählt. In diesem Package liegen direkt die Main-Klasse \texttt{IWINewsBot}, welche den Bot startet (siehe~\autoref{sec:Programmstart}).
 
+\section{Kommandos}
 Der Bot kommuniziert auf zwei Arten mit dem Nutzer. Zum einen kann der Nutzer den Bot über bestimmte Befehle direkt ansprechen, worauf dieser dann antwortet. Zum anderen verschickt der Bot automatisch Nachrichten an alle Subscriber, falls es neue Nachrichten gibt.
 
-Für den ersten Fall gibt es die Klassen in dem Paket \texttt{hska\allowbreak.iwi\allowbreak.telegramBot\allowbreak.commands}, bei denen definiert wird, wie reagiert wird, wenn ein bestimmter Befehl an den Bot geschickt wird, wobei Befehle mit ein Slash beginnen müssen. Hierbei kann es sich um öffentliche Befehle handeln, also Befehle, die dem BotFather mitgeteilt werden, damit dieser die Befehle vorschlagen kann, es ist aber auch möglich, auf Befehle zu reagieren, die dem BotFather nicht bekannt gemacht wurden. Dies wurde vor allem während der Entwicklung genutzt um bestimmte Funktionalitäten zu nutzen, die noch nicht ganz fertig waren, beispielsweise dem Setzen von Einstellungen, als die Inline-Buttons für diese Funktion noch nicht fertig implementiert waren.
+Für den ersten Fall gibt es die Klassen in dem Paket \texttt{hska\allowbreak.iwi\allowbreak.telegramBot\allowbreak.commands}, bei denen definiert wird, wie reagiert wird, wenn ein bestimmter Befehl an den Bot geschickt wird, wobei Befehle mit ein Slash beginnen müssen. Hierbei kann es sich um öffentliche Befehle handeln, also Befehle, die dem BotFather mitgeteilt werden, damit dieser die Befehle vorschlagen kann, es ist aber auch möglich, auf Befehle zu reagieren, die dem BotFather nicht bekannt gemacht wurden. Dies wurde vor allem während der Entwicklung genutzt, um bestimmte Funktionalitäten zu nutzen, die noch nicht ganz fertig waren, beispielsweise dem Setzen von Einstellungen, als die Inline-Buttons für diese Funktion noch nicht fertig implementiert waren.
 
 Neben den Commands wird im Hintergrund der Fakultätsserver regelmäßig nach neuen Nachrichten abgefragt. Hierfür existiert die Klasse \texttt{BackgroundFeedSync}, die einen Actor\footnote{Actors sind eine moderne Abstraktionsschicht für nebenläufiges Verhalten, für mehr Informationen siehe: \url{http://danielwestheide.com/blog/2013/02/27/the-neophytes-guide-to-scala-part-14-the-actor-approach-to-concurrency.html}} startet, der im Hintergrund die Fakultätsserver abfragt, auf die Datenbank zugreift und im Falle einer neuen Nachricht die jeweiligen Subscriber benachrichtigt.
 
@@ -109,7 +110,7 @@ Wie auf die einzelnen Befehle eines Users reagiert werden soll, ist in den Klass
 
 \begin{description}
   \item[Subscription] Generelle Abonnement-Befehle (\texttt{/start} und \texttt{/stop})
-  \item[Mensa] \texttt{/mensa}-Befehl
+  \item[Mensa] \texttt{/mensa}- und \texttt{/settings}-Befehle
   \item[Lecturers] \texttt{/profs}-Befehl
   \item[AboSettings] \texttt{/abo}-Befehl
   \item[About] Informationen zum Bot, \texttt[/about]-Befehl
@@ -294,3 +295,6 @@ onCallbackWithTag("Lecturer") { implicit cbq: CallbackQuery =>
 Wie man an~\autoref{code:InlineCallback} erkennt, wird auf den Callback reagiert, so als wäre eine Methode aufgerufen worden, wobei auf das \texttt{CallbackQuery} einfach zugegriffen werden kann. Als Antwort wird eine \texttt{SendMessage} geschickt mit den Informationen zu dem ausgewählten Professor, der über die ID identifiziert wird.
 
 Die Verbindung mit dem Server der Fakultät wird über den Aufruf von \texttt{HTTPGet\allowbreak.get(\allowbreak FeedURL\allowbreak.lecturer)} aufgenommen (siehe~\autoref{code:profsCommand}). Hierbei ist die URL in \texttt{FeedURL\allowbreak.lecturer} gespeichert und kann an dieser Stelle angepasst werden, sollte sich das URL-Schema der Fakultät ändern. \texttt{HTTPGet.get} kümmert sich um den Verbindungsaufbau, indem dort alle nötigen Parameter gesetzt werden können und Fehler behandelt werden, sodass ein \texttt{Option[String]} zurück gegeben werden kann, wobei \texttt{None} zurückgegeben wird, wenn ein Fehler auftrat.
+
+\subsection{Der Mensa-Befehl}
+// TODO: Schreiben
