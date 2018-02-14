@@ -382,3 +382,5 @@ def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Ent
   })
 }
 \end{lstlisting}
+
+Zuerst wird hierfür die Konfiguration aller User aus der Datenbank geholt. Dann wird für jeden User geprüft, welche Kanäle er abonniert hat. Nun wird geprüft, ob neue Nachrichten für diesen Kanal dabei sind. Das Ergebnis ist eine große Map, in der jeder User eine Liste von neuen Einträgen erhält, die ihm dann vom Bot zugeschickt werden.
