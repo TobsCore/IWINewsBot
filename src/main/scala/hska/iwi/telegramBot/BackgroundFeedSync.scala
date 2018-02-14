@@ -46,9 +46,9 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
       val newFacultyNews = redis.addFacultyNews(facultyNews)
       newFacultyNews.foreach(news =>
         logger.info(s"""New Faculty News received: ${news.hashCode4DB()}
-          |${news.title}
-          |${news.publicationDate}
-          |${news.description}""".stripMargin))
+             |${news.title}
+             |${news.publicationDate}
+             |${news.description}""".stripMargin))
       val subscriptionEntries = entriesForSubscribers(newEntries)
       val subscribedFacultyNews = subscribedFacultyNewsUsers()
       logger.trace(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
@@ -78,15 +78,15 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
     */
   def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Entry]] = {
     val userConfig = redis.userConfig().filter(_._2.isDefined).mapValues(_.get)
-    userConfig.map(e => {
-      val userID = e._1
-      val subscribedCourses = e._2
-      val coursesForUser = mutable.Set.empty[Entry]
-      entries
-        .filter(e => subscribedCourses.contains(e._1))
-        .foreach(e => e._2.foreach(entry => coursesForUser += entry))
-      (userID, coursesForUser.toSet)
-    })
+    userConfig.map {
+      case (userID: UserID, subscribedCourses: Set[Course]) => {
+        val coursesForUser = mutable.Set.empty[Entry]
+        entries
+          .filter(e => subscribedCourses.contains(e._1))
+          .foreach(e => e._2.foreach(entry => coursesForUser += entry))
+        (userID, coursesForUser.toSet)
+      }
+    }
   }
 
   def subscribedFacultyNewsUsers(): Set[UserID] = {
