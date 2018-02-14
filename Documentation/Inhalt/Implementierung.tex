@@ -297,12 +297,14 @@ Wie man an~\autoref{code:InlineCallback} erkennt, wird auf den Callback reagiert
 Die Verbindung mit dem Server der Fakultät wird über den Aufruf von \texttt{HTTPGet\allowbreak.get(\allowbreak FeedURL\allowbreak.lecturer)} aufgenommen (siehe~\autoref{code:profsCommand}). Hierbei ist die URL in \texttt{FeedURL\allowbreak.lecturer} gespeichert und kann an dieser Stelle angepasst werden, sollte sich das URL-Schema der Fakultät ändern. \texttt{HTTPGet.get} kümmert sich um den Verbindungsaufbau, indem dort alle nötigen Parameter gesetzt werden können und Fehler behandelt werden, sodass ein \texttt{Option[String]} zurück gegeben werden kann, wobei \texttt{None} zurückgegeben wird, wenn ein Fehler auftrat.
 
 \subsection{Der Mensa-Befehl}
-Ähnlich wie beim \texttt{/profs}-Befehl, verwendet der \texttt{/mensa}-Befehl Inline Buttons, die beim Anwählen den Mensaplan des gewählten Tages darstellen. Ursprünglich sollte nur das Essen des aktuellen Tages gezeigt werden, hierzu waren also keine Inline-Buttons nötig, jedoch wurde durch Feedback mitgeteilt, dass der Mensaplan für die gesamte Woche abrufbar sein soll. Da die Mensa am Wochenende geschlossen hat, werden diese Tage nicht als Möglichkeit angeboten. Da dieser Code keine neuen Funktionen nutzt, wird dieser an dieser Stelle nicht ausführlicher behandelt.
+Ähnlich wie beim \texttt{/profs}-Befehl, verwendet der \texttt{/mensa}-Befehl Inline Buttons, die beim Anwählen den Mensaplan des gewählten Tages darstellen. Ursprünglich sollte nur das Essen des aktuellen Tages gezeigt werden, hierzu waren also keine Inline-Buttons nötig, jedoch wurde durch Feedback mitgeteilt, dass der Mensaplan für die gesamte Woche abrufbar sein soll. Da die Mensa am Wochenende geschlossen hat, werden die Wochenendtage nicht als Möglichkeit angeboten.
+
+Da der Code des Mensa-Befehls keine neuen Funktionen nutzt, wird dieser nun nicht ausführlicher behandelt.
 
 \subsection{Abonnements verwalten}
-Um die Grundfunktionalität der Push-Benachrichtigung nutzerfreundlicher zu gestalten, wurde das Einstellen von Abonnement-Präferenzen über den \texttt{/abo}-Befehl implementiert. Hierbei war nicht nur die Implementierung der Inline-Buttons von Nöten, es musste entschieden werden, wie man klassische Formular-Elemente wie \emph{Toggle-Buttons} mit den von Telegram angebotenen Mitteln zu verwirklichen.
+Um die Grundfunktionalität der Push-Benachrichtigung nutzerfreundlicher zu gestalten, wurde das Einstellen von Abonnement-Präferenzen über den \texttt{/abo}-Befehl implementiert. Hierbei war nicht nur die Implementierung der Inline-Buttons von Nöten, es musste auch entschieden werden, wie man klassische Formular-Elemente wie \emph{Toggle-Buttons} mit den von Telegram angebotenen Mitteln umsetzen kann.
 
-Nachdem entschieden wurde, dass Buttons benutzt werden, galt es deren Funktionalität zu beschreiben. Der Button-Text sollte dabei die auszuführende Aktion beschreiben. Mithilfe von Status-Benachrichtigungen wird dabei verständlich gemacht, was der User gerade geändert hat (siehe~\autoref{img:notification}).
+Nachdem entschieden wurde, dass Inline-Buttons benutzt werden, und nicht eigene Befehle, galt es deren Funktionalität zu beschreiben. Der Button-Text sollte dabei die auszuführende Aktion beschreiben. Mithilfe von Status-Benachrichtigungen wird dabei verständlich gemacht, was der User gerade geändert hat (siehe~\autoref{img:notification}).
 
 \begin{figure}[!htb]
     \centering
@@ -315,7 +317,7 @@ Nachdem entschieden wurde, dass Buttons benutzt werden, galt es deren Funktional
 \subsection{Die weiteren Kommandos}
 Alle weiteren Kommandos sind mit den bereits vorgestellten Methoden umgesetzt worden. Aus diesem Grund werden diese nicht detailliert vorgestellt.
 
-Nur das \texttt{/settings}-Kommando sticht durch seine andere Usability hervor, hier kann der User den angezeigten Mensapreis anpassen. Es gibt 3 Preis-Optionen, die in~\autoref{sec:Funktionsumfang} bereits vorgestellt wurden. Eine solche Option würde man klassisch über ein Drop-Down Menü darstellen, in diesem Beispiel wurde jedoch ein Inline-Button gewählt, der über alle 3 Optionen toggelt und über eine Benachrichtigung die aktuelle Auswahl erklärt.
+Nur das \texttt{/settings}-Kommando sticht durch seine andere Usability hervor, hier kann der User den angezeigten Mensapreis anpassen. Es gibt 3 Preis-Optionen, die in~\autoref{sec:Funktionsumfang} bereits vorgestellt wurden. Eine solche Option würde man klassisch über ein Drop-Down Menü darstellen, in diesem Szenario wurde jedoch ein Inline-Button gewählt, der über alle 3 Optionen toggelt und über eine Benachrichtigung die aktuelle Auswahl erklärt.
 
 \section{Hintergrundsynchronisation}
 Im Hintergrund wird permanent nach neuen Einträgen gesucht, dies geschieht in der Klasse \texttt{BackgroundFeedSync}.
@@ -360,13 +362,13 @@ def start(): Unit = {
 
 Direkt zu Beginn wird das Actor System \texttt{backgroundActorSystem} als Hintergrundprozess definiert, der nach 10 Sekunden und dann alle 2 Minuten gestartet werden soll. Hierbei werden zuerst alle Nachrichten des Schwarzen Bretts bezogen, danach die Fakultätsnachrichten. Diese Nachrichten werden der Redis-Datenbank hinzugefügt, hierbei wird überprüft, welche Nachrichten tatsächlich neu sind und diese werden dann zurückgegeben. Im Anschluss werden die Subscriber aus der Datenbank geholt und an diese werden die Nachrichten verschickt.
 
-Da es Probleme mit den Fakultätsnachrichten gab, werden diese momentan nicht verschickt, es wurden in der Vergangenheit Nachrichten als neu erkannt, obwohl diese nicht neu waren. Die Ursache hierfür wird bisher noch gesucht, es wurden aus diesem Grund mehr Informationen geloggt.
+Da es Probleme mit den Fakultätsnachrichten gab, werden diese momentan nicht verschickt, es wurden in der Vergangenheit Nachrichten als neu erkannt, obwohl diese nicht neu waren. Die Ursache hierfür ist bislang unbekannt, es werden aus diesem Grund mehr Informationen geloggt.
 
-Die Fakultätsnachrichten haben nämlich keine eindeutige ID, worüber sie identifiziert werden können. Um zu prüfen, ob eine Fakultätsnachricht neu ist, wird zur Zeit ein Hash der Nachricht berechnet und in der Datenbank gespeichert. So kann für jede Nachricht geprüft werden, ob diese neu ist. Es wird hierbei der sha256 Hash genutzt und es werden der Titel einer Nachricht und deren \texttt{publicationDate} gehasht.
+Ein möglicher Grund ist, dass die Fakultätsnachrichten keine eindeutige ID haben, worüber sie identifiziert werden könnten. Um zu prüfen, ob eine Fakultätsnachricht neu ist, wird zur Zeit ein Hash der Nachricht berechnet und in der Datenbank gespeichert. So kann für jede Nachricht geprüft werden, ob diese bereits existiert, oder aber neu ist. Es wird hierbei der sha256 Hash genutzt und es werden der Titel einer Nachricht und deren \texttt{publicationDate} gehasht.
 
 Die Nachrichten des schwarzen Bretts hingegen, verfügen über eine eindeutige ID, somit kann über diese ID einfach geprüft werden, ob es sich um eine neue Nachricht handelt.
 
-Hat ein Nutzer mehr als einen Fakultätskanal (INFB, MKIB, INFM) abonniert, so soll dieser nicht mehrere Nachrichten erhalten, falls diese Nachricht in mehreren Kanälen gepostet wird. Somit werden vor dem Versand Nachrichten-Duplikate eliminiert, siehe~\autoref{code:entriesForSubscribers}.
+Hat ein Nutzer mehr als einen Fakultätskanal (INFB, MKIB, INFM) abonniert, so soll dieser nicht mehrere gleiche Nachrichten erhalten, falls diese Nachricht in mehreren Kanälen gepostet wird. Somit werden vor dem Versand Nachrichten-Duplikate eliminiert, siehe~\autoref{code:entriesForSubscribers}.
 
 \begin{lstlisting}[language=scala, style=scala, caption={Verteilung der Nachrichten auf die Subscriber und Eliminierung von Duplikaten}, label={code:entriesForSubscribers}]
 def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Entry]] = {
@@ -383,4 +385,4 @@ def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Ent
 }
 \end{lstlisting}
 
-Zuerst wird hierfür die Konfiguration aller User aus der Datenbank geholt. Dann wird für jeden User geprüft, welche Kanäle er abonniert hat. Nun wird geprüft, ob neue Nachrichten für diesen Kanal dabei sind. Das Ergebnis ist eine große Map, in der jeder User eine Liste von neuen Einträgen erhält, die ihm dann vom Bot zugeschickt werden.
+Zuerst wird hierfür die Konfiguration aller User aus der Datenbank geholt. Dann wird für jeden User geprüft, welche Kanäle er abonniert hat. Nun wird geprüft, ob neue Nachrichten für diesen Kanal dabei sind. Das Ergebnis ist eine große Map, in der jeder User eine Liste von neuen Nachrichten erhält, die ihm dann vom Bot zugeschickt werden.
