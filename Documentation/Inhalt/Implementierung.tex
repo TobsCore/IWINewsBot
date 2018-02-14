@@ -90,7 +90,7 @@ gestartet.
 \section{Projektstruktur}
 Das eigentliche Projekt befindet sich unter \texttt{src/}, wobei unter Projektcode (in dem Unterordner \texttt{main/}) und Testcode (in dem Unterordner \texttt{test/}) unterschieden wird. Wie auch bei Java werden in Scala Packages genutzt um Namespaces nachzubilden. Somit ist es möglich, Klassen mit gleichen Namen in einem Projekt zu nutzen. Für den Telegram-Bot wurde das Package \texttt{hska.iwi.telegramBot} gewählt. In diesem Package liegen direkt die Main-Klasse \texttt{IWINewsBot}, welche den Bot startet (siehe~\autoref{sec:Programmstart}).
 
-\section{Kommandos}
+\subsection{Kommandos}
 Der Bot kommuniziert auf zwei Arten mit dem Nutzer. Zum einen kann der Nutzer den Bot über bestimmte Befehle direkt ansprechen, worauf dieser dann antwortet. Zum anderen verschickt der Bot automatisch Nachrichten an alle Subscriber, falls es neue Nachrichten gibt.
 
 Für den ersten Fall gibt es die Klassen in dem Paket \texttt{hska\allowbreak.iwi\allowbreak.telegramBot\allowbreak.commands}, bei denen definiert wird, wie reagiert wird, wenn ein bestimmter Befehl an den Bot geschickt wird, wobei Befehle mit ein Slash beginnen müssen. Hierbei kann es sich um öffentliche Befehle handeln, also Befehle, die dem BotFather mitgeteilt werden, damit dieser die Befehle vorschlagen kann, es ist aber auch möglich, auf Befehle zu reagieren, die dem BotFather nicht bekannt gemacht wurden. Dies wurde vor allem während der Entwicklung genutzt, um bestimmte Funktionalitäten zu nutzen, die noch nicht ganz fertig waren, beispielsweise dem Setzen von Einstellungen, als die Inline-Buttons für diese Funktion noch nicht fertig implementiert waren.
@@ -297,4 +297,88 @@ Wie man an~\autoref{code:InlineCallback} erkennt, wird auf den Callback reagiert
 Die Verbindung mit dem Server der Fakultät wird über den Aufruf von \texttt{HTTPGet\allowbreak.get(\allowbreak FeedURL\allowbreak.lecturer)} aufgenommen (siehe~\autoref{code:profsCommand}). Hierbei ist die URL in \texttt{FeedURL\allowbreak.lecturer} gespeichert und kann an dieser Stelle angepasst werden, sollte sich das URL-Schema der Fakultät ändern. \texttt{HTTPGet.get} kümmert sich um den Verbindungsaufbau, indem dort alle nötigen Parameter gesetzt werden können und Fehler behandelt werden, sodass ein \texttt{Option[String]} zurück gegeben werden kann, wobei \texttt{None} zurückgegeben wird, wenn ein Fehler auftrat.
 
 \subsection{Der Mensa-Befehl}
-// TODO: Schreiben
+Ähnlich wie beim \texttt{/profs}-Befehl, verwendet der \texttt{/mensa}-Befehl Inline Buttons, die beim Anwählen den Mensaplan des gewählten Tages darstellen. Ursprünglich sollte nur das Essen des aktuellen Tages gezeigt werden, hierzu waren also keine Inline-Buttons nötig, jedoch wurde durch Feedback mitgeteilt, dass der Mensaplan für die gesamte Woche abrufbar sein soll. Da die Mensa am Wochenende geschlossen hat, werden diese Tage nicht als Möglichkeit angeboten. Da dieser Code keine neuen Funktionen nutzt, wird dieser an dieser Stelle nicht ausführlicher behandelt.
+
+\subsection{Abonnements verwalten}
+Um die Grundfunktionalität der Push-Benachrichtigung nutzerfreundlicher zu gestalten, wurde das Einstellen von Abonnement-Präferenzen über den \texttt{/abo}-Befehl implementiert. Hierbei war nicht nur die Implementierung der Inline-Buttons von Nöten, es musste entschieden werden, wie man klassische Formular-Elemente wie \emph{Toggle-Buttons} mit den von Telegram angebotenen Mitteln zu verwirklichen.
+
+Nachdem entschieden wurde, dass Buttons benutzt werden, galt es deren Funktionalität zu beschreiben. Der Button-Text sollte dabei die auszuführende Aktion beschreiben. Mithilfe von Status-Benachrichtigungen wird dabei verständlich gemacht, was der User gerade geändert hat (siehe~\autoref{img:notification}).
+
+\begin{figure}[!htb]
+    \centering
+    \caption{Benachrichtigung beim Ändern einer Einstellung}
+      \includegraphics[width=0.4\linewidth]{SettingNotification.png}
+      \label{img:notification}
+    \caption*{Quelle: Eigene Abbildung}
+\end{figure}
+
+\subsection{Die weiteren Kommandos}
+Alle weiteren Kommandos sind mit den bereits vorgestellten Methoden umgesetzt worden. Aus diesem Grund werden diese nicht detailliert vorgestellt.
+
+Nur das \texttt{/settings}-Kommando sticht durch seine andere Usability hervor, hier kann der User den angezeigten Mensapreis anpassen. Es gibt 3 Preis-Optionen, die in~\autoref{sec:Funktionsumfang} bereits vorgestellt wurden. Eine solche Option würde man klassisch über ein Drop-Down Menü darstellen, in diesem Beispiel wurde jedoch ein Inline-Button gewählt, der über alle 3 Optionen toggelt und über eine Benachrichtigung die aktuelle Auswahl erklärt.
+
+\section{Hintergrundsynchronisation}
+Im Hintergrund wird permanent nach neuen Einträgen gesucht, dies geschieht in der Klasse \texttt{BackgroundFeedSync}.
+
+\begin{lstlisting}[language=scala, style=scala, caption={Start Methode der Klasse BackgroundFeedSync}]
+/**
+  * The background sync task is started by calling this method. Since this starts the
+  * background tasks, it should be
+  * noted, that calling this method multiple times will yield too many calls to the feed's
+  * servers and should be avoided.
+  */
+def start(): Unit = {
+  // Start searching 10 seconds after launch and then every 2 minutes
+  backgroundActorSystem.scheduler.schedule(10 seconds, 2 minutes) {
+    logger.debug("Loading remote data.")
+    val entries = feedProcessor.receiveEntries()
+    val facultyNews = feedProcessor.receiveFacultyNews()
+    logger.trace(s"Received ${facultyNews.size} faculty news items")
+    val newEntries = saveEntries(entries)
+    val newFacultyNews = redis.addFacultyNews(facultyNews)
+    newFacultyNews.foreach(news =>
+      logger.info(s"""New Faculty News received: ${news.hashCode4DB()}
+        |${news.title}
+        |${news.publicationDate}
+        |${news.description}""".stripMargin))
+    val subscriptionEntries = entriesForSubscribers(newEntries)
+    val subscribedFacultyNews = subscribedFacultyNewsUsers()
+    logger.trace(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
+    sendPushMessageToSubscribers(subscriptionEntries)
+    // This is the original method, but in order to avoid sending out outdated faculty news,
+    // the new faculty news gets replaced by an empty list, which will result in no messages sent.
+    // sendFacultyNewsToSubscribers(subscribedFacultyNews, newFacultyNews)
+
+    // Debug purpose
+    sendFacultyNewsToSubscribers(subscribedFacultyNews, List())
+    newFacultyNews.foreach(news =>
+      notifyAdmins(s"New faculty News entry with Hash ${news.hashCode4DB()}"))
+
+  }
+}
+\end{lstlisting}
+
+Direkt zu Beginn wird das Actor System \texttt{backgroundActorSystem} als Hintergrundprozess definiert, der nach 10 Sekunden und dann alle 2 Minuten gestartet werden soll. Hierbei werden zuerst alle Nachrichten des Schwarzen Bretts bezogen, danach die Fakultätsnachrichten. Diese Nachrichten werden der Redis-Datenbank hinzugefügt, hierbei wird überprüft, welche Nachrichten tatsächlich neu sind und diese werden dann zurückgegeben. Im Anschluss werden die Subscriber aus der Datenbank geholt und an diese werden die Nachrichten verschickt.
+
+Da es Probleme mit den Fakultätsnachrichten gab, werden diese momentan nicht verschickt, es wurden in der Vergangenheit Nachrichten als neu erkannt, obwohl diese nicht neu waren. Die Ursache hierfür wird bisher noch gesucht, es wurden aus diesem Grund mehr Informationen geloggt.
+
+Die Fakultätsnachrichten haben nämlich keine eindeutige ID, worüber sie identifiziert werden können. Um zu prüfen, ob eine Fakultätsnachricht neu ist, wird zur Zeit ein Hash der Nachricht berechnet und in der Datenbank gespeichert. So kann für jede Nachricht geprüft werden, ob diese neu ist. Es wird hierbei der sha256 Hash genutzt und es werden der Titel einer Nachricht und deren \texttt{publicationDate} gehasht.
+
+Die Nachrichten des schwarzen Bretts hingegen, verfügen über eine eindeutige ID, somit kann über diese ID einfach geprüft werden, ob es sich um eine neue Nachricht handelt.
+
+Hat ein Nutzer mehr als einen Fakultätskanal (INFB, MKIB, INFM) abonniert, so soll dieser nicht mehrere Nachrichten erhalten, falls diese Nachricht in mehreren Kanälen gepostet wird. Somit werden vor dem Versand Nachrichten-Duplikate eliminiert, siehe~\autoref{code:entriesForSubscribers}.
+
+\begin{lstlisting}[language=scala, style=scala, caption={Verteilung der Nachrichten auf die Subscriber und Eliminierung von Duplikaten}, label={code:entriesForSubscribers}]
+def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Entry]] = {
+  val userConfig = redis.userConfig().filter(_._2.isDefined).mapValues(_.get)
+  userConfig.map(e => {
+    val userID = e._1
+    val subscribedCourses = e._2
+    val coursesForUser = mutable.Set.empty[Entry]
+    entries
+      .filter(e => subscribedCourses.contains(e._1))
+      .foreach(e => e._2.foreach(entry => coursesForUser += entry))
+    (userID, coursesForUser.toSet)
+  })
+}
+\end{lstlisting}
