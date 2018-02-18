@@ -106,14 +106,6 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(4) = 2
               return daysToAdd
             }
-            case 7 => {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 1
-              daysToAdd(2) = 1
-              daysToAdd(3) = 1
-              daysToAdd(4) = 1
-              return daysToAdd
-            }
             case _ =>
           }
         }
@@ -125,14 +117,6 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(2) = 2
               daysToAdd(3) = 2
               daysToAdd(4) = 2
-              return daysToAdd
-            }
-            case 7 => {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 0
-              daysToAdd(2) = 1
-              daysToAdd(3) = 1
-              daysToAdd(4) = 1
               return daysToAdd
             }
             case _ =>
@@ -148,14 +132,6 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(4) = 2
               return daysToAdd
             }
-            case 7 => {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 0
-              daysToAdd(2) = 0
-              daysToAdd(3) = 1
-              daysToAdd(4) = 1
-              return daysToAdd
-            }
             case _ =>
           }
         }
@@ -167,14 +143,6 @@ trait Mensa extends Commands with Callbacks {
               daysToAdd(2) = 0
               daysToAdd(3) = 0
               daysToAdd(4) = 2
-              return daysToAdd
-            }
-            case 7 => {
-              daysToAdd(0) = 0
-              daysToAdd(1) = 0
-              daysToAdd(2) = 0
-              daysToAdd(3) = 0
-              daysToAdd(4) = 1
               return daysToAdd
             }
             case _ =>
