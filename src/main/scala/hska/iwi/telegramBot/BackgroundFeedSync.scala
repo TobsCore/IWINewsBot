@@ -45,7 +45,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
       val newEntries = saveEntries(entries)
       val newFacultyNews = redis.addFacultyNews(facultyNews)
       newFacultyNews.foreach(news =>
-        logger.info(s"""New Faculty News received: ${news.hashCode4DB()}
+        logger.debug(s"""New Faculty News received, with ID "${news.id}"
              |${news.title}
              |${news.publicationDate}
              |${news.description}""".stripMargin))
@@ -53,15 +53,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
       val subscribedFacultyNews = subscribedFacultyNewsUsers()
       logger.trace(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
       sendPushMessageToSubscribers(subscriptionEntries)
-      // This is the original method, but in order to avoid sending out outdated faculty news,
-      // the new faculty news gets replaced by an empty list, which will result in no messages sent.
-      // sendFacultyNewsToSubscribers(subscribedFacultyNews, newFacultyNews)
-
-      // Debug purpose
-      sendFacultyNewsToSubscribers(subscribedFacultyNews, List())
-      newFacultyNews.foreach(news =>
-        notifyAdmins(s"New faculty News entry with Hash ${news.hashCode4DB()}"))
-
+      sendFacultyNewsToSubscribers(subscribedFacultyNews, newFacultyNews)
     }
   }
 

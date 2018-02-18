@@ -9,6 +9,7 @@ case class FacultyNews(date: String,
                        title: String,
                        description: String,
                        image: String,
+                       id: Integer,
                        imageType: String,
                        imageURL: String,
                        caption: String,
@@ -34,12 +35,11 @@ case class FacultyNews(date: String,
          |""".stripMargin)
 
     if (detailUrls.nonEmpty) {
-      resultText.append("\nWeitere Informationen unter:\n")
+      resultText.append("\nWeitere Informationen unter:")
       for (url <- detailUrls) {
-        resultText.append(url + "\n")
+        resultText.append("\n" + url)
       }
     }
-    resultText.append(s"\n$date")
     resultText.toString
   }
 
