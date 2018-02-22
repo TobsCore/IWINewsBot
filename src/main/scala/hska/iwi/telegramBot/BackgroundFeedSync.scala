@@ -45,7 +45,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
       val newEntries = saveEntries(entries)
       val newFacultyNews = redis.addFacultyNews(facultyNews)
       newFacultyNews.foreach(news =>
-        logger.debug(s"""New Faculty News received, with ID "${news.id}"
+        logger.debug(s"""New Faculty News received, with Hash "${news.hashCode4DB()}"
              |${news.title}
              |${news.publicationDate}
              |${news.description}""".stripMargin))

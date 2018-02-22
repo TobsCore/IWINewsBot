@@ -1,7 +1,6 @@
 package hska.iwi.telegramBot.news
 
 import com.roundeights.hasher.Hasher
-import hska.iwi.telegramBot.service.LocalDateTime
 
 import scala.language.postfixOps
 
@@ -9,7 +8,6 @@ case class FacultyNews(date: String,
                        title: String,
                        description: String,
                        image: String,
-                       id: Integer,
                        imageType: String,
                        imageURL: String,
                        caption: String,
@@ -25,13 +23,12 @@ case class FacultyNews(date: String,
     *
     * @return A string representation of the object.
     */
-  def hashCode4DB(): String = Hasher(title + publicationDate).sha256.hex
+  def hashCode4DB(): String = Hasher(title + date).sha256.hex
 
   override def toString: String = {
-    val date = LocalDateTime.parseTimestamp(this.publicationDate)
     val resultText = new StringBuilder(s"""<b>${this.title}</b>
-         |
-       |${this.description}
+         |${if (date == null) { "" } else { date + "\n" }}
+         |${this.description}
          |""".stripMargin)
 
     if (detailUrls.nonEmpty) {
