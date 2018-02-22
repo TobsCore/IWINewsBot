@@ -54,8 +54,6 @@ trait AboSettings extends Commands with Callbacks with Instances {
   }
 
   onCallbackWithTag("Abo") { implicit cbq: CallbackQuery =>
-    callback(cbq)
-
     val tag = cbq.data
     if (tag.isDefined) {
       tag.get match {
@@ -73,6 +71,7 @@ trait AboSettings extends Commands with Callbacks with Instances {
       logger.error(
         "There was no content to the callback method. This shouldn't happen, as the user cannot " +
           "set the subscriptions correctly. If this error occurs, check this.")
+      callback(cbq)
     } else {
 
       val userID: UserID = UserID(cbq.message.get.chat.id.toInt)
@@ -89,6 +88,7 @@ trait AboSettings extends Commands with Callbacks with Instances {
           ackCallback(Some(notificationText4Faculty(setValue)))
         case _ => throw new IllegalArgumentException(s"Type ${course.getClass} is not allowed")
       }
+      callback(cbq)
     }
   }
 
