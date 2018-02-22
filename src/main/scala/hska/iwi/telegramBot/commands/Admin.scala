@@ -43,12 +43,16 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
           redis.getAllUserIDs
             .getOrElse(Set())
             .map(userID => redis.getUserData(userID))
-            .foreach(user => {
-              s.append(s"${user.get.firstName} ${user.get.lastName
-                .getOrElse("")} - Username: ${user.get.username
-                .getOrElse("<i>not defined</i>")}  -  [${user.toString}]")
-              s.append("\n")
-            })
+            .foreach(userOption =>
+              userOption.foreach(user => {
+                s.append(
+                  "%s %s | Username: %s | [%d]".format(
+                    user.firstName,
+                    user.lastName.getOrElse(""),
+                    user.username.getOrElse("<i>not defined</i>"),
+                    user.get.id))
+                s.append("\n")
+              }))
           reply(s.toString, parseMode = ParseMode.HTML)
         } else {
           reply("Cannot list users - This is an admin feature")
