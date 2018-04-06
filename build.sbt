@@ -29,6 +29,9 @@ libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.18.0"
 // For hashing
 libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
 
+// Rive Script (Chat Bots)
+libraryDependencies += "com.rivescript" % "rivescript-core" % "0.10.0"
+
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt
