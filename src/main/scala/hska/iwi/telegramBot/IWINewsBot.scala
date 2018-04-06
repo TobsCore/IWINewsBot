@@ -23,7 +23,8 @@ class IWINewsBot()
     with AboSettings
     with About
     with Mensa
-    with Lecturers {
+    with Lecturers
+    with Chat {
 
   override implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 
