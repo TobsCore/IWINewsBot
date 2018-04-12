@@ -4,14 +4,15 @@ import akka.actor.ActorSystem
 import com.redis.RedisClient
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service._
-import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
+import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.ChatId
 
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.Failure
 
 /**
   * The background worker is responsible for checking the feed urls for content and notifying
@@ -49,6 +50,15 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
              |${news.title}
              |${news.publicationDate}
              |${news.description}""".stripMargin))
+      newEntries.foreach {
+        case (course, entrySet) =>
+          entrySet.foreach(news => logger.debug(s"""New ${course} News received
+               |${news.id}
+               |${news.publicationDate}
+               |${news.title}
+               |${news.subTitle}
+               |${news.content}"""))
+      }
       val subscriptionEntries = entriesForSubscribers(newEntries)
       val subscribedFacultyNews = subscribedFacultyNewsUsers()
       logger.trace(s"Received ${subscribedFacultyNews.size} faculty news subscribers")
@@ -93,15 +103,35 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
   def sendPushMessageToSubscribers(userToEntryMap: Map[UserID, Set[Entry]]): Unit = {
     for ((userID, entrySet) <- userToEntryMap) {
       for (entry <- entrySet) {
-        request(SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
+        trySendMessage(ChatId(userID.id), entry.toString)
       }
     }
+  }
+
+  def trySendMessage(chatID: ChatId, content: String): Unit = {
+    request(SendMessage(chatID, content, parseMode = Some(ParseMode.HTML)))
+      .onComplete {
+        case Failure(telegramException: TelegramApiException) =>
+          telegramException.errorCode match {
+            case 439 =>
+              logger.error(
+                s"Received a 439 error [Too many requests] while trying to send message " +
+                  s"to user with $chatID")
+            case 403 =>
+              logger.error(
+                s"Blocked by user: User with id $chatID has forbidden access, which " +
+                  s"caused an error. The message could not be sent.")
+            case e =>
+              logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
+          }
+        case _ => logger.debug(s"Sent message to user $chatID")
+      }
   }
 
   def sendFacultyNewsToSubscribers(subscribedUsers: Set[UserID], news: List[FacultyNews]): Unit = {
     subscribedUsers.foreach(userID => {
       for (entry <- news) {
-        request(SendMessage(ChatId(userID.id), entry.toString, parseMode = Some(ParseMode.HTML)))
+        trySendMessage(ChatId(userID.id), entry.toString)
       }
     })
   }
