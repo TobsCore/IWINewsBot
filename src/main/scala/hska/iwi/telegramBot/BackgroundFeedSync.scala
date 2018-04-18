@@ -52,7 +52,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
              |${news.description}""".stripMargin))
       newEntries.foreach {
         case (course, entrySet) =>
-          entrySet.foreach(news => logger.debug(s"""New ${course} News received
+          entrySet.foreach(news => logger.debug(s"""New $course News received
                |${news.id}
                |${news.publicationDate}
                |${news.title}
@@ -81,13 +81,12 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
   def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Entry]] = {
     val userConfig = redis.userConfig().filter(_._2.isDefined).mapValues(_.get)
     userConfig.map {
-      case (userID: UserID, subscribedCourses: Set[Course]) => {
+      case (userID: UserID, subscribedCourses: Set[Course]) =>
         val coursesForUser = mutable.Set.empty[Entry]
         entries
           .filter(e => subscribedCourses.contains(e._1))
           .foreach(e => e._2.foreach(entry => coursesForUser += entry))
         (userID, coursesForUser.toSet)
-      }
     }
   }
 
