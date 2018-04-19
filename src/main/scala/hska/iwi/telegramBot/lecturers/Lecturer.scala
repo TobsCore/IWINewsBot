@@ -18,7 +18,7 @@ case class Lecturer(id: Int,
                     faculty: String,
                     picture: String,
                     pictureType: String,
-                    lecturers: Set[Lecture],
+                    lectures: Seq[Lecture],
                     fullname: String,
                     visitingLecturer: Boolean,
                     shortenedFullname: String) {
@@ -34,8 +34,8 @@ case class Lecturer(id: Int,
   }
 
   private def consultationhours(lecturer: Lecturer): String = {
-    val sprechzeiten
-      : Boolean = lecturer.consultationDay != -1 && lecturer.consultationStartTime != -1 && lecturer.consultationEndTime != -1
+    val sprechzeiten = lecturer.consultationDay != -1 && lecturer.consultationStartTime != -1 &&
+      lecturer.consultationEndTime != -1
     if (sprechzeiten) {
       val day = LocalDateTime.getWeekDay(lecturer.consultationDay)
       val startTime = LocalDateTime.prettyHourIntervall(lecturer.consultationStartTime)
