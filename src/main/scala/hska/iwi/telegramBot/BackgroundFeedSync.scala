@@ -2,6 +2,7 @@ package hska.iwi.telegramBot
 
 import akka.actor.ActorSystem
 import com.redis.RedisClient
+import hska.iwi.telegramBot.BotFunctions.SafeSendMessage
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.api.declarative.Commands
@@ -22,7 +23,11 @@ import scala.util.{Failure, Success}
   *              the bot's token, which should be defined in the bot.token file and be read by
   *              the main class.
   */
-case class BackgroundFeedSync(token: String) extends TelegramBot with Commands with Admins {
+case class BackgroundFeedSync(token: String)
+    extends TelegramBot
+    with Commands
+    with Admins
+    with SafeSendMessage {
 
   val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
@@ -107,7 +112,7 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
     }
   }
 
-  def trySendMessage(chatID: ChatId, content: String): Unit = {
+  override def trySendMessage(chatID: ChatId, content: String): Unit = {
     request(SendMessage(chatID, content, parseMode = Some(ParseMode.HTML)))
       .onComplete {
         case Failure(telegramException: TelegramApiException) =>

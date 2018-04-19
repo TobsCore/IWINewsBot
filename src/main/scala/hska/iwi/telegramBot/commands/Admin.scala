@@ -1,14 +1,20 @@
 package hska.iwi.telegramBot.commands
 
+import hska.iwi.telegramBot.BotFunctions.SafeSendMessage
 import hska.iwi.telegramBot.news.Course
 import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.Implicits._
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.ParseMode
-import info.mukel.telegrambot4s.models.User
+import info.mukel.telegrambot4s.models.{ChatId, User}
 
-trait Admin extends Commands with Instances with ObjectSerialization with Admins {
+trait Admin
+    extends Commands
+    with Instances
+    with ObjectSerialization
+    with Admins
+    with SafeSendMessage {
   _: TelegramBot =>
 
   onCommand("/admin") { implicit msg =>
@@ -20,6 +26,7 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
             |/list - Lists all subscribed users
             |/subs - Lists all users for subscribed information channels (MKIB, etc.)
             |/userconfig userID - Gets the userID's configuration
+            |/announce - Send announcement to all users
             |
             |/shutdown - Shuts down bot
           """.stripMargin)
@@ -73,6 +80,30 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
         } else {
           reply("Cannot shutdown bot without admin privileges. This incident will be reported!")
           logger.warn(s"User $user tried to shutdown service, but is not an admin")
+        }
+      }
+    }
+  }
+
+  onCommand("/announce", "/announcement") { implicit msg =>
+    {
+      using(_.from) { user =>
+        if (isAllowed(user)) {
+          logger.info(s"$user is sending announcement.")
+          val announcement = msg.text.getOrElse("").split("\\s+", 2).lift(1).getOrElse("")
+          logger.info(s"Announcement: $announcement")
+          if (announcement.isEmpty) {
+            reply("Failed! Cannot send empty announcement.")
+            logger.warn("Received empty announcement message. Will not send it to users.")
+          } else {
+            logger.debug(s"Message: $announcement")
+
+            redis.getAllUserIDs
+              .getOrElse(Set())
+              .foreach(userID => trySendMessage(ChatId(userID.id), announcement))
+          }
+        } else {
+          logger.warn(s"User $user tried to send announcement service, but is not an admin")
         }
       }
     }
