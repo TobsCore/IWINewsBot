@@ -27,7 +27,7 @@ object HTTPGet {
       Some(content)
     } catch {
       case ste: java.net.SocketTimeoutException =>
-        logger.info(s"Cannot connect to $address")
+        logger.warn(s"Cannot connect to $address")
         logger.debug(ste.getMessage)
         None
       case e: java.io.IOException =>

@@ -21,14 +21,14 @@ trait Lecturers extends Commands with Callbacks {
   var lecturers: Option[Seq[Lecturer]] = None
 
   onCommand("/profs") { implicit msg =>
-    logger.debug(s"${msg.from.getOrElse("")} requested data about lecturers")
+    logger.info(s"${msg.from.getOrElse("")} requested lecturers")
     val content = HTTPGet.get(FeedURL.lecturer)
     if (content.isDefined) {
       //parses the json entries and stores them in a lecturers object
       lecturers = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
       //reply(RoomFormatter.format(lecturers), parseMode = Some(ParseMode.HTML))
 
-      logger.info(s"Received ${lecturers.get.size} Lecturers.")
+      logger.debug(s"Received ${lecturers.get.size} Lecturers.")
 
       reply("Zu wem möchtest Du genauere Informationen erhalten?",
             replyMarkup = Some(createInlineKeyboardMarkup(lecturers.get)))
@@ -47,7 +47,7 @@ trait Lecturers extends Commands with Callbacks {
     // Always needs to acknowledge the callback
     ackCallback()(cbq)
     val lecturerID = cbq.data.get.toInt
-    logger.info(s"Received lecturer with ID: $lecturerID")
+    logger.debug(s"Received lecturer with ID: $lecturerID")
 
     val chatId = ChatId(cbq.message.get.chat.id)
     val messageId = cbq.message.get.messageId

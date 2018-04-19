@@ -66,8 +66,9 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
     {
       using(_.from) { user =>
         if (isAllowed(user)) {
+          logger.info(s"$user is shutting down bot.")
           reply(s"Shutting down bot. ${"Bye Bye".italic} 👋", parseMode = ParseMode.Markdown)
-          Thread.sleep(2000)
+          Thread.sleep(1000)
           System.exit(0)
         } else {
           reply("Cannot shutdown bot without admin privileges. This incident will be reported!")
@@ -80,7 +81,8 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
   onCommand("/userconfig", "/userConfig") { implicit msg =>
     using(_.from) { user =>
       if (isAllowed(user)) {
-        logger.info(s"Returning user Configuration information to user ${msg.from.get}")
+        logger.info(
+          s"Admin Function: Returning user Configuration information to user ${msg.from.get}")
         val msgParts = msg.text.get.split(" ")
         val userID = if (msgParts.size > 1) {
           Some(msgParts(1))
@@ -90,10 +92,10 @@ trait Admin extends Commands with Instances with ObjectSerialization with Admins
 
         val searchUserID: Int = userID match {
           case None =>
-            logger.info("Information request for request sender")
+            logger.debug("Information request for request sender")
             msg.from.get.id
           case Some(id) =>
-            logger.info(s"Information request for User id: $id")
+            logger.debug(s"Information request for User id: $id")
             id.toInt
         }
 

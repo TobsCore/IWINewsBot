@@ -16,8 +16,7 @@ trait Mensa extends Commands with Callbacks with Instances {
   implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
 
   onCommand("/mensa") { implicit msg =>
-    logger.debug(s"${msg.from.getOrElse("")} requested mensa data")
-    logger.debug("received command 'mensa'")
+    logger.info(s"${msg.from.getOrElse("")} requested mensa data")
     reply("Für welchen Tag soll das Mensaangebot ausgegeben werden?",
           replyMarkup = Some(createInlineKeyboardMarkup()))
   }
@@ -25,7 +24,7 @@ trait Mensa extends Commands with Callbacks with Instances {
   onCommand("/settings") { implicit msg =>
     using(_.from) { user =>
       {
-        logger.info("User selected /settings")
+        logger.debug("User selected /settings")
         reply("Aus welcher Sicht möchtest Du die Mensapreise anzeigen lassen?",
               replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(UserID(user.id))))
       }
