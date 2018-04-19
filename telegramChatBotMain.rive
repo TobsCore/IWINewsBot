@@ -1,15 +1,18 @@
 ! version = 2.0
 
-+ hello bot
-- Hello, human! 🙈
++ hallo bot
+- Hallo, Mensch! 🙈
 
-+ how are you
-- I'm great, how are you?
-- I'm good, you?
-- Good :) you?
-- Great! You?
-- I'm fine, thanks for asking!
++ wie geht es dir?
+- Mir geht es super, und Dir?
+- Gut, danke!
+- Gut, Dir?
+- Super!
+- Es ist in Ordnung, danke der Nachfrage.
 
-+ example *
++ beispiel
+- Ich kenne die Parameter: {param} und {id}
+
++ beispiel *
 - <call>example <star></call>
 
