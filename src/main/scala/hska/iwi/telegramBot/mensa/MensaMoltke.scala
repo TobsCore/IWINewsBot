@@ -5,11 +5,11 @@ import java.util.Locale
 
 import hska.iwi.telegramBot.service.{LocalDateTime, PriceConfig}
 
-case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String, date: String) {
+case class MensaMoltke(name: String, mealGroups: Seq[MealGroup], status: String, date: String) {
 
   def toString(daysInFuture: Int, priceConfig: PriceConfig): String = {
     val date = LocalDateTime.formatPrettyDateInFuture(daysInFuture)
-    val formattedMealGroups: String = formatMealGroups(mealGroups, priceConfig)
+    val formattedMealGroups: String = formatMealGroups(mealGroups.sortBy(_.title), priceConfig)
 
     val config = priceConfig.toString
 
@@ -28,17 +28,17 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     }
   }
 
-  private def formatMealGroups(mealGroups: Set[MealGroup], priceConfig: PriceConfig): String = {
+  private def formatMealGroups(mealGroups: Seq[MealGroup], priceConfig: PriceConfig): String = {
     val formattedGroups: StringBuilder = new StringBuilder()
     for (mealGroup <- mealGroups) {
       if (mealGroup.meals.isEmpty) {
-        formattedGroups.append(s"""<b>${mealGroup.title}</b>
+        formattedGroups.append(s"""<b>${formatTitle(mealGroup.title)}</b>
                                   |geschlossen
                                   |
                                   |""".stripMargin)
       } else {
-        val meals = formatMeals(mealGroup.meals, priceConfig)
-        formattedGroups.append(s"""<b>${mealGroup.title}</b>
+        val meals = formatMeals(mealGroup.meals.sortBy(_.priceStudent).reverse, priceConfig)
+        formattedGroups.append(s"""<b>${formatTitle(mealGroup.title)}</b>
              |$meals
              |""".stripMargin)
       }
@@ -46,7 +46,14 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
     formattedGroups.toString
   }
 
-  private def formatMeals(meals: Set[Meal], priceConfig: PriceConfig): String = {
+  private def formatTitle(title: String): String = {
+    title match {
+      case "Gut&Guenstig" => "Gut & Günstig"
+      case _              => title
+    }
+  }
+
+  private def formatMeals(meals: Seq[Meal], priceConfig: PriceConfig): String = {
     val locale = Locale.GERMAN
     val formatter = NumberFormat.getNumberInstance(locale)
     formatter.setMaximumFractionDigits(2)
@@ -82,15 +89,15 @@ case class MensaMoltke(name: String, mealGroups: Set[MealGroup], status: String,
         case "Fi" | "27" | "98" =>
           if (!emojiString.toString.contains("\uD83D\uDC1F")) {
             emojiString.append("\uD83D\uDC1F ")
-          } //Fisch
+          } //fish
         case "93" | "94" =>
           if (!emojiString.toString.contains("\ud83d\udc04")) {
             emojiString.append("\ud83d\udc04 ")
-          } //Rind
-        case "95" => emojiString.append("\ud83d\udc16 ") //Schwein
-        case "96" => emojiString.append("(veget.) ") //vegetarisch
+          } //beef
+        case "95" => emojiString.append("\ud83d\udc16 ") //pork
+        case "96" => emojiString.append("(veget.) ") //vegetarian
         case "97" => emojiString.append("(vegan) ") //vegan
-        case "We" => emojiString.append("\uD83E\uDD91 ")
+        case "We" => emojiString.append("\uD83E\uDD91 ") //molluscs
         case _    => emojiString.append("")
       }
     }
