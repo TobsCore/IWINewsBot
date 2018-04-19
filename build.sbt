@@ -1,5 +1,4 @@
 name := "IWINewsBot"
-version := "1.2.5"
 scalaVersion := "2.12.4"
 
 
