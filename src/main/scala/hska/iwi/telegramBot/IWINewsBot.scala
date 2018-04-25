@@ -21,6 +21,7 @@ class IWINewsBot()
     with Subscription
     with Admin
     with AboSettings
+    with Settings
     with About
     with Mensa
     with Lecturers {
