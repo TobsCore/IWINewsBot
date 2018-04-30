@@ -203,4 +203,11 @@ trait DBConnection {
     * @return
     */
   def getPriceConfigForUser(userID: UserID): PriceConfig
+
+  /**
+    * Creates a default configuration for the given user. This includes both course subscriptions and
+    * @param user The user's id
+    * @return {{{true}}} if the data are saved correctly, {{{false}}} otherwise
+    */
+  def setDefaultUserConfig(user: UserID): Boolean
 }

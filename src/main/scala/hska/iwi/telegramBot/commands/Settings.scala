@@ -49,6 +49,7 @@ trait Settings extends Commands with Callbacks with Instances {
     val buttonData = cbq.data
     val user = UserID(cbq.from.id)
     if (buttonData.isDefined) {
+      logger.debug(s"$user is changing price settings. Selection: ${buttonData.get}")
       val response: (String, Option[InlineKeyboardMarkup]) = buttonData.get match {
         case Tagging.STUDENT =>
           ackCallback(Some("Preise für Studierende wurde gespeichert"))
@@ -182,32 +183,29 @@ trait Settings extends Commands with Callbacks with Instances {
     val configOption = redis.getConfigFor(user)
     val facultyNewsValueOption = redis.getFacultyConfigForUser(user)
 
-    // TODO: Should behave differently. If a user doesn't have any settings, yet, the default
-    // settings should be written to the database and then returned. This method should then not
-    // return an option and even better could be moved over to the createButtons method call,
-    // like all the others.
-    if (configOption.isDefined && facultyNewsValueOption.isDefined) {
-      val config = configOption.get
-      val facultyNewsValue = facultyNewsValueOption.get
-
-      Some(
-        InlineKeyboardMarkup.singleColumn(
-          Seq(
-            InlineKeyboardButton.callbackData(aboButtonTexts(!config(INFB), INFB),
-                                              prefixTag(Tagging.ABO_PREFIX)(Tagging.INFB)),
-            InlineKeyboardButton.callbackData(aboButtonTexts(!config(MKIB), MKIB),
-                                              prefixTag(Tagging.ABO_PREFIX)(Tagging.MKIB)),
-            InlineKeyboardButton.callbackData(aboButtonTexts(!config(INFM), INFM),
-                                              prefixTag(Tagging.ABO_PREFIX)(Tagging.INFM)),
-            InlineKeyboardButton.callbackData(buttonText4Faculty(!facultyNewsValue),
-                                              prefixTag(Tagging.ABO_PREFIX)(Tagging.FACULTYNEWS)),
-            InlineKeyboardButton.callbackData("« Zurück zu Settings",
-                                              prefixTag(Tagging.ABO_PREFIX)("Back"))
-          )
-        ))
-    } else {
-      None
+    if (configOption.isEmpty || facultyNewsValueOption.isEmpty) {
+      // Set the default values for configuration
+      redis.setDefaultUserConfig(user)
     }
+    // Get the previously received configuration or get the newly set default options
+    val config = configOption.getOrElse(redis.getConfigFor(user).get)
+    val facultyNewsValue = facultyNewsValueOption.getOrElse(redis.getFacultyConfigForUser(user).get)
+
+    Some(
+      InlineKeyboardMarkup.singleColumn(
+        Seq(
+          InlineKeyboardButton.callbackData(aboButtonTexts(!config(INFB), INFB),
+                                            prefixTag(Tagging.ABO_PREFIX)(Tagging.INFB)),
+          InlineKeyboardButton.callbackData(aboButtonTexts(!config(MKIB), MKIB),
+                                            prefixTag(Tagging.ABO_PREFIX)(Tagging.MKIB)),
+          InlineKeyboardButton.callbackData(aboButtonTexts(!config(INFM), INFM),
+                                            prefixTag(Tagging.ABO_PREFIX)(Tagging.INFM)),
+          InlineKeyboardButton.callbackData(buttonText4Faculty(!facultyNewsValue),
+                                            prefixTag(Tagging.ABO_PREFIX)(Tagging.FACULTYNEWS)),
+          InlineKeyboardButton.callbackData("« Zurück zu Settings",
+                                            prefixTag(Tagging.ABO_PREFIX)("Back"))
+        )
+      ))
   }
 
   def priceSettingsMarkup(userID: UserID): InlineKeyboardMarkup = {

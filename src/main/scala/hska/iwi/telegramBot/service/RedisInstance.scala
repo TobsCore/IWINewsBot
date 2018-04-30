@@ -3,7 +3,7 @@ package hska.iwi.telegramBot.service
 import com.redis.RedisClient
 import com.redis.serialization.Parse.Implicits._
 import com.typesafe.scalalogging.Logger
-import hska.iwi.telegramBot.news.{Course, Entry, FacultyNews}
+import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.Implicits._
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
@@ -11,6 +11,10 @@ import org.json4s.jackson.Serialization.write
 import scala.collection.mutable
 
 class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
+  override def setDefaultUserConfig(user: UserID): Boolean = {
+    setFacultyConfigForUser(user, true)
+    setUserConfig(user, Map(INFB -> true, MKIB -> true, INFM -> true))
+  }
 
   val logger = Logger(getClass)
 
