@@ -1,13 +1,13 @@
 package hska.iwi.telegramBot.service
 
 object Tagging {
-
   // Prefix Tagging
   val SETTINGS_PREFIX = "Settings"
   val PRICE_PREFIX = "PriceConfig"
   val ABO_PREFIX = "AboConfig"
   val STUDIUM_PREFIX = "Studium"
   val SPECIALILISATION_PREFIX = "Specialisation"
+  val SEMESTER_PREFIX = "Semester"
 
   // General Purpose Buttons
   val BACK = "Back"
