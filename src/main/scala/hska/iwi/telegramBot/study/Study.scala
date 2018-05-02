@@ -27,6 +27,17 @@ object Study {
   }
 
   /**
+    * Just a wrapper method for the other getID method.
+    *
+    * @param course         The course of the study
+    * @param specialisation The specialisation of the study. Can be {{{None}}}
+    * @return The id for the given study. If no matching study can be found, {{{Failure}}} will
+    *         be returned.
+    */
+  def getID(course: Course, specialisation: Option[Specialisation] = None): Try[Int] =
+    getID(Study(course, specialisation, 0))
+
+  /**
     * For a given id returns the combination of course (i.e INFB) and specialisation (i.e.
     * SoftwareEngineering) if one exists. If there is no speicalisation (i.e. INFB doesn't
     * currently has a specialisation), {{{None}}} ist returned.

@@ -2,6 +2,8 @@ package hska.iwi.telegramBot.commands
 
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.{Instances, PriceConfig, Tagging, UserID}
+import hska.iwi.telegramBot.study.Study
+import info.mukel.telegrambot4s.api.Extractors.Int
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.methods.{EditMessageText, ParseMode}
@@ -86,10 +88,12 @@ trait Settings extends Commands with Callbacks with Instances {
       val response: (String, Option[InlineKeyboardMarkup]) = buttonData.get match {
         case Tagging.INFB =>
           ackCallback(Some("INFB ausgewählt"))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(7)))
+          val studyID = Study.getID(INFB)
+          ("Semester auswählen:", Some(semesterSettingsMarkup(7, studyID.get)))
         case Tagging.MKIB =>
           ackCallback(Some("MKIB ausgewählt"))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(7)))
+          val studyID = Study.getID(MKIB)
+          ("Semester auswählen:", Some(semesterSettingsMarkup(7, studyID.get)))
         case Tagging.INFM =>
           ackCallback(Some("INFM ausgewählt"))
           ("Vertiefungsrichtung auswählen:", Some(studiumSpecialisationSettingsMarkup()))
@@ -131,17 +135,38 @@ trait Settings extends Commands with Callbacks with Instances {
   }
 
   onCallbackWithTag(Tagging.SEMESTER_PREFIX) { implicit cbq: CallbackQuery =>
-    // TODO: Implement this correctly. This is crap!
     val buttonData = cbq.data
     implicit val user: UserID = UserID(cbq.from.id)
     if (buttonData.isDefined) {
       logger.debug(s"$user is changing semester settings")
       val msg = cbq.message.get
-      val response: (String, Option[InlineKeyboardMarkup]) = buttonData.get match {
-        case Tagging.BACK => (mainSettingsText(user), Some(mainSettingMarkup()))
-        case _ =>
-          logger.error("Unknown tag received in callback for Abo settings.")
-          ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
+      // The study information are appended and seperated by a `-`, therefore they have to be split
+      val tags = buttonData.get.split('-')
+
+      val response: (String, Option[InlineKeyboardMarkup]) = if (tags.size != 2) {
+        buttonData.get match {
+          case Tagging.BACK => (mainSettingsText(user), Some(mainSettingMarkup()))
+          case _ =>
+            logger.error(
+              s"Unknown tag (${buttonData.get}) received in callback for semester settings.")
+            ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
+        }
+      } else {
+        tags(0) match {
+          case Int(semester) =>
+            val studyID = Integer.parseInt(tags(1))
+            val studyData = Study.infoByID(studyID)
+            val study = Study(studyData.get._1, studyData.get._2, semester)
+
+            ackCallback(Some(s"Speichere Studiendaten: $study"))
+            logger.info(s"Saving $user study data: $study")
+            redis.setStudySettingsForUser(user, study)
+            (mainSettingsText(user), Some(mainSettingMarkup()))
+          case _ =>
+            logger.error(
+              s"Unknown tag (${buttonData.get}) received in callback for semester settings.")
+            ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
+        }
       }
 
       requestEditMessage(msg.chat.id, msg.messageId, response._1, response._2)
@@ -157,10 +182,12 @@ trait Settings extends Commands with Callbacks with Instances {
       val response: (String, Option[InlineKeyboardMarkup]) = buttonData.get match {
         case Tagging.INTERACTIVE_SYSTEMS =>
           ackCallback(Some("Interaktive Systeme ausgewählt"))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(3)))
+          val studyID = Study.getID(INFM, Some(InteractiveSystems))
+          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
         case Tagging.SOFTWARE_ENGINEERING =>
           ackCallback(Some("Software-Engineering ausgewählt"))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(3)))
+          val studyID = Study.getID(INFM, Some(SoftwareEngineering))
+          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
         case Tagging.BACK => (mainSettingsText(user), Some(mainSettingMarkup()))
         case _ =>
           logger.error("Unknown tag received in callback for Abo settings.")
@@ -222,11 +249,11 @@ trait Settings extends Commands with Callbacks with Instances {
     InlineKeyboardMarkup.singleColumn(buttons)
   }
 
-  def semesterSettingsMarkup(semesterAmount: Int): InlineKeyboardMarkup = {
+  def semesterSettingsMarkup(semesterAmount: Int, selectedStudyID: Int): InlineKeyboardMarkup = {
     val buttons =
       createButtons(
         (1 to semesterAmount)
-          .map(e => (s"${e.toString}. Semester", e.toString)) :+ ("« Zurück zu Settings", Tagging.BACK),
+          .map(e => (s"${e.toString}. Semester", s"${e.toString}-$selectedStudyID")) :+ ("« Zurück zu Settings", Tagging.BACK),
         Tagging.SEMESTER_PREFIX
       )
     InlineKeyboardMarkup(buttons.sliding(2, 2).toSeq)
