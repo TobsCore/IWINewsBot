@@ -5,7 +5,7 @@ import hska.iwi.telegramBot.rooms.Room
 case class LectureEntry(cancellation: String,
                         comment: String,
                         contactHours: Int,
-                        creditPoInts: Int,
+                        creditPoints: Int,
                         day: Int,
                         duration: String,
                         endTime: Int,

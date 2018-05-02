@@ -26,7 +26,6 @@ trait Lecturers extends Commands with Callbacks {
     if (content.isDefined) {
       //parses the json entries and stores them in a lecturers object
       lecturers = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
-      //reply(RoomFormatter.format(lecturers), parseMode = Some(ParseMode.HTML))
 
       logger.debug(s"Received ${lecturers.get.size} Lecturers.")
 

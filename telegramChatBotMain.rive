@@ -1,14 +1,42 @@
 ! version = 2.0
 
++ welche (vorlesungen|veranstaltungen) habe ich *?
+- <call>timetable <star2></call>
+
++ welche (vorlesungen|veranstaltungen) habe ich?
+- <call>timetable</call>
+
++ wie sieht mein stundenplan aus?
+- <call>timetable</call>
+
++ was ist mein stundeplan?
+- <call>timetable</call>
+
++ [*] mensa [*]
+- Rufe den Mensaplan über /mensa auf.
+
 + hallo bot
 - Hallo, Mensch! 🙈
 
 + wie geht es dir?
-- Mir geht es super, und Dir?
-- Gut, danke!
-- Gut, Dir?
-- Super!
 - Es ist in Ordnung, danke der Nachfrage.
+- Meh.
+- Hör mir auf! 🙈
+- Frag nicht!
+- Heute ist nicht mein Tag, aber lieb, dass du fragst.
+
++ was hast du an?
+- Das ist ja eine indiskrete Frage! 😳
+
++ [*] (blöd|scheiße|fick|doof|fuck|kacke|fucking) [*]
+- Mit einer positiveren Einstellung wirst du im Leben weiter kommen!
+
++ was ist der sinn des lebens?
+- 42
+
++ wie (wird|ist) das wetter [*]?
+- Sehe ich aus wie ein meteorologisches Programm?!
+- LMGTFY...Nee, nicht mein Job.
 
 + beispiel
 - Ich kenne die Parameter: {param} und {id}
@@ -16,3 +44,12 @@
 + beispiel *
 - <call>example <star></call>
 
++ *
+- Das habe ich leider nicht verstanden.
+- Ich weiß nicht, was du meinst. Eine Befehlsübersicht bekommst du über /help
+- Da kann ich dir nicht helfen, sorry. 😔
+
+// Substitutions
+! sub zum      = zu dem
+! sub gibt's   = gibt es
+! sub geht's   = geht es
