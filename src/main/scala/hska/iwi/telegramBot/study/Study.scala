@@ -4,7 +4,12 @@ import hska.iwi.telegramBot.news._
 
 import scala.util.{Failure, Try}
 
-case class Study(course: Course, specialisation: Option[Specialisation] = None, semester: Int) {}
+case class Study(course: Course, specialisation: Option[Specialisation] = None, semester: Int) {
+  override def toString: String = {
+    val append = if (specialisation.isEmpty) "" else s" (${specialisation.get})"
+    s"$semester. Semester $course" + append
+  }
+}
 
 object Study {
 

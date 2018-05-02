@@ -336,14 +336,17 @@ trait Settings extends Commands with Callbacks with Instances {
     } else ""
 
     val aboInfo =
-      if (courseNewsInfo.isEmpty && facultyInfo.isEmpty) "Keine" else courseNewsInfo + facultyInfo
+      if (courseNewsInfo.isEmpty && facultyInfo.isEmpty) "<i>Keine</i>"
+      else courseNewsInfo + facultyInfo
 
+    val studySetting = redis.getStudySettingsForUser(userID).getOrElse("<i>Nichts gespeichert</i>")
     // Price information
     val priceSetting = redis.getPriceConfigForUser(userID).toString
     s"""<b>Einstellungen</b>
        |
        |Abonniert: $aboInfo
        |Preise: $priceSetting
+       |Studium: $studySetting
        |
        |Du kannst die folgenden Dinge anpassen:
      """.stripMargin
