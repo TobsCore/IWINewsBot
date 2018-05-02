@@ -3,14 +3,19 @@ package hska.iwi.telegramBot.service
 import com.redis.RedisClient
 import com.redis.serialization.Parse.Implicits._
 import com.typesafe.scalalogging.Logger
-import hska.iwi.telegramBot.news.{Course, Entry, FacultyNews}
+import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service.Implicits._
+import hska.iwi.telegramBot.study.Study
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
 
 import scala.collection.mutable
 
 class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
+  override def setDefaultUserConfig(user: UserID): Boolean = {
+    setFacultyConfigForUser(user, true)
+    setUserConfig(user, Map(INFB -> true, MKIB -> true, INFM -> true))
+  }
 
   val logger = Logger(getClass)
 
@@ -147,6 +152,33 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
 
   override def getPriceConfigForUser(userID: UserID): PriceConfig = {
     PriceConfig(redis.get[String](s"config:price:${userID.id}").getOrElse("both"))
+  }
+
+  override def setStudySettingsForUser(user: UserID, study: Study): Boolean = {
+    val settingsStore = Map("course" -> Some(study.course),
+                            "specialisation" -> study.specialisation,
+                            "semester" -> Some(study.semester)).collect {
+      case (key, Some(value)) => key -> value
+    }
+
+    // Optionally reset specialisation, if it isn't set
+    if (!settingsStore.contains("specialisation")) {
+      redis.hdel(s"config:study:${user.id}", "specialisation")
+    }
+
+    redis.hmset(s"config:study:${user.id}", settingsStore)
+  }
+
+  override def getStudySettingsForUser(user: UserID): Option[Study] = {
+    val course = redis.hget[Course](s"config:study:${user.id}", "course")
+    val specialisation = redis.hget[Specialisation](s"config:study:${user.id}", "specialisation")
+    val semester = redis.hget[Int](s"config:study:${user.id}", "semester")
+
+    if (course.isDefined && semester.isDefined) {
+      Some(Study(course.get, specialisation, semester.get))
+    } else {
+      None
+    }
   }
 }
 

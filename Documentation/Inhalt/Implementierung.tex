@@ -386,3 +386,116 @@ def entriesForSubscribers(entries: Map[Course, Set[Entry]]): Map[UserID, Set[Ent
 \end{lstlisting}
 
 Zuerst wird hierfür die Konfiguration aller User aus der Datenbank geholt. Dann wird für jeden User geprüft, welche Kanäle er abonniert hat. Nun wird geprüft, ob neue Nachrichten für diesen Kanal dabei sind. Das Ergebnis ist eine große Map, in der jeder User eine Liste von neuen Nachrichten erhält, die ihm dann vom Bot zugeschickt werden.
+
+\section{Datenbank-Struktur}
+Im folgenden soll die Datenbank-Struktur dokumentiert werden, also wie welche Daten in der Redis Datenbank gespeichert werden.
+
+\subsection{User-Daten}
+Die User, die den Service benutzen, werden in der Datenbank gespeichert, damit eine zuverlässige Kommunikation ermöglicht werden kann. Die User werden über ihre von Telegram vergebene UserID gespeichert. Hierzu gibt es in Redis ein Set aller registrierten User, die unter \texttt{users} abgespeichert werden.
+
+\begin{lstlisting}[caption={Abfrage aller User IDs}]
+> smembers users
+1) "12345678"
+2) "098765433"
+\end{lstlisting}
+
+Über diese IDs werden genauere Informationen abgespeichert, wie Name und Sprache. Diese Daten sind unter \texttt{user:\textit{userID}} abgespeichert, wobei die \texttt{userID} aus dem Set unter \texttt{users} stammen kann. Diese User-Informationen werden mittels JSON serialisiert und werden als Objekt abgelegt.
+
+\begin{lstlisting}[caption={User-Informationen abfragen}]
+> get user:12345678
+"{\"id\":12345678,\"isBot\":false,\"firstName\":\"Username-First\",\"lastName\":\"Username-Last\",\"username\":\"Username\",\"languageCode\":\"de-DE\"}"
+\end{lstlisting}
+
+\subsection{Einstellungen}
+User haben per Default bestimmte Einstellungen, die auch in der Datenbank persistiert werden. Abonnierte Studienfächer sind unter \texttt{config:\textit{userID}} als Hashmap abgelegt. Diese Hashmap ist ein Redis-Konstrukt. \textbf{Wichtig:} Die IWI-Fakultätsnachrichten werden hier nicht abgespeichert.
+
+\begin{lstlisting}[caption={Abo-Einstellungen eines Users}]
+> hgetall config:12345678
+1) "INFB"
+2) "false"
+3) "MKIB"
+4) "false"
+5) "INFM"
+6) "true"
+\end{lstlisting}
+
+Die Fakultätsabonnements werden unter \texttt{config:faculty:\textit{userID}} als Boolean abgelegt. Diese Fragmentierung der Daten ist der Evolution des Bots geschuldet und nicht optimal.
+
+\begin{lstlisting}[caption={Fakultätsabo-Einstellungen eines Users}]
+> get config:faculty:12345678
+"true"
+\end{lstlisting}
+
+Neben den Abo-Einstellungen, kann ein Nutzer zusätzlich die Preis-Darstellung für den \texttt{/mensa}-Befehl einstellen. Hierbei gibt es die drei Optionen \textit{student}, \textit{employee}, \textit{both}. Diese werden als Text unter \texttt{config:price:\textit{userID}} abgelegt.
+
+\begin{lstlisting}[caption={Preis-Einstellungen eines Users}]
+> get config:price:12345678
+"student"
+\end{lstlisting}
+
+Außerdem kann ein Users optional festlegen, in welchem Semester er sich befindet, damit er Informationen zu seinem Stundenplan abfragen kann. Diese Informationen sind sowohl das Studienfach (z.B. INFB) als auch die Vertiefung (z.B. Software Engineering für INFM). Außerdem wird das Semester gespeichert.
+
+\begin{lstlisting}[caption={Studiumeinstellung eines Users}]
+> hgetall config:study:12345678
+1) "course"
+2) "INFM"
+3) "semester"
+4) "2"
+5) "specialisation"
+6) "Software Engineering"
+\end{lstlisting}
+
+\subsection{News}
+Alle bisher existierenden News werden in der Datenbank abgespeichert. So können neue Nachrichten gefunden werden, indem geprüft wird, ob eine Nachricht noch nicht in der Datenbank existiert. Für die verschiedenen Studiengänge werden die Nachrichten als Set abgespeichert, also in \texttt{news:INFB}, \texttt{news:MKIB}, \texttt{news:INFM}.
+
+\begin{lstlisting}[caption={Auflistung der bekannten Nachrichten}]
+> smembers news:INFB
+1) "958"
+2) "1064"
+3) "1066"
+> smembers news:MKIB
+1) "958"
+2) "1067"
+\end{lstlisting}
+
+Die IDs können, wie in dem Beispiel, in verschiedenen News-Sets auftauchen, so ist die ID \textit{958} sowohl in dem Set für INFB und MKIB.
+
+Die Fakultätsnachrichten haben, wie bereits kurz beschrieben, keine eindeutige ID, weswegen ein Hash zur Identifikation genutzt wird. Dieser Hash wird in dem Set \texttt{faculty\-News} abgelegt.
+
+\begin{lstlisting}[caption={Auflistung der bekannten Fakultätsnachrichten}]
+> smembers facultyNews
+1) "ace41ce4bd5d339e07e147948d57080c08982266bcde9006bdc656258c5e1a9"
+2) "937dd056ef3fd158fcc7487daf40bfad238419c72499cbaddb7b255b7d34dcf"
+3) "499e43e94579441732dbeaf727db008f88dba8995bad3ba3750512a5e51a842"
+\end{lstlisting}
+
+\paragraph{Anmerkung:}{Zu den einzelnen Nachrichten werden keine zusätzlichen Informationen abgespeichert, wie zu einem User beispielsweise. Dies ist bis zu diesem Zeitpunkt nicht notwendig gewesen.}
+
+\subsection{Zusammenfassung Datenstruktur}
+Zur Übersichtlichkeit wird im Folgenden die Datenstruktur noch einmal zusammengefasst werden. Hierbei ist \texttt{UserID} als Platzhalter für die User ID zu betrachten und \texttt{Course} steht für die Studiengänge INFB, MKIB, INFM.
+
+\begin{lstlisting}[caption={Auflistung der bekannten Fakultätsnachrichten}]
+// Set: Liste alle User IDs
+users
+
+// JSON-Objekt: User-Informationen
+user:{userID}
+
+// Hashmap: Abonnements eines Users
+config:{userID}
+
+// Object: Fakultätsnachrichten-Abonnements eines Users (true/false)
+config:faculty:{userID}
+
+// Object: Preiseinstellung eines Users (student/employee/both)
+config:price:{userID}
+
+// Hashmap: Studiumeinstellung eines Users
+config:study:{userID}
+
+// Set: Nachrichten für einen Studiengang
+news:{Course}
+
+// Set: Fakultätsnachrichten
+facultyNews
+\end{lstlisting}

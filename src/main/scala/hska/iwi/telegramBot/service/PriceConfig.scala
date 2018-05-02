@@ -6,6 +6,7 @@ case class PriceConfig(configValue: String) extends AnyVal {
     configValue match {
       case "student"  => "Studierende"
       case "employee" => "Mitarbeiter/innen"
+      case "bot"      => "Studierende und Mitarbeiter/innen"
       case _          => "Studierende und Mitarbeiter/innen"
     }
   }

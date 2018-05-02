@@ -21,25 +21,6 @@ trait Mensa extends Commands with Callbacks with Instances {
           replyMarkup = Some(createInlineKeyboardMarkup()))
   }
 
-  onCommand("/settings") { implicit msg =>
-    using(_.from) { user =>
-      {
-        logger.debug("User selected /settings")
-        reply("Aus welcher Sicht möchtest Du die Mensapreise anzeigen lassen?",
-              replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(UserID(user.id))))
-      }
-    }
-  }
-
-  def createInlineKeyboardMarkupPriceConfig(userID: UserID): InlineKeyboardMarkup = {
-    val priceConfig = redis.getPriceConfigForUser(userID)
-    val config =
-      InlineKeyboardButton.callbackData(priceConfig.toString, tagPriceConfig("0"))
-
-    val priceConfigButton = Seq[InlineKeyboardButton](config)
-    InlineKeyboardMarkup.singleColumn(priceConfigButton)
-  }
-
   def createInlineKeyboardMarkup(): InlineKeyboardMarkup = {
     val daysToAdd = setDaysToAddArray()
 
@@ -110,34 +91,7 @@ trait Mensa extends Commands with Callbacks with Instances {
     }
   }
 
-  onCallbackWithTag("PriceConfig") { implicit cbq: CallbackQuery =>
-    val messageId = cbq.message.get.messageId
-    val chatId = cbq.message.get.chat.id
-    val userId = UserID(cbq.from.id)
-    val priceConfig = redis.getPriceConfigForUser(userId)
-    val newConfig = priceConfig.configValue match {
-      case "student"  => "employee"
-      case "employee" => "both"
-      case _          => "student"
-    }
-    redis.setPriceConfigForUser(PriceConfig(newConfig), userId)
-
-    val text = s"Preise für ${PriceConfig(newConfig).toString} sind ausgewählt"
-    ackCallback(Some(text))
-
-    request(
-      EditMessageText(
-        Some(chatId),
-        Some(messageId),
-        replyMarkup = Some(createInlineKeyboardMarkupPriceConfig(userId)),
-        text = "Aus welcher Sicht möchtest Du die Mensapreise anzeigen lassen?",
-        parseMode = Some(ParseMode.HTML)
-      ))
-  }
-
   def tagMensa: String => String = prefixTag("Mensa")
-
-  def tagPriceConfig: String => String = prefixTag("PriceConfig")
 
   def setDaysToAddArray(): Array[Int] = {
     val daysToAdd = Array.fill[Int](5)(0)

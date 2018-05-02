@@ -22,14 +22,13 @@ trait Subscription extends Commands with Instances {
 
             // Set configuration. Everything is set to true, since the user subscribes to all
             // subjects by default.
-            redis.setUserConfig(userID, Map(INFB -> true, MKIB -> true, INFM -> true))
+            redis.setDefaultUserConfig(userID)
           } else {
             reply("Du erhälst bereits Nachrichten.")
           }
 
           // Update the user data
           redis.setUserData(userID, user)
-          redis.setFacultyConfigForUser(userID, configValue = true)
         } catch {
           case rte: RuntimeException =>
             logger.error("Cannot connect to redis server")
