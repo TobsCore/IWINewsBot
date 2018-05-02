@@ -4,7 +4,7 @@ trait Specialisation {
 
   def getSpecialisationByName(specialisationName: String): Option[Specialisation] =
     specialisationName.toLowerCase() match {
-      case "softwareengineering" | "softare engineering" | "software-engineering" | "swe" =>
+      case "softwareengineering" | "software engineering" | "software-engineering" | "swe" =>
         Some(SoftwareEngineering)
       case "interactive systems" | "interaktive systeme" | "interactive-systems" |
           "interaktive-systeme" =>
@@ -12,6 +12,8 @@ trait Specialisation {
       case _ => None
     }
 }
+
+object Specialisation extends Specialisation {}
 
 object SoftwareEngineering extends Specialisation {
   override def toString: String = "Software Engineering"

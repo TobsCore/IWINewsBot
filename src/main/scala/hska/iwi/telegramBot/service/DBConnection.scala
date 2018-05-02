@@ -1,6 +1,7 @@
 package hska.iwi.telegramBot.service
 
 import hska.iwi.telegramBot.news.{Course, Entry, FacultyNews}
+import hska.iwi.telegramBot.study.Study
 import info.mukel.telegrambot4s.models.User
 
 trait DBConnection {
@@ -192,22 +193,45 @@ trait DBConnection {
 
   /**
     * Sets the user's preference about showing the mensa prices. It is stored through its userID.
+    *
     * @param priceConfig The new price preference which is set here
-    * @param userID The id of the user
+    * @param userID      The id of the user
     */
   def setPriceConfigForUser(priceConfig: PriceConfig, userID: UserID): Unit
 
   /**
     * Gets the price preference of the mensa feature through the userID
+    *
     * @param userID The user's id
     * @return
     */
   def getPriceConfigForUser(userID: UserID): PriceConfig
 
   /**
-    * Creates a default configuration for the given user. This includes both course subscriptions and
+    * Creates a default configuration for the given user. This includes both course subscriptions
+    * and
+    *
     * @param user The user's id
     * @return {{{true}}} if the data are saved correctly, {{{false}}} otherwise
     */
   def setDefaultUserConfig(user: UserID): Boolean
+
+  /**
+    * Creates the study settings for a given user.
+    *
+    * @param user  The user's id which is used to identify the data in the database
+    * @param study The study settings.
+    * @return {{{true}}} if everything was stored correctly, {{{false}}} otherwise
+    */
+  def setStudySettingsForUser(user: UserID, study: Study): Boolean
+
+  /**
+    * Get the user's study settings.
+    *
+    * @param user The user's id.
+    * @return The study settings, if they could be retrieved from the database. If there are no
+    *         settings stored, {{{None}}} is returned.
+    */
+  def getStudySettingsForUser(user: UserID): Option[Study]
+
 }
