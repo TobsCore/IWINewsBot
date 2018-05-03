@@ -2,36 +2,43 @@ package hska.iwi.telegramBot.ChatBot.Routines
 
 import com.rivescript.RiveScript
 import com.rivescript.`macro`.Subroutine
-import hska.iwi.telegramBot.service.{FeedURL, HTTPGet, LocalDateTime}
+import hska.iwi.telegramBot.news.Specialisation
+import hska.iwi.telegramBot.service._
 import hska.iwi.telegramBot.timetable.TimetableEntry
+import jdk.nashorn.internal.runtime.Specialization
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
-class TimetableRoutine extends Subroutine {
+class TimetableRoutine extends Subroutine with Instances {
 
   implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 
   override def call(rs: RiveScript, args: Array[String]): String = {
     args.headOption match {
       case Some(param) => runWithParam(param, rs)
-      case _           => requestTimetable(0)
+      case _           => requestTimetable(0, rs)
     }
   }
 
   private def runWithParam(param: String, rs: RiveScript): String = param.toLowerCase() match {
-    case "morgen"                     => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(1))
-    case "heute"                      => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(0))
-    case "montags" | "montag"         => requestTimetable(1)
-    case "dienstags" | "dienstag"     => requestTimetable(2)
-    case "mittwochs" | "mittwoch"     => requestTimetable(3)
-    case "donnerstags" | "donnerstag" => requestTimetable(4)
-    case "freitags" | "freitag"       => requestTimetable(5)
-    case _                            => requestTimetable(0)
+    case "morgen"                     => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(1), rs)
+    case "heute"                      => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(0), rs)
+    case "montags" | "montag"         => requestTimetable(1, rs)
+    case "dienstags" | "dienstag"     => requestTimetable(2, rs)
+    case "mittwochs" | "mittwoch"     => requestTimetable(3, rs)
+    case "donnerstags" | "donnerstag" => requestTimetable(4, rs)
+    case "freitags" | "freitag"       => requestTimetable(5, rs)
+    case _ =>
+      "Das letzte Wort kenne ich leider nicht. Möchtest du deinen Stundenplan für heute, morgen oder einen bestimmten Wochentag erfahren?"
   }
 
-  def requestTimetable(dayOfWeek: Int): String = {
+  def requestTimetable(dayOfWeek: Int, rs: RiveScript): String = {
 
-    val content = HTTPGet.get(FeedURL.timetable + "INFM" + "/" + "1" + "/" + "2")
+    val studyConfig = redis.getStudySettingsForUser(UserID(rs.currentUser().toInt))
+
+    val timetableURL = FeedURL.timetable + studyConfig.get.course.toString + "/" + Specialisation
+      .getShortCutByName(studyConfig.get.specialisation) + "/" + studyConfig.get.semester.toString
+    val content = HTTPGet.get(timetableURL)
 
     if (content.isDefined) {
 
