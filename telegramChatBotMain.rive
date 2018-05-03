@@ -1,12 +1,12 @@
 ! version = 2.0
 
-+ welche (vorlesungen|veranstaltungen) habe ich *?
++ welche (vorlesung|vorlesungen|veranstaltung|veranstaltungen) habe ich *?
 - <call>timetable <star2></call>
 
-+ welche (vorlesungen|veranstaltungen) habe ich?
++ welche (vorlesung|vorlesungen|veranstaltung|veranstaltungen) habe ich?
 - <call>timetable</call>
 
-+ wie sieht mein stundenplan aus?
++ wie sieht mein (tag|stundenplan) aus?
 - <call>timetable</call>
 
 + was ist mein stundeplan?
@@ -17,6 +17,9 @@
 
 + hallo bot
 - Hallo, Mensch! 🙈
+
++ hallo [*]
+- Hallo selber!
 
 + wie geht es dir?
 - Es ist in Ordnung, danke der Nachfrage.
@@ -36,6 +39,7 @@
 
 + wie (wird|ist) das wetter [*]?
 - Sehe ich aus wie ein meteorologisches Programm?!
+- Sonnig mit Aussicht auf Fleischbällchen.
 - LMGTFY...Nee, nicht mein Job.
 
 + beispiel
