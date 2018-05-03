@@ -15,10 +15,8 @@ case class TimetableEntry(courseOfStudies: String,
     val timetablesFormatted = singleDayEntriesFormatted(timetables)
 
     s"""
-       |Stundenplan
-       |
+       |<b>Stundenplan</b>
        |$timetablesFormatted
-       |
      """.stripMargin
 
   }
@@ -34,20 +32,47 @@ case class TimetableEntry(courseOfStudies: String,
   def lectureEntries(singleDayTimetable: SingleDayTimetable): String = {
     val entries = singleDayTimetable.entries
     val stringBuilder = new StringBuilder
-
-    /*    stringBuilder.append(s"""
-         |${LocalDateTime.getWeekDay(entries(1).day)}
-         |
-       """.stripMargin)*/
+    var firstElement = true
 
     for (entry <- entries) {
+      val day = LocalDateTime.getWeekDay(entry.day)
+      if (firstElement) {
+        stringBuilder.append(s"\n<b>$day</b>")
+        firstElement = false
+      }
       stringBuilder.append(s"""
-           |
-           |${entry.lectureName}
            |${LocalDateTime.prettyHourIntervall(entry.startTime)}-${LocalDateTime
-                                .prettyHourIntervall(entry.endTime)}
-           |
-         """.stripMargin)
+                                .prettyHourIntervall(entry.endTime)} Uhr
+           |${entry.lectureName}
+           |${lecturerNames(entry)}
+           |${rooms(entry)}
+           |""".stripMargin)
+    }
+    stringBuilder.toString()
+  }
+
+  def rooms(entry: LectureEntry): String = {
+    val stringBuilder = new StringBuilder
+    var size = entry.locations.size
+    for (room <- entry.locations) {
+      stringBuilder.append(room.building + room.room)
+      if (size > 1) {
+        stringBuilder.append(" / ")
+        size -= 1
+      }
+    }
+    stringBuilder.toString()
+  }
+
+  def lecturerNames(entry: LectureEntry): String = {
+    val stringBuilder = new StringBuilder
+    var size = entry.lecturerNames.size
+    for (lecturer <- entry.lecturerNames) {
+      stringBuilder.append(lecturer)
+      if (size > 1) {
+        stringBuilder.append(" / ")
+        size -= 1
+      }
     }
     stringBuilder.toString()
   }
