@@ -44,7 +44,11 @@ case class TimetableEntry(courseOfStudies: String,
            |${LocalDateTime.prettyHourIntervall(entry.startTime)}-${LocalDateTime
                                 .prettyHourIntervall(entry.endTime)} Uhr
            |${entry.lectureName}
-           |${lecturerNames(entry)}
+           |""".stripMargin)
+      if (!entry.group.isEmpty) {
+        stringBuilder.append(s"Gruppe ${entry.group}\n")
+      }
+      stringBuilder.append(s"""${lecturerNames(entry)}
            |${rooms(entry)}
            |""".stripMargin)
     }
