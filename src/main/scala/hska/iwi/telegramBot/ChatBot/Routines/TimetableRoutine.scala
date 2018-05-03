@@ -36,35 +36,41 @@ class TimetableRoutine extends Subroutine with Instances {
 
     val studyConfig = redis.getStudySettingsForUser(UserID(rs.currentUser().toInt))
 
-    val timetableURL = FeedURL.timetable + studyConfig.get.course.toString + "/" + Specialisation
-      .getShortCutByName(studyConfig.get.specialisation) + "/" + studyConfig.get.semester.toString
-    val content = HTTPGet.get(timetableURL)
+    if (studyConfig.isDefined) {
 
-    if (content.isDefined) {
+      val timetableURL = FeedURL.timetable + studyConfig.get.course.toString + "/" + Specialisation
+        .getShortCutByName(studyConfig.get.specialisation) + "/" + studyConfig.get.semester.toString
+      val content = HTTPGet.get(timetableURL)
 
-      val timetable: Option[TimetableEntry] = Some(
-        JsonMethods.parse(content.get).extract[TimetableEntry])
+      if (content.isDefined) {
 
-      val timetableContent: Option[TimetableEntry] = dayOfWeek match {
-        case 0 => timetable
-        case _ =>
-          val temp = timetable.get.timetables(dayOfWeek - 1)
-          Some(
-            TimetableEntry(
-              timetable.get.courseOfStudies,
-              timetable.get.idSemester,
-              timetable.get.moduleSpecialization,
-              timetable.get.semester,
-              timetable.get.semesterName,
-              Seq(temp)
-            ))
+        val timetable: Option[TimetableEntry] = Some(
+          JsonMethods.parse(content.get).extract[TimetableEntry])
+
+        val timetableContent: Option[TimetableEntry] = dayOfWeek match {
+          case 0 => timetable
+          case _ =>
+            val temp = timetable.get.timetables(dayOfWeek - 1)
+            Some(
+              TimetableEntry(
+                timetable.get.courseOfStudies,
+                timetable.get.idSemester,
+                timetable.get.moduleSpecialization,
+                timetable.get.semester,
+                timetable.get.semesterName,
+                Seq(temp)
+              ))
+        }
+
+        timetableContent.get.toString
+
+      } else {
+        ""
       }
-
-      timetableContent.get.toString
-
     } else {
-      ""
-    }
-  }
+      "Ich weiß noch nicht, zu welchem Studiengang Du den Stundenplan sehen möchtest. In /settings kannst Du es eintragen."
 
+    }
+
+  }
 }
