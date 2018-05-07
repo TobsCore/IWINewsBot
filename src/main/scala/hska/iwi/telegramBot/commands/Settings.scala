@@ -143,7 +143,7 @@ trait Settings extends Commands with Callbacks with Instances {
       // The study information are appended and seperated by a `-`, therefore they have to be split
       val tags = buttonData.get.split('-')
 
-      val response: (String, Option[InlineKeyboardMarkup]) = if (tags.size != 2) {
+      val response: (String, Option[InlineKeyboardMarkup]) = if (tags.length != 2) {
         buttonData.get match {
           case Tagging.BACK => (mainSettingsText(user), Some(mainSettingMarkup()))
           case _ =>
@@ -173,7 +173,6 @@ trait Settings extends Commands with Callbacks with Instances {
     }
   }
   onCallbackWithTag(Tagging.SPECIALILISATION_PREFIX) { implicit cbq: CallbackQuery =>
-    // TODO: Implement this correctly. This is crap!
     val buttonData = cbq.data
     implicit val user: UserID = UserID(cbq.from.id)
     if (buttonData.isDefined) {

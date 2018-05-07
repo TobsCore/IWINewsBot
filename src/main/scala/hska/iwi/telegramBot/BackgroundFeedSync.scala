@@ -7,12 +7,12 @@ import hska.iwi.telegramBot.service._
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
-import info.mukel.telegrambot4s.models.ChatId
+import info.mukel.telegrambot4s.models.{ChatId, Message}
 
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
 /**
   * The background worker is responsible for checking the feed urls for content and notifying
@@ -123,7 +123,10 @@ case class BackgroundFeedSync(token: String) extends TelegramBot with Commands w
             case e =>
               logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
           }
-        case _ => logger.debug(s"Sent message to user $chatID")
+        case Success(msg: Message) =>
+          logger.debug(s"Sent message with ID ${msg.messageId} to user $chatID")
+        case e =>
+          logger.debug(s"Something went wrong. Message: ${e.getOrElse("Not message received")}")
       }
   }
 
