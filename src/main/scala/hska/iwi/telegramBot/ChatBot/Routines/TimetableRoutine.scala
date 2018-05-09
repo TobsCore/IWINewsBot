@@ -68,7 +68,7 @@ class TimetableRoutine extends Subroutine with Instances {
         ""
       }
     } else {
-      "Ich weiß noch nicht, zu welchem Studiengang Du den Stundenplan sehen möchtest. In /settings kannst Du es eintragen."
+      "Ich weiß noch nicht, zu welchem Studiengang Du den Stundenplan sehen möchtest. In /settings kannst Du es auswählen."
 
     }
 
