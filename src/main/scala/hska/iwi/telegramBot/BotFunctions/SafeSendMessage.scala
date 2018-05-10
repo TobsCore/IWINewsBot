@@ -4,7 +4,7 @@ import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.ChatId
 
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
 trait SafeSendMessage extends TelegramBot {
 
@@ -28,7 +28,11 @@ trait SafeSendMessage extends TelegramBot {
             case e =>
               logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
           }
-        case _ => logger.debug(s"Sent message to user $chatID")
+        case Failure(exception: Throwable) =>
+          logger.error(
+            s"An error occured while trying to send message to user $chatID. " +
+              s"Exception: $exception with message ${exception.getMessage}")
+        case Success(message) => logger.debug(s"Sent message to user $chatID, message: $message")
       }
   }
 }
