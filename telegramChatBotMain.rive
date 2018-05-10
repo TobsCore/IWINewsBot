@@ -13,7 +13,12 @@
 - <call>timetable</call>
 
 + [*] mensa [*]
-- Rufe den Mensaplan über /mensa auf.
+- <call>mensa</call>
+
++ was (gibt|gab) es * in der mensa?
+- <call>mensa <star2></call>
+
+
 
 + hallo bot
 - Hallo, Mensch! 🙈
