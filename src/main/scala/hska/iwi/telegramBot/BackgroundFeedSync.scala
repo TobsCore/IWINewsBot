@@ -1,7 +1,6 @@
 package hska.iwi.telegramBot
 
 import akka.actor.ActorSystem
-import com.redis.RedisClient
 import hska.iwi.telegramBot.BotFunctions.SafeSendMessage
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service._
@@ -25,9 +24,9 @@ case class BackgroundFeedSync(token: String)
     extends TelegramBot
     with Commands
     with Admins
+    with Instances
     with SafeSendMessage {
 
-  val redis = new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
   val backgroundActorSystem = ActorSystem("BackgroundActorSystem")
 
   val feedProcessor =
