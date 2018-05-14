@@ -1,15 +1,16 @@
 package hska.iwi.telegramBot.BotFunctions
 
 import akka.stream.BufferOverflowException
-import scala.concurrent.duration._
+import hska.iwi.telegramBot.service.{Instances, UserID}
 import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.{ChatId, Message}
 
-import scala.util.{Failure, Success}
+import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.{Failure, Success}
 
-trait SafeSendMessage extends TelegramBot {
+trait SafeSendMessage extends TelegramBot with Instances {
 
   def trySendMessage(chatID: ChatId, content: String, attempts: Int = 0): Unit = {
     request(SendMessage(chatID, content, parseMode = Some(ParseMode.HTML)))
@@ -24,6 +25,11 @@ trait SafeSendMessage extends TelegramBot {
               logger.error(
                 s"Blocked by user: User with id $chatID has forbidden access, which " +
                   s"caused an error. The message could not be sent.")
+              if (chatID.isChat) {
+                logger.info(s"User $chatID will be removed from database.")
+                val user = UserID(chatID.toEither.left.get.toInt)
+                redis.removeUser(user)
+              }
             case e =>
               logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
           }
