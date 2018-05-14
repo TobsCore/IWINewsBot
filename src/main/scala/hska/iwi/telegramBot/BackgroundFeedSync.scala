@@ -128,10 +128,13 @@ case class BackgroundFeedSync(token: String)
             case e =>
               logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
           }
+        case Failure(exception: Throwable) =>
+          logger.error(
+            s"Couldn't send message to user $chatID. Exception: ${exception.getMessage}.")
+          logger.debug(exception.toString)
+          logger.debug(exception.getStackTrace.toString)
         case Success(msg: Message) =>
           logger.debug(s"Sent message with ID ${msg.messageId} to user $chatID")
-        case e =>
-          logger.debug(s"Something went wrong. Message: ${e.getOrElse("Not message received")}")
       }
   }
 
