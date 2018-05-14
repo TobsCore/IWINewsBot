@@ -1,25 +1,24 @@
 package hska.iwi.telegramBot.BotFunctions
 
+import akka.stream.BufferOverflowException
+import scala.concurrent.duration._
 import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
 import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
-import info.mukel.telegrambot4s.models.ChatId
+import info.mukel.telegrambot4s.models.{ChatId, Message}
 
 import scala.util.{Failure, Success}
+import scala.language.postfixOps
 
 trait SafeSendMessage extends TelegramBot {
 
-  def trySendMessage(chatID: ChatId, content: String): Unit = {
+  def trySendMessage(chatID: ChatId, content: String, attempts: Int = 0): Unit = {
     request(SendMessage(chatID, content, parseMode = Some(ParseMode.HTML)))
       .onComplete {
         case Failure(telegramException: TelegramApiException) =>
           telegramException.errorCode match {
-            case 400 =>
+            case 429 =>
               logger.error(
-                s"Received a 400 error [Bad Request] while trying to send message " +
-                  s"to user with $chatID. Message: ${telegramException.message}")
-            case 439 =>
-              logger.error(
-                s"Received a 439 error [Too many requests] while trying to send message " +
+                s"Received a 429 error [Too many requests] while trying to send message " +
                   s"to user with $chatID")
             case 403 =>
               logger.error(
@@ -29,10 +28,20 @@ trait SafeSendMessage extends TelegramBot {
               logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
           }
         case Failure(exception: Throwable) =>
-          logger.error(
-            s"An error occured while trying to send message to user $chatID. " +
-              s"Exception: $exception with message ${exception.getMessage}")
-        case Success(message) => logger.debug(s"Sent message to user $chatID, message: $message")
+          exception match {
+            case BufferOverflowException(_) =>
+              logger.error(s"BufferOverflowException occured. Retry sending the message")
+              Thread.sleep((2 seconds).toMillis)
+              logger.info(s"Retrying to send message again. Attempt: ${attempts + 1}");
+              trySendMessage(chatID, content, attempts + 1);
+            case _ =>
+              logger.error(
+                s"Couldn't send message to user $chatID. Exception: ${exception.getMessage}.")
+              logger.debug(exception.toString)
+              logger.debug(exception.getStackTrace.toString)
+          }
+        case Success(msg: Message) =>
+          logger.debug(s"Sent message with ID ${msg.messageId} to user $chatID")
       }
   }
 }

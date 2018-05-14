@@ -5,15 +5,13 @@ import com.redis.RedisClient
 import hska.iwi.telegramBot.BotFunctions.SafeSendMessage
 import hska.iwi.telegramBot.news._
 import hska.iwi.telegramBot.service._
+import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
-import info.mukel.telegrambot4s.api.{TelegramApiException, TelegramBot}
-import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
-import info.mukel.telegrambot4s.models.{ChatId, Message}
+import info.mukel.telegrambot4s.models.ChatId
 
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.language.postfixOps
-import scala.util.{Failure, Success}
 
 /**
   * The background worker is responsible for checking the feed urls for content and notifying
@@ -108,34 +106,9 @@ case class BackgroundFeedSync(token: String)
     for ((userID, entrySet) <- userToEntryMap) {
       for (entry <- entrySet) {
         trySendMessage(ChatId(userID.id), entry.toString)
+        Thread.sleep((50 millis).toMillis)
       }
     }
-  }
-
-  override def trySendMessage(chatID: ChatId, content: String): Unit = {
-    request(SendMessage(chatID, content, parseMode = Some(ParseMode.HTML)))
-      .onComplete {
-        case Failure(telegramException: TelegramApiException) =>
-          telegramException.errorCode match {
-            case 439 =>
-              logger.error(
-                s"Received a 439 error [Too many requests] while trying to send message " +
-                  s"to user with $chatID")
-            case 403 =>
-              logger.error(
-                s"Blocked by user: User with id $chatID has forbidden access, which " +
-                  s"caused an error. The message could not be sent.")
-            case e =>
-              logger.error(s"Unknown error occured, with error-code $e. Better look into this.")
-          }
-        case Failure(exception: Throwable) =>
-          logger.error(
-            s"Couldn't send message to user $chatID. Exception: ${exception.getMessage}.")
-          logger.debug(exception.toString)
-          logger.debug(exception.getStackTrace.toString)
-        case Success(msg: Message) =>
-          logger.debug(s"Sent message with ID ${msg.messageId} to user $chatID")
-      }
   }
 
   def sendFacultyNewsToSubscribers(subscribedUsers: Set[UserID], news: List[FacultyNews]): Unit = {
