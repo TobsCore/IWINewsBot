@@ -45,7 +45,7 @@ trait Admin
       using(_.from) { user =>
         if (isAllowed(user)) {
           reply(s"Total of ${redis.getAllUserIDs.getOrElse(Set()).size.toString.bold} users are " +
-                  s"subsribed",
+                  s"subscribed",
                 parseMode = ParseMode.Markdown)
 
           val s: StringBuilder = new StringBuilder()
