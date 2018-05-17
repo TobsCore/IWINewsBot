@@ -18,11 +18,14 @@ trait SafeSendMessage extends TelegramBot with Instances {
         case Failure(telegramException: TelegramApiException) =>
           telegramException.errorCode match {
             case 429 =>
-              logger.error(
+              logger.warn(
                 s"Received a 429 error [Too many requests] while trying to send message " +
                   s"to user with $chatID")
+              logger.info(
+                s"Retrying to send message again to user with id $chatID. Attempt: ${attempts + 1}");
+              trySendMessage(chatID, content, attempts + 1);
             case 403 =>
-              logger.error(
+              logger.warn(
                 s"Blocked by user: User with id $chatID has forbidden access, which " +
                   s"caused an error. The message could not be sent.")
               if (chatID.isChat) {
@@ -36,9 +39,10 @@ trait SafeSendMessage extends TelegramBot with Instances {
         case Failure(exception: Throwable) =>
           exception match {
             case BufferOverflowException(_) =>
-              logger.error(s"BufferOverflowException occured. Retry sending the message")
+              logger.warn(s"BufferOverflowException occured. Retry sending the message")
               Thread.sleep((2 seconds).toMillis)
-              logger.info(s"Retrying to send message again. Attempt: ${attempts + 1}");
+              logger.info(
+                s"Retrying to send message again to user with id $chatID. Attempt: ${attempts + 1}");
               trySendMessage(chatID, content, attempts + 1);
             case _ =>
               logger.error(
