@@ -7,9 +7,12 @@ import hska.iwi.telegramBot.service.{LocalDateTime, PriceConfig}
 
 case class MensaMoltke(name: String, mealGroups: Seq[MealGroup], status: String, date: String) {
 
-  def toString(daysInFuture: Int, priceConfig: PriceConfig): String = {
+  def toString(daysInFuture: Int,
+               priceConfig: PriceConfig,
+               foodAdditives: Seq[String] = Seq()): String = {
     val date = LocalDateTime.formatPrettyDateInFuture(daysInFuture)
-    val formattedMealGroups: String = formatMealGroups(mealGroups.sortBy(_.title), priceConfig)
+    val formattedMealGroups: String =
+      formatMealGroups(mealGroups.sortBy(_.title), priceConfig, foodAdditives)
 
     val config = priceConfig.toString
 
@@ -28,7 +31,9 @@ case class MensaMoltke(name: String, mealGroups: Seq[MealGroup], status: String,
     }
   }
 
-  private def formatMealGroups(mealGroups: Seq[MealGroup], priceConfig: PriceConfig): String = {
+  private def formatMealGroups(mealGroups: Seq[MealGroup],
+                               priceConfig: PriceConfig,
+                               foodAdditives: Seq[String] = Seq()): String = {
     val formattedGroups: StringBuilder = new StringBuilder()
     for (mealGroup <- mealGroups) {
       if (mealGroup.meals.isEmpty) {
@@ -37,10 +42,13 @@ case class MensaMoltke(name: String, mealGroups: Seq[MealGroup], status: String,
                                   |
                                   |""".stripMargin)
       } else {
-        val meals = formatMeals(mealGroup.meals.sortBy(_.priceStudent).reverse, priceConfig)
-        formattedGroups.append(s"""<b>${formatTitle(mealGroup.title)}</b>
-             |$meals
-             |""".stripMargin)
+        val meals =
+          formatMeals(mealGroup.meals.sortBy(_.priceStudent).reverse, priceConfig, foodAdditives)
+        if (!meals.isEmpty) {
+          formattedGroups.append(s"""<b>${formatTitle(mealGroup.title)}</b>
+                                    |$meals
+                                    |""".stripMargin)
+        }
       }
     }
     formattedGroups.toString
@@ -53,33 +61,43 @@ case class MensaMoltke(name: String, mealGroups: Seq[MealGroup], status: String,
     }
   }
 
-  private def formatMeals(meals: Seq[Meal], priceConfig: PriceConfig): String = {
+  private def formatMeals(meals: Seq[Meal],
+                          priceConfig: PriceConfig,
+                          foodAdditives: Seq[String] = Seq()): String = {
+
+    val formattedMeals: StringBuilder = new StringBuilder()
+    for (meal <- meals) {
+      if (foodAdditives.isEmpty) {
+        formattedMeals.append(
+          s"""${meal.name} <i>${getEmojis(meal)}</i> ${getCorrectPrice(meal, priceConfig)}
+             |""".stripMargin)
+      } else {
+        val ingredients = foodAdditives.toSet.intersect(meal.foodAdditiveNumbers.toSet)
+        for (ingredient <- ingredients) {
+          if (!ingredient.isEmpty) {
+            formattedMeals.append(
+              s"""${meal.name} <i>${getEmojis(meal)}</i> ${getCorrectPrice(meal, priceConfig)}
+                 |""".stripMargin)
+          }
+        }
+      }
+    }
+    formattedMeals.toString()
+  }
+
+  private def getCorrectPrice(meal: Meal, priceConfig: PriceConfig): String = {
     val locale = Locale.GERMAN
     val formatter = NumberFormat.getNumberInstance(locale)
     formatter.setMaximumFractionDigits(2)
     formatter.setMinimumFractionDigits(2)
-
-    val formattedMeals: StringBuilder = new StringBuilder()
-    if (priceConfig.configValue == "student") {
-      for (meal <- meals) {
-        formattedMeals.append(
-          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceStudent)}€
-               |""".stripMargin)
-      }
-    } else if (priceConfig.configValue == "employee") {
-      for (meal <- meals) {
-        formattedMeals.append(
-          s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(meal.priceEmployee)}€
-               |""".stripMargin)
-      }
-    } else {
-      for (meal <- meals) {
-        formattedMeals.append(s"""${meal.name} <i>${getEmojis(meal)}</i> ${formatter.format(
-                                   meal.priceStudent)}€ / ${formatter.format(meal.priceEmployee)}€
-                 |""".stripMargin)
-      }
+    val price = priceConfig.configValue match {
+      case "student"  => formatter.format(meal.priceStudent) + "€"
+      case "employee" => formatter.format(meal.priceEmployee) + "€"
+      case _ =>
+        Seq(meal.priceStudent, meal.priceEmployee)
+        s"${formatter.format(meal.priceStudent)}€ / ${formatter.format(meal.priceEmployee)}€"
     }
-    formattedMeals.toString
+    price
   }
 
   private def getEmojis(meal: Meal): String = {
