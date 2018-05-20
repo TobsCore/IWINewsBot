@@ -22,7 +22,7 @@ trait SafeSendMessage extends TelegramBot with Instances {
                 s"Received a 429 error [Too many requests] while trying to send message " +
                   s"to user with $chatID")
               logger.info(
-                s"Retrying to send message again to user with id $chatID. Attempt: ${attempts + 1}");
+                s"Retrying to send message again to user with id $chatID. Attempt: ${attempts + 1}")
               trySendMessage(chatID, content, attempts + 1);
             case 403 =>
               logger.warn(
@@ -42,7 +42,7 @@ trait SafeSendMessage extends TelegramBot with Instances {
               logger.warn(s"BufferOverflowException occured. Retry sending the message")
               Thread.sleep((2 seconds).toMillis)
               logger.info(
-                s"Retrying to send message again to user with id $chatID. Attempt: ${attempts + 1}");
+                s"Retrying to send message again to user with id $chatID. Attempt: ${attempts + 1}")
               trySendMessage(chatID, content, attempts + 1);
             case _ =>
               logger.error(

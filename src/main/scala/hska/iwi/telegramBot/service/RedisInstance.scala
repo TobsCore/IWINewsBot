@@ -13,7 +13,7 @@ import scala.collection.mutable
 
 class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
   override def setDefaultUserConfig(user: UserID): Boolean = {
-    setFacultyConfigForUser(user, true)
+    setFacultyConfigForUser(user, configValue = true)
     setUserConfig(user, Map(INFB -> true, MKIB -> true, INFM -> true))
   }
 
