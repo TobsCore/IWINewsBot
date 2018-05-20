@@ -16,7 +16,7 @@ trait Subscription extends Commands with Instances {
           if (redis.addUser(userID)) {
             reply(
               """Du erhältst ab jetzt alle Nachrichten des schwarzen Bretts und der Fakultät IWI an der HSKA.
-              |Um Deine Einstellungen anzupassen, wähle /abo aus.""".stripMargin)
+              |Um Deine Einstellungen anzupassen, wähle /settings aus.""".stripMargin)
             logger.info(s"${user.firstName} ${user.lastName.getOrElse("")} added to subscriptions.")
             logger.debug(s"$user is stored in Database")
 

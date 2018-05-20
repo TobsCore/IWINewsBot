@@ -124,8 +124,11 @@ trait Settings extends Commands with Callbacks with Instances {
         case Tagging.INFB        => saveAboSettings(INFB)
         case Tagging.INFM        => saveAboSettings(INFM)
         case Tagging.FACULTYNEWS => saveAboSettings(Faculty)
-        case Tagging.BACK        => (mainSettingsText(user), Some(mainSettingMarkup()))
+        case Tagging.BACK =>
+          ackCallback()
+          (mainSettingsText(user), Some(mainSettingMarkup()))
         case _ =>
+          ackCallback()
           logger.error("Unknown tag received in callback for Abo settings.")
           ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
       }
@@ -145,8 +148,11 @@ trait Settings extends Commands with Callbacks with Instances {
 
       val response: (String, Option[InlineKeyboardMarkup]) = if (tags.length != 2) {
         buttonData.get match {
-          case Tagging.BACK => (mainSettingsText(user), Some(mainSettingMarkup()))
+          case Tagging.BACK =>
+            ackCallback()
+            (mainSettingsText(user), Some(mainSettingMarkup()))
           case _ =>
+            ackCallback()
             logger.error(
               s"Unknown tag (${buttonData.get}) received in callback for semester settings.")
             ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
@@ -163,6 +169,7 @@ trait Settings extends Commands with Callbacks with Instances {
             redis.setStudySettingsForUser(user, study)
             (mainSettingsText(user), Some(mainSettingMarkup()))
           case _ =>
+            ackCallback()
             logger.error(
               s"Unknown tag (${buttonData.get}) received in callback for semester settings.")
             ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
@@ -187,8 +194,11 @@ trait Settings extends Commands with Callbacks with Instances {
           ackCallback(Some("Software-Engineering ausgewählt"))
           val studyID = Study.getID(INFM, Some(SoftwareEngineering))
           ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
-        case Tagging.BACK => (mainSettingsText(user), Some(mainSettingMarkup()))
+        case Tagging.BACK =>
+          ackCallback()
+          (mainSettingsText(user), Some(mainSettingMarkup()))
         case _ =>
+          ackCallback()
           logger.error("Unknown tag received in callback for Abo settings.")
           ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
       }

@@ -8,6 +8,8 @@ import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.ParseMode
 import info.mukel.telegrambot4s.models.{ChatId, User}
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 trait Admin
     extends Commands
@@ -43,7 +45,7 @@ trait Admin
       using(_.from) { user =>
         if (isAllowed(user)) {
           reply(s"Total of ${redis.getAllUserIDs.getOrElse(Set()).size.toString.bold} users are " +
-                  s"subsribed",
+                  s"subscribed",
                 parseMode = ParseMode.Markdown)
 
           val s: StringBuilder = new StringBuilder()
@@ -98,9 +100,12 @@ trait Admin
           } else {
             logger.debug(s"Message: $announcement")
 
-            redis.getAllUserIDs
+            val users = redis.getAllUserIDs
               .getOrElse(Set())
-              .foreach(userID => trySendMessage(ChatId(userID.id), announcement))
+            for (user <- users) {
+              trySendMessage(ChatId(user.id), announcement)
+              Thread.sleep((50 millis).toMillis)
+            }
           }
         } else {
           logger.warn(s"User $user tried to send announcement service, but is not an admin")
