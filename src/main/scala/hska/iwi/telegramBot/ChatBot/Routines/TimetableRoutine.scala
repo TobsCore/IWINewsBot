@@ -5,7 +5,6 @@ import com.rivescript.`macro`.Subroutine
 import hska.iwi.telegramBot.news.Specialisation
 import hska.iwi.telegramBot.service._
 import hska.iwi.telegramBot.timetable.TimetableEntry
-import jdk.nashorn.internal.runtime.Specialization
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
