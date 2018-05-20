@@ -1,5 +1,7 @@
 package hska.iwi.telegramBot.service
 
+import java.net.ConnectException
+
 import com.redis.RedisClient
 import com.redis.serialization.Parse.Implicits._
 import com.typesafe.scalalogging.Logger
@@ -10,6 +12,7 @@ import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
 
 import scala.collection.mutable
+import scala.util.Try
 
 class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
   override def setDefaultUserConfig(user: UserID): Boolean = {
@@ -184,6 +187,6 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
 
 object RedisInstance {
 
-  def default: RedisInstance =
-    new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
+  def default: Try[RedisInstance] =
+    Try(new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort)))
 }
