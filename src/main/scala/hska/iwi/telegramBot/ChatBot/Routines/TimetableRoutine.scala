@@ -1,14 +1,13 @@
 package hska.iwi.telegramBot.ChatBot.Routines
 
 import com.rivescript.RiveScript
-import com.rivescript.`macro`.Subroutine
 import hska.iwi.telegramBot.news.Specialisation
 import hska.iwi.telegramBot.service._
 import hska.iwi.telegramBot.timetable.TimetableEntry
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
-class TimetableRoutine extends Subroutine with Instances {
+class TimetableRoutine extends CustomSubroutine with Instances {
 
   implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 

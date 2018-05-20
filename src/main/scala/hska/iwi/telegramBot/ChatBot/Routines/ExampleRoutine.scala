@@ -1,9 +1,8 @@
 package hska.iwi.telegramBot.ChatBot.Routines
 
 import com.rivescript.RiveScript
-import com.rivescript.`macro`.Subroutine
 
-class ExampleRoutine extends Subroutine {
+class ExampleRoutine extends CustomSubroutine {
 
   override def call(rs: RiveScript, args: Array[String]): String = {
     args.headOption match {

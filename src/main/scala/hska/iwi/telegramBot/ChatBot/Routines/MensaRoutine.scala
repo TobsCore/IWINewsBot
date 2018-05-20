@@ -1,16 +1,12 @@
 package hska.iwi.telegramBot.ChatBot.Routines
 
 import com.rivescript.RiveScript
-import com.rivescript.`macro`.Subroutine
 import hska.iwi.telegramBot.mensa.MensaMoltke
 import hska.iwi.telegramBot.service._
-import info.mukel.telegrambot4s.api.TelegramBot
-import info.mukel.telegrambot4s.api.declarative.Commands
-import info.mukel.telegrambot4s.models.{Chat, ChatType, Message}
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 
-class MensaRoutine extends Subroutine with Instances {
+class MensaRoutine extends CustomSubroutine with Instances {
 
   implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 

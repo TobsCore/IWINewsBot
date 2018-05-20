@@ -1,8 +1,6 @@
 package hska.iwi.telegramBot.ChatBot.Routines
 
 import com.rivescript.RiveScript
-import com.rivescript.`macro`.Subroutine
-import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.ChatBot.Marker.ChatBotMarker
 
 /**
@@ -10,8 +8,7 @@ import hska.iwi.telegramBot.ChatBot.Marker.ChatBotMarker
   * does support the star operator, which maps to anything, but in order to log requests
   * correctly, this routine is used.
   */
-class NoComprendoRoutine extends Subroutine {
-  val logger = Logger(getClass)
+class NoComprendoRoutine extends CustomSubroutine {
 
   val responses = List(
     "Das habe ich leider nicht verstanden.",
