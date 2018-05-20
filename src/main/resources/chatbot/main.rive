@@ -18,15 +18,13 @@
 + was (gibt|gab) es * in der mensa?
 - <call>mensa <star2></call>
 
-
-
 + hallo bot
 - Hallo, Mensch! 🙈
 
 + hallo [*]
 - Hallo selber!
 
-+ wie geht es dir?
++ wie geht es dir [so|heute|denn]?
 - Es ist in Ordnung, danke der Nachfrage.
 - Meh.
 - Hör mir auf! 🙈
@@ -55,8 +53,3 @@
 
 + *
 - <call>no-comprendo</call>
-
-// Substitutions
-! sub zum      = zu dem
-! sub gibt's   = gibt es
-! sub geht's   = geht es
