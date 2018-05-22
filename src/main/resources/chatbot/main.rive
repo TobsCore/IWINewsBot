@@ -12,11 +12,17 @@
 + was ist mein stundeplan?
 - <call>timetable</call>
 
-+ [*] mensa [*]
-- <call>mensa</call>
+//+ [*] stundenplan [*]
+//- <call>timetable</call>
 
-+ was (gibt|gab) es * in der mensa?
-- <call>mensa <star2></call>
+//+ [*] (mensa|essen) [*]
+//- <call>mensa</call>
+
++ was (gibt|gab) es _ * [in der mensa]?
+- <call>mensa <star2> <star3></call>
+
+//+ [*] (@food) [*]
+//- <call>mensa <star></call>
 
 + hallo bot
 - Hallo, Mensch! 🙈
@@ -45,11 +51,9 @@
 - Sonnig mit Aussicht auf Fleischbällchen.
 - LMGTFY...Nee, nicht mein Job.
 
-+ beispiel
-- Ich kenne die Parameter: {param} und {id}
-
-+ beispiel *
-- <call>example <star></call>
-
 + *
 - <call>no-comprendo</call>
+
+! array food = beef|pork|vegetarisches|veganes|vegetarisch|vegan|rind|schwein|fisch|mit rind|mit schwein|mit fleisch|mit fisch|mit meerestieren|mit weichtieren|fleischlos|mit tierischen produkten|ohne tierische produkte|ohne fleisch
+! array days = montag|dienstag|mittwoch|donnerstag|freitag|samstag
+! array daySynonym = morgen|übermorgen|gestern|vorgestern|heute

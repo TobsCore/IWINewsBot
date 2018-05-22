@@ -4,6 +4,7 @@ import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.service.HTTPGet
 import org.json4s.jackson.JsonMethods
 import org.json4s.{DefaultFormats, _}
+import com.typesafe.scalalogging.Logger
 
 case class FeedReader(address: String) {
   private implicit val jsonDefaultFormats: DefaultFormats.type = DefaultFormats
