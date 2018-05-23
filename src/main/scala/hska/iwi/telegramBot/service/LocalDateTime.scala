@@ -13,6 +13,11 @@ object LocalDateTime {
     format.format(Calendar.getInstance().getTime)
   }
 
+  def getCurrentTime: String = {
+    val format = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss")
+    format.format(Calendar.getInstance().getTime)
+  }
+
   def getDateInFuture(daysInFuture: Int): String = {
     daysInFuture match {
       case 0 => getCurrentDate

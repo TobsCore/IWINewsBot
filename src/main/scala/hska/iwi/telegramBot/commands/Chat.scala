@@ -16,6 +16,7 @@ import com.google.cloud.speech.v1.{
 import com.google.protobuf.ByteString
 import hska.iwi.telegramBot.ChatBot.ChatBot
 import hska.iwi.telegramBot.ChatBot.Marker.ChatBotMarker
+import hska.iwi.telegramBot.service.LocalDateTime
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{GetFile, ParseMode}
@@ -53,8 +54,9 @@ trait Chat extends Commands {
                   if res.status.isSuccess()
                   bytes <- Unmarshal(res).to[akka.util.ByteString]
                 } /* do */ {
+                  val user = msg.from.get.id
                   val dirName = "./voices"
-                  val fileName = s"$dirName/voice${voice.fileId}.oga"
+                  val fileName = s"$dirName/voice_${user}_${LocalDateTime.getCurrentTime}.oga"
                   // Create directory, if it doesn't exist already
                   val directory = new File(dirName)
                   if (!directory.exists) {
