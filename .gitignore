@@ -1,6 +1,9 @@
 ### Contains the authorization token ###
 bot.token
 
+# Voice file folder
+voices/
+
 ### Scala ###
 *.class
 *.log

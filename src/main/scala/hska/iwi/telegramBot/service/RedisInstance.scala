@@ -191,7 +191,7 @@ object RedisInstance {
     } catch {
       case _: Throwable =>
         logger.error("Couldn't find running Redis instance. Bot will exit now...")
-        System.exit(0)
+        System.exit(1)
         null
     }
 
