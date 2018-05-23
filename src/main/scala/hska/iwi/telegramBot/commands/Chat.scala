@@ -1,6 +1,6 @@
 package hska.iwi.telegramBot.commands
 
-import java.io.FileOutputStream
+import java.io.{File, FileOutputStream}
 import java.nio.file.{Files, Paths}
 
 import akka.http.scaladsl.Http
@@ -13,11 +13,13 @@ import hska.iwi.telegramBot.ChatBot.ChatBot
 import hska.iwi.telegramBot.ChatBot.Marker.ChatBotMarker
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
-import info.mukel.telegrambot4s.methods.ParseMode
-import info.mukel.telegrambot4s.methods.GetFile
+import info.mukel.telegrambot4s.methods.{GetFile, ParseMode}
+import org.gagravarr.ogg.OggFile
+import org.gagravarr.opus.OpusFile
+import org.gagravarr.opus.tools.OpusInfoTool
 
-import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConverters._
+import scala.util.{Failure, Success, Try}
 
 trait Chat extends Commands {
   _: TelegramBot =>
@@ -52,14 +54,20 @@ trait Chat extends Commands {
                   if res.status.isSuccess()
                   bytes <- Unmarshal(res).to[akka.util.ByteString]
                 } /* do */ {
-                  new FileOutputStream(s"./Voice${voice.fileId}.ogg").write(bytes.toArray)
+                  val fileName = s"./Voice${voice.fileId}.ogg"
+                  val stream = new FileOutputStream(fileName)
+                  stream.write(bytes.toArray)
+                  val opusFile = new OpusFile(new File(fileName))
                   logger.debug(s"Datei mit ${bytes.size} Bytes erhalten.")
                   reply(
-                    "<i>Der Text wird aus der Sprachdatei extrahiert. Dies kann einige Momente dauern...</i>",
+                    "<i>Der Text wird aus der Sprachdatei extrahiert. Dies kann einige Momente " +
+                      "dauern...</i>",
                     parseMode = Some(ParseMode.HTML))
                   val encoding = voice.mimeType
                   logger.debug(s"File URL: $url")
+                  logger.debug(s"File: $fileName")
                   logger.debug(s"Mime-Type: $encoding")
+                  logger.debug(s"File Info: ${opusFile.getInfo}")
 
                   Try(SpeechClient.create()) match {
                     case Failure(exception) =>
@@ -67,8 +75,6 @@ trait Chat extends Commands {
                       logger.debug(exception.getMessage)
                     case Success(speechClient: SpeechClient) =>
                       logger.info("Successfully created speech client")
-                      // The path to the audio file to transcribe
-                      val fileName = s"./Voice${voice.fileId}.ogg"
 
                       // Reads the audio file into memory
                       val path = Paths.get(fileName)
@@ -79,7 +85,7 @@ trait Chat extends Commands {
                       val config = RecognitionConfig
                         .newBuilder()
                         .setEncoding(AudioEncoding.OGG_OPUS)
-                        .setSampleRateHertz(48000)
+                        .setSampleRateHertz(opusFile.getInfo.getRate.toInt)
                         .setLanguageCode("de-De")
                         .build()
                       val audio = RecognitionAudio
@@ -87,27 +93,42 @@ trait Chat extends Commands {
                         .setContent(audioBytes)
                         .build()
 
-                      val response = speechClient.recognize(config, audio)
-                      val results = response.getResultsList.asScala
-                      results.foreach { result =>
-                        // There can be several alternative transcripts for a given chunk of speech. Just use the
-                        // first (most likely) one here.
-                        val alternative = result.getAlternativesList.asScala.headOption
-                        if (alternative.isDefined) {
-                          val input = alternative.get.getTranscript
-                          logger.debug(s"Voice File: $fileName")
-                          logger.info(s"Voice Transcription: $input")
+                      logger.debug(s"Voice File: $fileName")
+                      logger.debug("Recognizing speech from input")
+                      val response =
+                        speechClient.recognize(config, audio).getResultsList.asScala.toList
+                      response match {
+                        case Nil =>
+                          logger.debug("Speech couldn't get recognized.")
+                          reply(
+                            "Es konnte kein Text erkannt werden. Höre dir Deine Sprachnachricht " +
+                              "doch einmal an, vielleicht ist dein Mikrofon verdeckt gewesen.")
+                        case list =>
+                          // There can be several alternative transcripts for a given chunk of
+                          // speech. Just use the
+                          // first (most likely) one here.
+                          list.head.getAlternativesList.asScala.headOption match {
+                            case Some(alternative) =>
+                              val input = alternative.getTranscript
+                              logger.info(s"Voice Transcription: $input")
 
-                          val user = msg.from.get.id
-                          reply(s"Ich habe verstanden: <i>$input</i>",
-                                parseMode = Some(ParseMode.HTML))
-                          logger.info(ChatBotMarker(), s"Voice Command! - File $fileName")
-                          logger.info(ChatBotMarker(), s"Input: [$input] by [$user]")
-                          val replyMessage =
-                            Chat.chatBot.reply(user.toString, input)
-                          logger.info(ChatBotMarker(), s"Output: [$replyMessage]")
-                          reply(replyMessage, parseMode = Some(ParseMode.HTML))
-                        }
+                              val user = msg.from.get.id
+                              reply(s"Ich habe verstanden: <i>$input</i>",
+                                    parseMode = Some(ParseMode.HTML))
+                              logger.info(ChatBotMarker(), s"Voice Command! - File $fileName")
+                              logger.info(ChatBotMarker(), s"Input: [$input] by [$user]")
+                              val replyMessage =
+                                Chat.chatBot.reply(user.toString, input)
+                              logger.info(ChatBotMarker(), s"Output: [$replyMessage]")
+                              reply(replyMessage, parseMode = Some(ParseMode.HTML))
+                            case None =>
+                              logger.debug("Speech couldn't get recognized.")
+                              reply(
+                                "Es konnte kein Text erkannt werden. Höre dir Deine " +
+                                  "Sprachnachricht doch einmal an, vielleicht ist dein Mikrofon " +
+                                  "verdeckt gewesen.")
+                          }
+
                       }
                   }
                 }
