@@ -19,11 +19,12 @@ import hska.iwi.telegramBot.ChatBot.Marker.ChatBotMarker
 import hska.iwi.telegramBot.service.{Instances, LocalDateTime}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
-import info.mukel.telegrambot4s.methods.{GetFile, ParseMode}
-import info.mukel.telegrambot4s.models.Message
+import info.mukel.telegrambot4s.methods.{DeleteMessage, EditMessageText, GetFile, ParseMode}
+import info.mukel.telegrambot4s.models.{ChatId, Message}
 import org.gagravarr.opus.OpusFile
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
@@ -73,10 +74,8 @@ trait Chat extends Commands with Instances {
                   stream.write(bytes.toArray)
 
                   logger.debug(s"Datei mit ${bytes.size} Bytes erhalten.")
-                  reply(
-                    "<i>Der Text wird aus der Sprachdatei extrahiert. Dies kann einige Momente " +
-                      "dauern...</i>",
-                    parseMode = Some(ParseMode.HTML))
+                  val waitInformMessage: Future[Message] =
+                    reply("<i>Wird verarbeitet...</i>", parseMode = Some(ParseMode.HTML))
                   logger.debug(s"File URL: $url")
                   logger.debug(s"File: $fileName")
                   logger.debug(s"Mime-Type: ${voice.mimeType}")
@@ -86,6 +85,7 @@ trait Chat extends Commands with Instances {
                     case Failure(exception) =>
                       logger.warn("Couldn't instatiate speech client.")
                       logger.debug(exception.getMessage)
+                      reply("Etwas ist auf der Server-Seite schief gegangen ☠️")
                     case Success(_: SpeechClient) =>
                       logger.debug(s"Voice File: $fileName")
                       logger.debug("Recognizing speech from input")
@@ -94,6 +94,14 @@ trait Chat extends Commands with Instances {
                       response match {
                         case Nil =>
                           logger.debug("No response.")
+                          waitInformMessage.onComplete {
+                            case Success(message) =>
+                              request(
+                                DeleteMessage(chatId = ChatId(message.chat.id),
+                                              messageId = message.messageId))
+                            case _ =>
+                              logger.warn("Couldn't delete message")
+                          }
                           reply(
                             "Es konnte kein Text erkannt werden. Höre dir Deine Sprachnachricht " +
                               "doch noch einmal an, vielleicht ist dein Mikrofon verdeckt gewesen.")
@@ -111,10 +119,20 @@ trait Chat extends Commands with Instances {
                               // In thise case the voice text could be transcribed. This will
                               // trigger the chatbot and log some information.
                               val input = alternative.getTranscript
+
+                              waitInformMessage.onComplete {
+                                case Success(message) =>
+                                  request(
+                                    EditMessageText(chatId = Some(ChatId(message.chat.id)),
+                                                    messageId = Some(message.messageId),
+                                                    text = s"Ich habe verstanden: <i>$input</i>",
+                                                    parseMode = Some(ParseMode.HTML)))
+                                case _ =>
+                                  logger.warn("Couldn't edit message")
+                              }
                               logger.info(s"Voice Transcription: $input")
-                              reply(s"Ich habe verstanden: <i>$input</i>",
-                                    parseMode = Some(ParseMode.HTML))
                               logger.info(ChatBotMarker(), s"Voice Command! - File $fileName")
+
                               chatbotAnswer(input)
                           }
 
