@@ -35,6 +35,9 @@ libraryDependencies += "com.rivescript" % "rivescript-core" % "0.10.0"
 // Caching Library
 libraryDependencies += "com.github.blemale" %% "scaffeine" % "2.5.0"
 
+// Google Speech-to-Text
+libraryDependencies += "com.google.cloud" % "google-cloud-speech" % "0.48.0-alpha"
+
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt

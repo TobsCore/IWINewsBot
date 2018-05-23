@@ -3,6 +3,7 @@
 <configuration>
 
     <logger name="com.redis.RedisClient" level="OFF"/>
+    <logger name="io.grpc.netty.shaded.io" level="OFF"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -45,7 +46,7 @@
             <onMatch>DENY</onMatch>
         </filter>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>DEBUG</level>
         </filter>
         <!-- encoders are  by default assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder -->

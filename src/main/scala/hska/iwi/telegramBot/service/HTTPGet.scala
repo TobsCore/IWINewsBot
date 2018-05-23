@@ -2,6 +2,7 @@ package hska.iwi.telegramBot.service
 
 import java.net.{HttpURLConnection, URL}
 import java.nio.charset.{Charset, CodingErrorAction}
+import scala.io.Source
 
 import com.github.blemale.scaffeine.{Cache, Scaffeine}
 import com.typesafe.scalalogging.Logger
@@ -32,7 +33,7 @@ object HTTPGet {
       connection.setReadTimeout(readTimeout)
       connection.setRequestMethod(requestMethod)
       val inputStream = connection.getInputStream
-      val content = io.Source.fromInputStream(inputStream)(decoder).mkString
+      val content = Source.fromInputStream(inputStream)(decoder).mkString
       if (inputStream != null) inputStream.close()
       Some(content)
     } catch {
