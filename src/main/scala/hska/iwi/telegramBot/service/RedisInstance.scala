@@ -8,8 +8,10 @@ import hska.iwi.telegramBot.service.Implicits._
 import hska.iwi.telegramBot.study.Study
 import info.mukel.telegrambot4s.models.User
 import org.json4s.jackson.Serialization.write
+import scala.concurrent.duration._
 
 import scala.collection.mutable
+import scala.concurrent.duration.FiniteDuration
 
 class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSerialization {
   override def setDefaultUserConfig(user: UserID): Boolean = {
@@ -179,6 +181,16 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
     } else {
       None
     }
+  }
+
+  override def getQuotaForToday: FiniteDuration = {
+    val currentDay = LocalDateTime.getCurrentDate
+    redis.get[Int](s"quota:$currentDay").getOrElse(0).seconds
+  }
+
+  override def addToQuota(seconds: FiniteDuration): Unit = {
+    val currentDay = LocalDateTime.getCurrentDate
+    redis.incrby(s"quota:$currentDay", seconds.toSeconds)
   }
 }
 

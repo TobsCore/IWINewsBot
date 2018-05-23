@@ -28,6 +28,7 @@ trait Admin
             |/list - Lists all subscribed users
             |/subs - Lists all users for subscribed information channels (MKIB, etc.)
             |/userconfig userID - Gets the userID's configuration
+            |/quota - Prints the used up quota for the day.
             |/announce - Send announcement to all users
             |
             |/shutdown - Shuts down bot
@@ -153,6 +154,20 @@ trait Admin
       } else {
         reply("Cannot check subscriptions - This is an Admin feature")
         logger.warn(s"User $user tried to check all subscriptions")
+      }
+    }
+  }
+
+  onCommand("/quota") { implicit msg =>
+    using(_.from) { user: User =>
+      if (isAllowed(user)) {
+        val quota: Duration = redis.getQuotaForToday
+        val minutes = quota.toMinutes.minutes
+        val seconds = quota - minutes
+        reply(s"Quota: <b>$minutes, $seconds</b> used up.", parseMode = Some(ParseMode.HTML))
+      } else {
+        reply("Cannot check quota - This is an Admin feature")
+        logger.warn(s"User $user tried to check quota")
       }
     }
   }

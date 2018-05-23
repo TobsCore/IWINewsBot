@@ -4,6 +4,8 @@ import hska.iwi.telegramBot.news.{Course, Entry, FacultyNews}
 import hska.iwi.telegramBot.study.Study
 import info.mukel.telegrambot4s.models.User
 
+import scala.concurrent.duration.FiniteDuration
+
 trait DBConnection {
 
   /**
@@ -233,5 +235,21 @@ trait DBConnection {
     *         settings stored, {{{None}}} is returned.
     */
   def getStudySettingsForUser(user: UserID): Option[Study]
+
+  /**
+    * Returns the quoto of the current day. This is the overall quota, which is used to determine
+    * that the google service is not charged. If no quota has been set for this day, the duration is equal to 0 seconds.
+    *
+    * @return The quota of the day. This is returned as a duration, as this datatype is better
+    *         suited for the given task.
+    */
+  def getQuotaForToday: FiniteDuration
+
+  /**
+    * Adds amount of time to quota. Usually this is seconds. If no quota has been set for the day, it will be initialized with 0.
+    *
+    * @param time The time that is added to to current's day quota.
+    */
+  def addToQuota(time: FiniteDuration): Unit
 
 }

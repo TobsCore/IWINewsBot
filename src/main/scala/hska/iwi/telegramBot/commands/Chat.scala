@@ -16,7 +16,7 @@ import com.google.cloud.speech.v1.{
 import com.google.protobuf.ByteString
 import hska.iwi.telegramBot.ChatBot.ChatBot
 import hska.iwi.telegramBot.ChatBot.Marker.ChatBotMarker
-import hska.iwi.telegramBot.service.LocalDateTime
+import hska.iwi.telegramBot.service.{Instances, LocalDateTime}
 import info.mukel.telegrambot4s.api.TelegramBot
 import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.{GetFile, ParseMode}
@@ -24,9 +24,11 @@ import info.mukel.telegrambot4s.models.Message
 import org.gagravarr.opus.OpusFile
 
 import scala.collection.JavaConverters._
+import scala.concurrent.duration._
+import scala.language.postfixOps
 import scala.util.{Failure, Success, Try}
 
-trait Chat extends Commands {
+trait Chat extends Commands with Instances {
   _: TelegramBot =>
 
   private val speechClient: Try[SpeechClient] = Try(SpeechClient.create())
@@ -43,6 +45,11 @@ trait Chat extends Commands {
     using(_.voice) { voice =>
       if (voice.duration > 7) {
         reply("Die Sprachnachricht darf nicht länger als 7 Sekunden sein.")
+      } else if (redis.getQuotaForToday >= (1 hour)) {
+        logger.warn("Quota limit reached.")
+        reply(
+          "Es können keine weiteren Sprach-Nachrichten mehr empfangen werden, da die Quota an " +
+            "Transkriptionen ausgeschöpft ist. Versuche es morgen wieder.")
       } else {
         request(GetFile(voice.fileId)).onComplete {
           case Success(file) =>
@@ -73,6 +80,7 @@ trait Chat extends Commands {
                   logger.debug(s"File URL: $url")
                   logger.debug(s"File: $fileName")
                   logger.debug(s"Mime-Type: ${voice.mimeType}")
+                  logger.debug(s"Duration: ${voice.duration seconds}")
 
                   speechClient match {
                     case Failure(exception) =>
@@ -81,6 +89,7 @@ trait Chat extends Commands {
                     case Success(_: SpeechClient) =>
                       logger.debug(s"Voice File: $fileName")
                       logger.debug("Recognizing speech from input")
+                      redis.addToQuota(voice.duration seconds)
                       val response = recognizeInput(fileName)
                       response match {
                         case Nil =>
