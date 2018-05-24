@@ -1,28 +1,46 @@
 ! version = 2.0
 
-+ welche (vorlesung|vorlesungen|veranstaltung|veranstaltungen) habe ich *?
++ welche (@lectures) habe ich *?
 - <call>timetable <star2></call>
 
-+ welche (vorlesung|vorlesungen|veranstaltung|veranstaltungen) habe ich?
++ welche (@lectures) habe ich?
 - <call>timetable</call>
 
-+ wie sieht mein (tag|stundenplan) aus?
++ (wie sieht|was ist) mein stundenplan [aus]?
 - <call>timetable</call>
 
-+ was ist mein stundeplan?
-- <call>timetable</call>
++ wie sieht mein tag aus?
+- <call>timetable heute</call>
 
-//+ [*] stundenplan [*]
-//- <call>timetable</call>
++ was habe ich * ?
+- <call>timetable <star></call>
 
-//+ [*] (mensa|essen) [*]
-//- <call>mensa</call>
++ was gibt es * für (@lectures)?
+- <call>timetable <star1></call>
 
-+ was (gibt|gab) es _ * [in der mensa]?
++ was (gibt|gab) es (in der mensa|zu essen)?
+- <call>mensa</call>
+
++ was (gibt|gab) es _ * [in der mensa|zu essen]?
 - <call>mensa <star2> <star3></call>
 
-//+ [*] (@food) [*]
-//- <call>mensa <star></call>
++ welche * gerichte (gibt|gab) es [in der mensa|zu essen]?
+- <call>mensa <star1></call>
+
++ welche * gerichte (gibt|gab) es _ [in der mensa|zu essen]?
+- <call>mensa <star1> <star3></call>
+
++ welche gerichte * (gibt|gab) es _ [in der mensa|zu essen]?
+- <call>mensa <star1> <star3></call>
+
++ welche gerichte * (gibt|gab) es [in der mensa|zu essen]?
+- <call>mensa <star1></call>
+
++ welche gerichte (sind|waren) * [in der mensa|zu essen]?
+- <call>mensa <star2></call>
+
++ welche gerichte (gibt|gab) es * [in der mensa|zu essen]?
+- <call>mensa <star2></call>
 
 + hallo bot
 - Hallo, Mensch! 🙈
@@ -57,3 +75,4 @@
 ! array food = beef|pork|vegetarisches|veganes|vegetarisch|vegan|rind|schwein|fisch|mit rind|mit schwein|mit fleisch|mit fisch|mit meerestieren|mit weichtieren|fleischlos|mit tierischen produkten|ohne tierische produkte|ohne fleisch
 ! array days = montag|dienstag|mittwoch|donnerstag|freitag|samstag
 ! array daySynonym = morgen|übermorgen|gestern|vorgestern|heute
+! array lectures = vorlesung|vorlesungen|veranstaltung|veranstaltungen
