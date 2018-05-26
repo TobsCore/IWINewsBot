@@ -28,4 +28,5 @@ class ChatBot extends RiveScript(Config.utf8()) {
   setSubroutine("example", new Routines.ExampleRoutine)
   setSubroutine("timetable", new Routines.TimetableRoutine)
   setSubroutine("mensa", new Routines.MensaRoutine)
+  setSubroutine("profs", new Routines.ProfsRoutine)
 }

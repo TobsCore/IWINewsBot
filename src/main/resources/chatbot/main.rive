@@ -42,6 +42,22 @@
 + welche gerichte (gibt|gab) es * [in der mensa|zu essen]?
 - <call>mensa <star2></call>
 
++ wie lautet die email von (herr|frau) *?
+- <call>profs <star2></call>
+
++ wann hat (herr|frau|professor) * sprechstunde?
+- <call>profs <star2></call>
+
++ [*] (herr|frau|professor) * [*]
+- <call>profs <star2></call>
+
++ kannst du mir etwas zu den professoren sagen?
+- Zu welchem Professor möchtest du etwas wissen? Gib bitte seinen Namen mit Anrede ein.
+
++ (herr|frau|professor) *
+% zu welchem professor möchtest du etwas wissen gib bitte seinen namen mit anrede ein
+- <call>profs <star2></call>
+
 + hallo bot
 - Hallo, Mensch! 🙈
 
@@ -68,6 +84,9 @@
 - Sehe ich aus wie ein meteorologisches Programm?!
 - Sonnig mit Aussicht auf Fleischbällchen.
 - LMGTFY...Nee, nicht mein Job.
+
++ google *
+- Google search: <a href="http://google.com/search?q=<star>">Click Here</a>
 
 + *
 - <call>no-comprendo</call>
