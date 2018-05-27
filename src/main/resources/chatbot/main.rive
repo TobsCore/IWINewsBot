@@ -1,6 +1,7 @@
 ! version = 2.0
 
-+ welche (@lectures) habe ich *?
+//timetable
++ welche (@lectures) habe ich [am] *?
 - <call>timetable <star2></call>
 
 + welche (@lectures) habe ich?
@@ -12,12 +13,14 @@
 + wie sieht mein tag aus?
 - <call>timetable heute</call>
 
-+ was habe ich * ?
++ was habe ich [am] _ [für @lectures]?
 - <call>timetable <star></call>
 
-+ was gibt es * für (@lectures)?
-- <call>timetable <star1></call>
++ was steht [am] _ an?
+- <call>timetable <star></call>
 
+
+//mensa
 + was (gibt|gab) es (in der mensa|zu essen)?
 - <call>mensa</call>
 
@@ -42,6 +45,8 @@
 + welche gerichte (gibt|gab) es * [in der mensa|zu essen]?
 - <call>mensa <star2></call>
 
+
+//profs
 + wie lautet die email von (herr|frau) *?
 - <call>profs <star2></call>
 
@@ -58,6 +63,8 @@
 % zu welchem professor möchtest du etwas wissen gib bitte seinen namen mit anrede ein
 - <call>profs <star2></call>
 
+
+//fun
 + hallo bot
 - Hallo, Mensch! 🙈
 
@@ -88,6 +95,8 @@
 + google *
 - Google search: <a href="http://google.com/search?q=<star>">Click Here</a>
 
+
+//general
 + *
 - <call>no-comprendo</call>
 

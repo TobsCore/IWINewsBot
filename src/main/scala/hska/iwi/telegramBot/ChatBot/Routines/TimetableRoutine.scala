@@ -12,6 +12,7 @@ class TimetableRoutine extends CustomSubroutine with Instances {
   implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
 
   override def call(rs: RiveScript, args: Array[String]): String = {
+    args.foreach(arg => logger.debug("Parameter bei TimetableRoutine" + arg))
     args.headOption match {
       case Some(param) => runWithParam(param, rs)
       case _           => requestTimetable(0, rs)
@@ -20,6 +21,7 @@ class TimetableRoutine extends CustomSubroutine with Instances {
 
   private def runWithParam(param: String, rs: RiveScript): String = param.toLowerCase() match {
     case "morgen"                     => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(1), rs)
+    case "übermorgen"                 => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(2), rs)
     case "heute"                      => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(0), rs)
     case "montags" | "montag"         => requestTimetable(1, rs)
     case "dienstags" | "dienstag"     => requestTimetable(2, rs)
