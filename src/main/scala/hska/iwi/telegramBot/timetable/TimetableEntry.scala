@@ -13,11 +13,17 @@ case class TimetableEntry(courseOfStudies: String,
   val logger = Logger(getClass)
   override def toString: String = {
     val timetablesFormatted = singleDayEntriesFormatted(timetables)
-
-    s"""
-       |<b>Stundenplan</b>
-       |$timetablesFormatted
+    if (timetablesFormatted.isEmpty) {
+      s"""
+         |<b>Stundenplan</b>
+         |An diesem Tag sind keine Veranstaltungen eingetragen.
      """.stripMargin
+    } else {
+      s"""
+         |<b>Stundenplan</b>
+         |$timetablesFormatted
+     """.stripMargin
+    }
 
   }
 
