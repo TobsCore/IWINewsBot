@@ -15,52 +15,59 @@ class MensaRoutine extends CustomSubroutine with Instances {
     val concatStringMit = concatExpressions(args, "mit")
     val concatStringOhne = concatExpressions(args, "ohne")
     val day = args.filter(arg => DaySynonyms.AllDays.contains(arg))
+    
     day.foreach(d => logger.debug("Days: " + d))
     args.foreach(arg => logger.debug("Args: " + arg))
 
-    val foodAdditives: Seq[String] = args.length match {
-      case 0 => Seq()
-      case 1 =>
-        if (concatStringMit.isDefined) {
-          logger.debug("concatMit: " + concatStringMit.get)
-          getFoodAdditivesSeqByName(concatStringMit.get)
-        } else if (concatStringOhne.isDefined) {
-          logger.debug("concatOhne: " + concatStringOhne.get)
-          getFoodAdditivesSeqByName(concatStringOhne.get)
-        } else {
-          getFoodAdditivesSeqByName(args(0))
-        }
-      case 2 =>
-        if (concatStringMit.isDefined) {
-          logger.debug("concatMit: " + concatStringMit.get)
-          getFoodAdditivesSeqByName(concatStringMit.get)
-        } else if (concatStringOhne.isDefined) {
-          logger.debug("concatOhne: " + concatStringOhne.get)
-          getFoodAdditivesSeqByName(concatStringOhne.get)
-        } else {
-          if (DaySynonyms.AllDays.contains(args(0))) {
-            getFoodAdditivesSeqByName(args(1))
+    val containsAnd = splitExpressions(args, "und")
+
+    val foodAdditives = if (containsAnd.isDefined) {
+      getFoodAdditivesUnionWithAnd(containsAnd.get(0), containsAnd.get(1))
+    } else {
+
+      args.length match {
+        case 0 => Seq()
+        case 1 =>
+          if (concatStringMit.isDefined) {
+            logger.debug("concatMit: " + concatStringMit.get)
+            getFoodAdditivesSeqByName(concatStringMit.get)
+          } else if (concatStringOhne.isDefined) {
+            logger.debug("concatOhne: " + concatStringOhne.get)
+            getFoodAdditivesSeqByName(concatStringOhne.get)
           } else {
             getFoodAdditivesSeqByName(args(0))
           }
-        }
-      case _ =>
-        if (concatStringMit.isDefined) {
-          logger.debug("concatMit: " + concatStringMit.get)
-          getFoodAdditivesSeqByName(concatStringMit.get)
-        } else if (concatStringOhne.isDefined) {
-          logger.debug("concatOhne: " + concatStringOhne.get)
-          getFoodAdditivesSeqByName(concatStringOhne.get)
-        } else {
-          getFoodAdditivesSeqByName(args.head)
-        }
+        case 2 =>
+          if (concatStringMit.isDefined) {
+            logger.debug("concatMit: " + concatStringMit.get)
+            getFoodAdditivesSeqByName(concatStringMit.get)
+          } else if (concatStringOhne.isDefined) {
+            logger.debug("concatOhne: " + concatStringOhne.get)
+            getFoodAdditivesSeqByName(concatStringOhne.get)
+          } else {
+            if (DaySynonyms.AllDays.contains(args(0))) {
+              getFoodAdditivesSeqByName(args(1))
+            } else {
+              getFoodAdditivesSeqByName(args(0))
+            }
+          }
+        case _ =>
+          if (concatStringMit.isDefined) {
+            logger.debug("concatMit: " + concatStringMit.get)
+            getFoodAdditivesSeqByName(concatStringMit.get)
+          } else if (concatStringOhne.isDefined) {
+            logger.debug("concatOhne: " + concatStringOhne.get)
+            getFoodAdditivesSeqByName(concatStringOhne.get)
+          } else {
+            getFoodAdditivesSeqByName(args.head)
+          }
+      }
     }
-
     logger.debug("FoodAdditivies: " + foodAdditives)
 
     args.headOption match {
       case Some(param) =>
-        if (day.length == 1) {
+        if (day.length > 0) {
           callMensa(day(0), rs, foodAdditives)
         } else {
           callMensa(DaySynonyms.Today, rs, foodAdditives)
@@ -72,7 +79,6 @@ class MensaRoutine extends CustomSubroutine with Instances {
 
   def callMensa(param: String, rs: RiveScript, foodAdditives: Seq[String] = Seq()): String = {
     val stringBuilder = new StringBuilder
-    logger.info("Param: " + param)
     param.toLowerCase() match {
       case "heute" =>
         stringBuilder.append("Heute gibt es:\n")
@@ -131,9 +137,10 @@ class MensaRoutine extends CustomSubroutine with Instances {
     param.toLowerCase match {
       case "vegan" | "veganes" | "vegane" | "veganen" | "ohne tierische produkte" =>
         FoodAdditives.Vegan
-      case "vegetarisch" | "vegetarisches" | "vegetarischen" | "vegetarische" | "ohne fleisch" |
-          "fleischlos" =>
+      case "vegetarisch" | "vegetarisches" | "vegetarischen" | "vegetarische" =>
         FoodAdditives.Vegetarian
+      case "ohne fleisch" | "fleischlos" | "ohne tier" | "tierlos" =>
+        FoodAdditives.Vegan.toSet.union(FoodAdditives.Vegetarian.toSet).toSeq
       case "mit schwein" | "schwein" | "pork"                => FoodAdditives.Pork
       case "rind" | "kuh" | "beef" | "mit rind" | "mit beef" => FoodAdditives.Beef
       case "mit fleisch" | "fleisch" | "fleischhaltiges" | "fleischhaltigen" =>
@@ -151,6 +158,46 @@ class MensaRoutine extends CustomSubroutine with Instances {
       case _ => Seq()
 
     }
+
+  def getFoodAdditivesUnionWithAnd(param1: String, param2: String): Seq[String] = {
+    logger.debug("Foodparameter which should be joined")
+    logger.debug("Parameter1 " + param1)
+    logger.debug("Paramter2 " + param2)
+    val food1 = getFoodAdditivesSeqByName(param1)
+    val food2 = getFoodAdditivesSeqByName(param2)
+
+    food1.union(food2)
+  }
+
+  def splitExpressions(expressions: Array[String], searchString: String): Option[Array[String]] = {
+    val index = expressions.indexOf(searchString)
+    val resultArray = Array.fill[String](2)("")
+
+    if (index != -1) {
+      var slicedArray1 = expressions.slice(0, index)
+      slicedArray1.foreach(elem => {
+        for (day <- DaySynonyms.AllDays) {
+          if (day == elem) {
+            slicedArray1 = slicedArray1.slice(slicedArray1.indexOf(elem), expressions.length)
+          }
+        }
+      })
+
+      var slicedArray2 = expressions.slice(index + 1, expressions.length)
+      slicedArray2.foreach(elem => {
+        for (day <- DaySynonyms.AllDays) {
+          if (day == elem) {
+            slicedArray2 = slicedArray2.slice(0, slicedArray2.indexOf(elem))
+          }
+        }
+      })
+      resultArray(1) = slicedArray2.mkString(" ")
+      resultArray(0) = slicedArray1.mkString(" ")
+      Some(resultArray)
+    } else {
+      None
+    }
+  }
 
   def concatExpressions(expressions: Array[String], searchString: String): Option[String] = {
     val index = expressions.indexOf(searchString)
