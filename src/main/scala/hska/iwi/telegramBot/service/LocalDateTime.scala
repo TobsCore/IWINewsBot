@@ -45,6 +45,15 @@ object LocalDateTime {
     }
   }
 
+  def getDaysInfutureWithWantedWeekDay(weekDay: Int): Int = {
+    val today = getWeekDayPlusBonusDays(0)
+    if (weekDay <= today) {
+      (weekDay + 7) - today
+    } else {
+      weekDay - today
+    }
+  }
+
   def getWeekDayPlusBonusDays(bonusDays: Int): Int =
     ((new DateTime().getDayOfWeek + bonusDays - 1) % 7) + 1
 

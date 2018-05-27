@@ -14,8 +14,8 @@ class MensaRoutine extends CustomSubroutine with Instances {
 
     val concatStringMit = concatExpressions(args, "mit")
     val concatStringOhne = concatExpressions(args, "ohne")
-    val day = args.filter(arg => DaySynonyms.AllDays.contains(arg))
-    
+    val day = args.filter(arg => DaysAndSynonyms.AllDays.contains(arg))
+
     day.foreach(d => logger.debug("Days: " + d))
     args.foreach(arg => logger.debug("Args: " + arg))
 
@@ -45,7 +45,7 @@ class MensaRoutine extends CustomSubroutine with Instances {
             logger.debug("concatOhne: " + concatStringOhne.get)
             getFoodAdditivesSeqByName(concatStringOhne.get)
           } else {
-            if (DaySynonyms.AllDays.contains(args(0))) {
+            if (DaysAndSynonyms.AllDays.contains(args(0))) {
               getFoodAdditivesSeqByName(args(1))
             } else {
               getFoodAdditivesSeqByName(args(0))
@@ -78,39 +78,45 @@ class MensaRoutine extends CustomSubroutine with Instances {
   }
 
   def callMensa(param: String, rs: RiveScript, foodAdditives: Seq[String] = Seq()): String = {
-    val stringBuilder = new StringBuilder
     param.toLowerCase() match {
-      case "heute" =>
-        stringBuilder.append("Heute gibt es:\n")
-        stringBuilder.append(mensaRequest(rs, 0, foodAdditives).getOrElse("Keine Daten vorhanden."))
-        stringBuilder.toString()
-      case "morgen" =>
-        stringBuilder.append("Morgen gibt es:\n")
-        stringBuilder.append(mensaRequest(rs, 1, foodAdditives).getOrElse("Keine Daten vorhanden."))
-        stringBuilder.toString()
-      case "übermorgen" =>
-        stringBuilder.append("Übermorgen gibt es:\n")
-        stringBuilder.append(mensaRequest(rs, 2, foodAdditives).getOrElse("Keine Daten vorhanden."))
-        stringBuilder.toString()
-      case "gestern" =>
-        stringBuilder.append("Gestern gab es:\n")
-        stringBuilder.append(
-          mensaRequest(rs, -1, foodAdditives).getOrElse("Keine Daten vorhanden."))
-        stringBuilder.toString()
-      case "vorgestern" =>
-        stringBuilder.append("Vorgestern gab es:\n")
-        stringBuilder.append(
-          mensaRequest(rs, -2, foodAdditives).getOrElse("Keine Daten vorhanden."))
-        stringBuilder.toString()
+      case DaySynonyms.Today =>
+        mensaRequest(rs, 0, foodAdditives).getOrElse("Keine Daten vorhanden.")
+      case DaySynonyms.Tomorrow =>
+        mensaRequest(rs, 1, foodAdditives).getOrElse("Keine Daten vorhanden.")
+      case DaySynonyms.TheDayAfterTomorrow =>
+        mensaRequest(rs, 2, foodAdditives).getOrElse("Keine Daten vorhanden.")
+      case DaySynonyms.Yesterday =>
+        mensaRequest(rs, -1, foodAdditives).getOrElse("Keine Daten vorhanden.")
+      case DaySynonyms.TheDayBeforeYesterday =>
+        mensaRequest(rs, -2, foodAdditives).getOrElse("Keine Daten vorhanden.")
+      case Days.Mon =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(1), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
+      case Days.Tue =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(2), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
+      case Days.Wed =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(3), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
+      case Days.Thu =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(4), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
+      case Days.Fri =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(5), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
+      case Days.Sat =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(6), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
+      case Days.Sun =>
+        mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(7), foodAdditives)
+          .getOrElse("Keine Daten vorhanden.")
       case _ =>
         val foodOutput = getFoodAdditivesSeqByName(param)
         if (foodOutput.isEmpty) {
           "Das habe ich leider nicht verstanden. Möchtest du wissen, was es heute, morgen oder " +
             "übermorgen in der Mensa gibt? Für weitere Tage rufe /mensa auf."
         } else {
-          stringBuilder.append("Heute gibt es:\n")
-          stringBuilder.append(mensaRequest(rs, 0, foodOutput).getOrElse("Keine Daten vorhanden."))
-          stringBuilder.toString()
+          mensaRequest(rs, 0, foodOutput).getOrElse("Keine Daten vorhanden.")
         }
 
     }
@@ -162,7 +168,7 @@ class MensaRoutine extends CustomSubroutine with Instances {
   def getFoodAdditivesUnionWithAnd(param1: String, param2: String): Seq[String] = {
     logger.debug("Foodparameter which should be joined")
     logger.debug("Parameter1 " + param1)
-    logger.debug("Paramter2 " + param2)
+    logger.debug("Parameter2 " + param2)
     val food1 = getFoodAdditivesSeqByName(param1)
     val food2 = getFoodAdditivesSeqByName(param2)
 
@@ -176,16 +182,16 @@ class MensaRoutine extends CustomSubroutine with Instances {
     if (index != -1) {
       var slicedArray1 = expressions.slice(0, index)
       slicedArray1.foreach(elem => {
-        for (day <- DaySynonyms.AllDays) {
+        for (day <- DaysAndSynonyms.AllDays) {
           if (day == elem) {
-            slicedArray1 = slicedArray1.slice(slicedArray1.indexOf(elem), expressions.length)
+            slicedArray1 = slicedArray1.slice(slicedArray1.indexOf(elem) + 1, expressions.length)
           }
         }
       })
 
       var slicedArray2 = expressions.slice(index + 1, expressions.length)
       slicedArray2.foreach(elem => {
-        for (day <- DaySynonyms.AllDays) {
+        for (day <- DaysAndSynonyms.AllDays) {
           if (day == elem) {
             slicedArray2 = slicedArray2.slice(0, slicedArray2.indexOf(elem))
           }
@@ -205,7 +211,7 @@ class MensaRoutine extends CustomSubroutine with Instances {
     if (index != -1) {
       var slicedArray = expressions.slice(index, expressions.length)
       slicedArray.foreach(elem => {
-        for (day <- DaySynonyms.AllDays) {
+        for (day <- DaysAndSynonyms.AllDays) {
           if (day == elem) {
             slicedArray = slicedArray.slice(0, slicedArray.indexOf(elem))
           }
@@ -236,4 +242,20 @@ object DaySynonyms {
   val TheDayBeforeYesterday = "vorgestern"
 
   val AllDays = Seq(TheDayBeforeYesterday, Yesterday, Today, TheDayAfterTomorrow, Tomorrow)
+}
+
+object Days {
+  val Mon = "montag"
+  val Tue = "dienstag"
+  val Wed = "mittwoch"
+  val Thu = "donnerstag"
+  val Fri = "freitag"
+  val Sat = "samstag"
+  val Sun = "sonntag"
+
+  val AllDays = Seq(Mon, Tue, Wed, Thu, Fri, Sat, Sun)
+}
+
+object DaysAndSynonyms {
+  val AllDays = DaySynonyms.AllDays.union(Days.AllDays)
 }
