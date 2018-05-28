@@ -32,7 +32,7 @@ import scala.util.{Failure, Success, Try}
 trait Chat extends Commands with Instances {
   _: TelegramBot =>
 
-  private val speechClient: Try[SpeechClient] = Try(SpeechClient.create())
+  private lazy val speechClient: Try[SpeechClient] = Try(SpeechClient.create())
 
   onMessage { implicit msg =>
     using(_.text) { input =>
