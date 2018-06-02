@@ -20,6 +20,8 @@ class TimetableRoutine extends CustomSubroutine with Instances {
   }
 
   private def runWithParam(param: String, rs: RiveScript): String = param.toLowerCase() match {
+    case "gestern"                    => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(-1), rs)
+    case "vorgestern"                 => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(-2), rs)
     case "morgen"                     => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(1), rs)
     case "übermorgen"                 => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(2), rs)
     case "heute"                      => requestTimetable(LocalDateTime.getWeekDayPlusBonusDays(0), rs)

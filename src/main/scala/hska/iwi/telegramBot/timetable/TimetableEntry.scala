@@ -11,6 +11,7 @@ case class TimetableEntry(courseOfStudies: String,
                           timetables: Seq[SingleDayTimetable]) {
 
   val logger = Logger(getClass)
+
   override def toString: String = {
     val timetablesFormatted = singleDayEntriesFormatted(timetables)
     if (timetablesFormatted.isEmpty) {
@@ -32,7 +33,7 @@ case class TimetableEntry(courseOfStudies: String,
     for (timetable <- timetables) {
       stringbuilder.append(lectureEntries(timetable))
     }
-    stringbuilder.toString()
+    stringbuilder.toString
   }
 
   def lectureEntries(singleDayTimetable: SingleDayTimetable): String = {
@@ -48,7 +49,11 @@ case class TimetableEntry(courseOfStudies: String,
       }
       stringBuilder.append(s"""
            |${LocalDateTime.prettyHourIntervall(entry.startTime)}-${LocalDateTime
-                                .prettyHourIntervall(entry.endTime)} Uhr
+                                .prettyHourIntervall(entry.endTime)} Uhr""".stripMargin)
+      if (entry.interval != "WEEKLY") {
+        stringBuilder.append(s" (${intervalToGermanString(entry.interval)})")
+      }
+      stringBuilder.append(s"""
            |${entry.lectureName}
            |""".stripMargin)
       if (!entry.group.isEmpty) {
@@ -58,33 +63,43 @@ case class TimetableEntry(courseOfStudies: String,
            |${rooms(entry)}
            |""".stripMargin)
     }
-    stringBuilder.toString()
+    stringBuilder.toString
   }
 
   def rooms(entry: LectureEntry): String = {
     val stringBuilder = new StringBuilder
-    var size = entry.locations.size
-    for (room <- entry.locations) {
+    val locations = entry.locations.filterNot(r => r.room.isEmpty && r.building.isEmpty)
+    var size = locations.size
+    for (room <- locations) {
       stringBuilder.append(room.building + room.room)
       if (size > 1) {
         stringBuilder.append(" / ")
         size -= 1
       }
     }
-    stringBuilder.toString()
+    stringBuilder.toString
   }
 
   def lecturerNames(entry: LectureEntry): String = {
     val stringBuilder = new StringBuilder
-    var size = entry.lecturerNames.size
-    for (lecturer <- entry.lecturerNames) {
+    val lectureNames = entry.lecturerNames.filterNot(_.isEmpty)
+    var size = lectureNames.size
+    for (lecturer <- lectureNames) {
       stringBuilder.append(lecturer)
       if (size > 1) {
         stringBuilder.append(" / ")
         size -= 1
       }
     }
-    stringBuilder.toString()
+    stringBuilder.toString
+  }
+
+  def intervalToGermanString(interval: String): String = interval match {
+    case "SINGLE"      => "einmalig"
+    case "BLOCK"       => "Blockveranstaltung"
+    case "WEEKLY"      => "wöchentlich"
+    case "FORTNIGHTLY" => "14-tägig"
+    case _             => ""
   }
 
 }

@@ -19,6 +19,9 @@
 + was steht [am] _ an?
 - <call>timetable <star></call>
 
++ was steht an?
+- <call>timetable</call>
+
 
 //mensa
 + was (gibt|gab) es (in der mensa|zu essen)?
