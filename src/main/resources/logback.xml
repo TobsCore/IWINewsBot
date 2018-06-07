@@ -11,7 +11,7 @@
             </evaluator>
             <onMatch>DENY</onMatch>
         </filter>
-        <file>iwi-bot.log</file>
+        <file>logs/current.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- rollover daily -->
             <fileNamePattern>logs/iwi-bot-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
@@ -32,7 +32,7 @@
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
-        <file>chatbot.log</file>
+        <file>logs/chatbot.log</file>
         <encoder>
             <pattern>%date %level %msg%n</pattern>
         </encoder>
