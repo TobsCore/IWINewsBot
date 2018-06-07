@@ -22,6 +22,7 @@ class IWINewsBot()
     with Admin
     with Settings
     with About
+    with Help
     with Mensa
     with Lecturers
     with Chat {
