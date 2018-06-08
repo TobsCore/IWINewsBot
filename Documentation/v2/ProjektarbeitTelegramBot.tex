@@ -1,0 +1,22 @@
+% !TEX program = xelatex
+\documentclass[a4paper, titlepage, 11pt,parskip=full]{scrreprt}
+
+\input{Definitions}
+
+\begin{document}
+\input{Titelseite}
+\pagenumbering{gobble}
+\input{Inhaltsverzeichnis}
+
+\pagenumbering{arabic}
+\input{Inhalt/Einfuehrung}
+\input{Inhalt/Rivescript}
+\input{Inhalt/Implementierung}
+\input{Inhalt/Weiteres}
+\input{Inhalt/Sprachnachrichten}
+\input{Inhalt/Fazit}
+
+\newpage
+\input{Abbildungsverzeichnis}
+\input{Quellcodeverzeichnis}
+\end{document}
