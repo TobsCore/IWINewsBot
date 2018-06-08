@@ -1,0 +1,289 @@
+% german names
+\usepackage{ngerman}
+% utf-8
+\usepackage{polyglossia}
+\setmainlanguage[spelling=new]{german}
+\usepackage{fontspec}
+\usepackage{pdfpages}
+
+% In order to remove scr warning
+\usepackage{scrhack}
+
+%Needed to wrap text around images, used for personas
+\usepackage{wrapfig}
+
+%Used to avoid page breaks with each chapter
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{}{}{}
+\makeatother
+
+% colors
+\usepackage{color}
+\definecolor{grey}{rgb}{0.2,0.2,0.2}
+\definecolor{orange}{rgb}{1,0.3,0}
+\definecolor{turqoise}{rgb}{0,0.7,0.5}
+\definecolor{OliveGreen}{rgb}{0.2,0.7,0.4}
+\definecolor{Plum}{rgb}{0.52,0,0.7}
+
+
+% Correctly break urls at hyphens
+\usepackage[hyphens]{url}
+
+% Special Link color (same as cite color)
+\usepackage[colorlinks=true, citecolor=magenta, linkcolor=magenta, urlcolor=magenta] {hyperref}
+
+%Black to save some costs
+%\usepackage[colorlinks=true, citecolor=black, linkcolor=black, urlcolor=black] {hyperref}
+
+
+% Use more than one optional parameter in a new commands
+\usepackage{xargs}
+
+% Adds Todos to output
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+% To display figures exactly there where you want them to be
+\usepackage[section]{placeins}
+
+%Place subsections figures where you want them to be
+\makeatletter
+\AtBeginDocument{%
+  \expandafter\renewcommand\expandafter\subsection\expandafter{%
+    \expandafter\@fb@secFB\subsection
+  }%
+}
+\makeatother
+
+% code listings
+\usepackage{listings}
+\newcommand*\lstinputpath[1]{\lstset{inputpath=#1}}
+\lstinputpath{Code}
+
+\renewcommand{\lstlistingname}{Code}
+\renewcommand{\lstlistlistingname}{Quellcodeverzeichnis}
+
+\renewcommand*{\figureautorefname}{Ab\-bil\-dung}
+\renewcommand*{\sectionautorefname}{Ab\-schnitt}
+\renewcommand*{\chapterautorefname}{Ka\-pi\-tel}
+\renewcommand*{\subsectionautorefname}{Ab\-schnitt}
+\renewcommand*{\subsubsectionautorefname}{Ab\-schnitt}
+\newcommand{\lstnumberautorefname}{Zeile}
+
+
+\lstdefinelanguage{scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,\#,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
+
+% Style languages
+\lstdefinestyle{Code}{
+	language=sql,
+	basicstyle={\ttfamily \small},
+	breaklines=true,
+	commentstyle=\color{grey},
+	keywordstyle=\color{orange},
+	numbers=left,
+	showspaces=false,
+	captionpos=t,
+	abovecaptionskip=12pt,
+	stringstyle=\color{turqoise},
+	xleftmargin=20pt
+}
+\lstdefinestyle{JSON}{
+	string=[s]{"}{"},
+	stringstyle=\color{blue},
+	comment=[l]{:},
+	commentstyle=\color{black},
+	showspaces=false,
+	captionpos=t,
+	abovecaptionskip=12pt,
+	xleftmargin=20pt
+}
+\lstdefinestyle{scala}{%
+	basicstyle={\ttfamily \small},
+	breaklines=true,
+	commentstyle=\color{grey},
+	keywordstyle=\color{orange},
+	numbers=left,
+	showspaces=false,
+	stringstyle=\color{turqoise},
+	xleftmargin=20pt
+}
+
+\lstset{%
+	language=bash,
+	basicstyle={\ttfamily \small},
+	breaklines=true,
+	escapeinside={~}{~},
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+	commentstyle=\color{grey},
+	keywordstyle=\color{black},
+	stringstyle=\color{black},
+	otherkeywords={},
+	numbers=none,
+	showspaces=false,
+	xleftmargin=\parindent,
+	 %xleftmargin=1cm,
+	 %xrightmargin=\parindent,
+	aboveskip=1.5em,
+}
+
+% This is necessary in order to avoid stupid latex errors, which are caused by importing gensymb package.
+\usepackage{textcomp}
+
+% Used for the degree symbol
+\usepackage{gensymb}
+
+% Place caption beneath listing
+\usepackage[skip=12pt]{caption}
+
+% Adding the source of a picture beneath it
+\usepackage{subcaption}
+
+%for images that are wrapped with text
+\usepackage{wrapfig}
+\usepackage{ragged2e}
+\DeclareCaptionFormat{myformat}{#1#2\\#3}
+
+% For adding the titelpage as a pdf
+\usepackage{pdfpages}
+
+% graphics
+\usepackage{graphicx}
+\graphicspath{{Images/}}
+
+% BibTex lib - used for citation
+%\usepackage{cite}
+
+% Alternative to using common cite.
+
+% Continuous footnote numbering (usually reset after chapter)
+\usepackage{chngcntr}
+\counterwithout{footnote}{chapter}
+
+\usepackage[automark,headsepline,autooneside=false]{scrlayer-scrpage}
+\clearpairofpagestyles{}
+\ihead{\leftmark}
+\chead{}
+\ohead{\ifstr{\rightmark}{\leftmark}{}{\rightmark}}
+%\ifoot{Bachelorthesis --- Tobias Kerst}
+%\cfoot{}
+\ofoot*{\pagemark}
+\pagestyle{scrheadings}
+\setkomafont{pageheadfoot}{\normalfont}
+
+% Better layout size at footer and header
+% footskip = is the dimension used as the baselineskip in the footer
+\setlength\footskip{2cm}
+\setlength\textheight{21.5cm}
+%distance between the bottom of the text block and the top of the footer is
+\setlength{\skip\footins}{1cm}
+\setlength{\headsep}{1.5cm}
+% Creates a bigger margin from page to header
+%\usepackage[top=4cm]{geometry}
+\setlength{\voffset}{0.8cm}
+
+% Better footnote layout
+\usepackage[bottom,hang]{footmisc}
+\setlength{\footnotemargin}{1.2em}
+
+\usepackage{lipsum}
+
+\setkomafont{disposition}{\normalfont\bfseries}
+
+% for verbatiminput
+\usepackage{verbatim}
+
+% Used for cross-referencing between different files
+\usepackage{xr}
+
+% German quotation marks
+\let\oldquote'
+\newif\ifquoteopen
+\catcode`\'=\active
+\makeatletter
+% we have to redefine \pr@m@s to use an active '
+\def\pr@m@s{%
+  \ifx'\@let@token
+    \expandafter\pr@@@s
+  \else
+    \ifx^\@let@token
+      \expandafter\expandafter\expandafter\pr@@@t
+    \else
+      \egroup
+    \fi
+  \fi}
+\protected\def'{%
+  \ifmmode
+    \expandafter\active@math@prime
+  \else
+    \expandafter\active@text@prime
+  \fi}
+\def\active@text@prime{%
+   \@ifnextchar'{%
+     \ifquoteopen
+       \global\quoteopenfalse\grqq\expandafter\@gobble
+     \else
+       \global\quoteopentrue\glqq\expandafter\@gobble
+     \fi
+   }{%
+     \ifquoteopen
+       \global\quoteopenfalse\grq\xspace
+     \else
+       \global\quoteopentrue\glq
+     \fi
+   }%
+}
+\makeatother
+
+% not yet used
+%\input{src/cmd}
+
+% Defines a macro \Autoref to allow multiple references to be passed to \autoref
+\makeatletter
+\newcommand\Autoref[1]{\@first@ref#1,@}
+\def\@throw@dot#1.#2@{#1}% discard everything after the dot
+\def\@set@refname#1{%    % set \@refname to autoefname+s using \getrefbykeydefault
+    \edef\@tmp{\getrefbykeydefault{#1}{anchor}{}}%
+    \def\@refname{\@nameuse{\expandafter\@throw@dot\@tmp.@autorefname}n}%
+}
+\def\@first@ref#1,#2{%
+  \ifx#2@\autoref{#1}\let\@nextref\@gobble% only one ref, revert to normal \autoref
+  \else%
+    \@set@refname{#1}%  set \@refname to autoref name
+    \@refname~\ref{#1}% add autoefname and first reference
+    \let\@nextref\@next@ref% push processing to \@next@ref
+  \fi%
+  \@nextref#2%
+}
+\def\@next@ref#1,#2{%
+   \ifx#2@ und~\ref{#1}\let\@nextref\@gobble% at end: print and+\ref and stop
+   \else, \ref{#1}% print  ,+\ref and continue
+   \fi%
+   \@nextref#2%
+}
+\makeatother
+
+% avoids schusterjungen and hurenkinder
+\usepackage[all]{nowidow}
+\clubpenalty10000
+\widowpenalty10000
+\displaywidowpenalty=10000
