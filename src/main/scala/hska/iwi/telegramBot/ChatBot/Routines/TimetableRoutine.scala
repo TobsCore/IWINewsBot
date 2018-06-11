@@ -42,7 +42,7 @@ class TimetableRoutine extends CustomSubroutine with Instances {
 
       val timetableURL = FeedURL.timetable + studyConfig.get.course.toString + "/" + Specialisation
         .getShortCutByName(studyConfig.get.specialisation) + "/" + studyConfig.get.semester.toString
-      val content = HTTPGet.get(timetableURL)
+      val content: Option[String] = HTTPGet.get(timetableURL)
 
       if (content.isDefined) {
 

@@ -21,10 +21,12 @@ class ChatBot extends RiveScript(Config.utf8()) {
   private val funnyAnswersStream = getClass.getClassLoader.getResourceAsStream(s"$folder/fun.rive")
   private val synonymsStream = getClass.getClassLoader.getResourceAsStream(s"$folder/synonyms.rive")
   private val arraysStream = getClass.getClassLoader.getResourceAsStream(s"$folder/arrays.rive")
+  private val lecturesStream = getClass.getClassLoader.getResourceAsStream(s"$folder/lectures.rive")
   stream(Source.fromInputStream(mainStream).getLines.toArray)
   stream(Source.fromInputStream(funnyAnswersStream).getLines.toArray)
   stream(Source.fromInputStream(synonymsStream).getLines.toArray)
   stream(Source.fromInputStream(arraysStream).getLines.toArray)
+  stream(Source.fromInputStream(lecturesStream).getLines.toArray)
   sortReplies()
 
   // Add Subroutines here
@@ -33,4 +35,5 @@ class ChatBot extends RiveScript(Config.utf8()) {
   setSubroutine("timetable", new Routines.TimetableRoutine)
   setSubroutine("mensa", new Routines.MensaRoutine)
   setSubroutine("profs", new Routines.ProfsRoutine)
+  setSubroutine("roomfinder", new Routines.RoomFinderRoutine)
 }

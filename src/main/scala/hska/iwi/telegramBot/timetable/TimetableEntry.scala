@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.service.LocalDateTime
 
 case class TimetableEntry(courseOfStudies: String,
-                          idSemester: Int,
+                          idSemester: Int = 0,
                           moduleSpecialization: Int,
                           semester: Int,
                           semesterName: String,

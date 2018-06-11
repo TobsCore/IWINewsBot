@@ -23,6 +23,17 @@
 - <call>timetable</call>
 
 
+//where
++ wo habe ich *?
+- <call>roomfinder <star></call>
+
++ wo findet * statt?
+- <call>roomfinder <star></call>
+
++ in welchem raum ist *?
+- <call>roomfinder <star></call>
+
+
 //mensa
 + was (gibt|gab) es (in der mensa|zu essen)?
 - <call>mensa</call>
