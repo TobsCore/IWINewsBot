@@ -7,6 +7,7 @@ import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
 import java.text.SimpleDateFormat
 
+import scala.collection.immutable.ListMap
 import scala.collection.mutable
 
 object JsonParser {
@@ -101,7 +102,8 @@ object JsonParser {
         .prettyHourIntervall(singleDate.endTime)} Uhr"
       singleDateMap += (myDateString -> roomSeq)
     }
-    singleDateMap.toMap
+    //singleDateMap.toMap
+    ListMap(singleDateMap.toMap.toSeq.sortBy(_._1):_*)
   }
 
   def intervalToGermanString(interval: String): String = interval match {
