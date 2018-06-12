@@ -91,6 +91,7 @@ object JsonParser {
 
   def mapBuilderBlockCourses(blockCourseSingleDate: Seq[BlockCourseSingleDate]): Map[String, Seq[Room]] = {
     val singleDateMap: mutable.Map[String, Seq[Room]] = mutable.Map.empty
+    //über die einzelnen SingleDate iterieren und Ausgabe bauen
     for (singleDate <- blockCourseSingleDate) {
       val roomSeq: Seq[Room] = singleDate.locations
       val inputFormat = new SimpleDateFormat("yyyy-MM-dd")

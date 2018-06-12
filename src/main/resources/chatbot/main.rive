@@ -100,7 +100,7 @@
 + was unterrichtet [@nametitles] *?
 - <call>profslectures <star></call>
 
-+ welche vorlesungen hält [@nametitles] *?
++ welche [vorlesungen|vorlesung] hält [@nametitles] *?
 - <call>profslectures <star></call>
 
 

@@ -32,11 +32,8 @@ class ProfsLecturesRoutine extends CustomSubroutine with Instances {
         //selektiere Dozent
         val selectedLecturer = lecturerData.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
         val lectures: Seq[Lecture] = selectedLecturer.get.lectures
-        //iteriere über die Lectures
-        for (lec <- lectures) {
-          val fachrichtung = lec.internalName.substring(0,4)
-          stringBuilder.append(lec.longName + " (Semester " + lec.semester + " - " + fachrichtung + ")\n")
-        }
+        //Vorlesungsstring bauen
+        lectures.map(_.longName).distinct.sorted.foreach(stringBuilder.append(_).append("\n"))
         val ausgabe = stringBuilder.toString()
         //Ausgabe
         s"""<b>${selectedLecturer.get.shortenedFullname}</b> unterrichtet in folgenden Vorlesungen:
@@ -49,6 +46,6 @@ class ProfsLecturesRoutine extends CustomSubroutine with Instances {
     } else {
       logger.error("Couldn't connect to the server.")
       "Fehler beim Bereitstellen der Daten"
-    }
-  }
+    } //end else
+  } //end requestProfsLectures
 }

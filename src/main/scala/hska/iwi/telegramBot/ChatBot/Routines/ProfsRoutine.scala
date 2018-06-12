@@ -23,7 +23,7 @@ class ProfsRoutine extends CustomSubroutine with Instances {
   private def callProfsWithParam(param: String, rs: RiveScript): String = {
     //Daten abholen
     logger.info(s"requested lecturers")
-    logger.debug(s"param: ${param}")
+    logger.debug(s"param: $param")
     val content = HTTPGet.get(FeedURL.lecturer)
     if (content.isDefined) {
       //parses the json entries and stores them in a lecturers object
@@ -33,16 +33,20 @@ class ProfsRoutine extends CustomSubroutine with Instances {
       //Sequence auf Wert prüfen
       if (lecturers.isDefined) {
         val selectedLecturer = lecturers.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
-        if (selectedLecturer.isDefined)
-        {
+        if (selectedLecturer.isDefined) {
           //Ausgabe machen
-          result = s"Hier sind die Informationen: ${selectedLecturer.get.toString}"
+          s"Hier sind die Informationen: ${selectedLecturer.get.toString}"
         }
         else {
-          result = "Diesen Professor/diese Professorin kenne ich nicht. Bitte prüfe die Schreibweise und probiere es erneut."
+          "Diesen Professor/diese Professorin kenne ich nicht. Bitte prüfe die Schreibweise und probiere es erneut."
         }
+      } else {
+        logger.error("Couldn't parse the Json.")
+        "Fehler beim Bereitstellen der Daten"
       }
+    } else {
+      logger.error("Couldn't connect to the server.")
+      "Fehler beim Bereitstellen der Daten"
     }
-    return result
   }
 }
