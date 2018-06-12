@@ -25,13 +25,27 @@
 
 //where
 + wo habe ich *?
-- <call>roomfinder <star></call>
+- <call>spaceandtime <star></call>
 
 + wo findet * statt?
-- <call>roomfinder <star></call>
+- <call>spaceandtime <star></call>
 
 + in welchem raum ist *?
-- <call>roomfinder <star></call>
+- <call>spaceandtime <star></call>
+
++ in welchem raum findet * statt?
+- <call>spaceandtime <star></call>
+
+
+//when
++ wann findet * statt?
+- <call>spaceandtime <star></call>
+
++ wann habe ich *?
+- <call>spaceandtime <star></call>
+
++ wann ist *?
+- <call>spaceandtime <star></call>
 
 
 //mensa
@@ -79,9 +93,15 @@
 + kannst du mir [etwas|was] zu den professoren sagen
 - Zu welchem Professor möchtest du etwas wissen? Gib bitte seinen Namen mit Anrede ein.
 
-+ (@nametitles) *
++ [@nametitles] *
 % zu welchem professor möchtest du etwas wissen gib bitte seinen namen mit anrede ein
 - <call>profs <star2></call>
+
++ was unterrichtet [@nametitles] *?
+- <call>profslectures <star></call>
+
++ welche vorlesungen hält [@nametitles] *?
+- <call>profslectures <star></call>
 
 
 //If no match is found, call no-comprendo routine. It will take care of that.

@@ -8,6 +8,7 @@ object FeedURL {
   val timetable = "http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/timetable/"
   val alltimetables = "http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/timetable/all"
   val blockCourses = "http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/blockcourses/v2"
+  val profslecturesurl = "http://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/lecturersconsultationhours?images=false&lectures=true"
 
   val freeRooms =
     "https://www.iwi.hs-karlsruhe.de/Intranetaccess/REST/unoccupiedrooms/lecturehalls/now?suppress_error=true"

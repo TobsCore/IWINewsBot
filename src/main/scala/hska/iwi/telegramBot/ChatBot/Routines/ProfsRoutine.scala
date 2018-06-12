@@ -1,7 +1,6 @@
 package hska.iwi.telegramBot.ChatBot.Routines
 
 import com.rivescript.RiveScript
-import com.rivescript.`macro`.Subroutine
 import hska.iwi.telegramBot.lecturers.Lecturer
 import hska.iwi.telegramBot.service.{FeedURL, HTTPGet, Instances}
 import org.json4s.DefaultFormats
