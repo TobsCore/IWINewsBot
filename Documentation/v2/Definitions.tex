@@ -26,7 +26,6 @@
 \definecolor{OliveGreen}{rgb}{0.2,0.7,0.4}
 \definecolor{Plum}{rgb}{0.52,0,0.7}
 
-
 % Correctly break urls at hyphens
 \usepackage[hyphens]{url}
 
@@ -93,6 +92,16 @@
   morestring=[b]"""
 }
 
+\lstdefinelanguage{buildSbt}{
+  morekeywords={libraryDependencies},
+  otherkeywords={+=, \%},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]'
+}
+
 % Style languages
 \lstdefinestyle{Code}{
 	language=sql,
@@ -128,6 +137,16 @@
 	xleftmargin=20pt
 }
 
+\lstdefinestyle{buildSbt}{%
+	basicstyle={\ttfamily \small},
+	breaklines=true,
+	commentstyle=\color{grey},
+	keywordstyle=\color{orange},
+	numbers=none,
+	showspaces=false,
+  stringstyle=\color{turqoise}
+}
+
 \lstset{%
 	language=bash,
 	basicstyle={\ttfamily \small},
@@ -136,14 +155,15 @@
 	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 	commentstyle=\color{grey},
 	keywordstyle=\color{black},
-	stringstyle=\color{black},
+  stringstyle=\color{black},
 	otherkeywords={},
 	numbers=none,
 	showspaces=false,
-	xleftmargin=\parindent,
-	 %xleftmargin=1cm,
-	 %xrightmargin=\parindent,
-	aboveskip=1.5em,
+	xleftmargin=\fboxsep,
+  frame=lrb,
+  xrightmargin=-\fboxsep,
+  aboveskip=15pt,
+  escapeinside={|}{|}
 }
 
 % This is necessary in order to avoid stupid latex errors, which are caused by importing gensymb package.
@@ -162,6 +182,10 @@
 \usepackage{wrapfig}
 \usepackage{ragged2e}
 \DeclareCaptionFormat{myformat}{#1#2\\#3}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{%
+  \parbox{\textwidth}{\colorbox{darkgray}{\parbox{\textwidth}{#1#2#3}}\vskip -4pt}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 % For adding the titelpage as a pdf
 \usepackage{pdfpages}
