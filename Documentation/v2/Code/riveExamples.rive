@@ -1,0 +1,22 @@
+! version = 2.0
+
++ hello bot
+- Hello, human!
+- It's a me! Mario! {weight=60}
+
+! sub zum       = zu dem
+! sub gibt's   	= gibt es
+! sub VIS   	= Verteilte Systeme
+
++ was gibt es [am] * in der mensa
+- <call>mensa <star></call>
+
+
+! array colors = rot grün blau gelb
+
++ mein * ist (@colors)
+- Oh, dein <star1> ist <star2>?
+
+
++ (wie sieht|was ist) mein stundenplan [aus]
+- <call>timetable</call>
