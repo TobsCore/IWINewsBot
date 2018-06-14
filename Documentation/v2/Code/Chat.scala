@@ -35,3 +35,7 @@ trait Chat extends Commands {
 object Chat {
   val chatBot = new ChatBot
 }
+
+logger.info(ChatBotMarker(), s"Input: [$input] by [$user]")
+val replyMessage = Chat.chatBot.reply(user.id.toString, input)
+logger.info(ChatBotMarker(), s"Output: [$replyMessage]")
