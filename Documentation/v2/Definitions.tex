@@ -12,6 +12,8 @@
 %Needed to wrap text around images, used for personas
 \usepackage{wrapfig}
 
+\usepackage{enumitem}
+
 %Used to avoid page breaks with each chapter
 \usepackage{etoolbox}
 \makeatletter
@@ -93,8 +95,8 @@
 }
 
 \lstdefinelanguage{buildSbt}{
-  morekeywords={libraryDependencies},
-  otherkeywords={+=, \%},
+  morekeywords={libraryDependencies, name, class},
+  otherkeywords={+=, \%, ACCEPT, DENY},
   sensitive=true,
   morecomment=[l]{//},
   morecomment=[n]{/*}{*/},
@@ -133,8 +135,7 @@
 	keywordstyle=\color{orange},
 	numbers=left,
 	showspaces=false,
-	stringstyle=\color{turqoise},
-	xleftmargin=20pt
+	stringstyle=\color{turqoise}
 }
 
 \lstdefinestyle{buildSbt}{%
@@ -142,7 +143,6 @@
 	breaklines=true,
 	commentstyle=\color{grey},
 	keywordstyle=\color{orange},
-	numbers=none,
 	showspaces=false,
   stringstyle=\color{turqoise}
 }
@@ -151,18 +151,17 @@
 	language=bash,
 	basicstyle={\ttfamily \small},
 	breaklines=true,
-	escapeinside={~}{~},
 	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
 	commentstyle=\color{grey},
 	keywordstyle=\color{black},
   stringstyle=\color{black},
-	otherkeywords={},
-	numbers=none,
+	otherkeywords={*},
+	numbers=left,
 	showspaces=false,
 	xleftmargin=\fboxsep,
-  frame=lrb,
   xrightmargin=-\fboxsep,
   aboveskip=15pt,
+  frame=b,
   escapeinside={|}{|}
 }
 
@@ -184,7 +183,7 @@
 \DeclareCaptionFormat{myformat}{#1#2\\#3}
 \DeclareCaptionFont{white}{\color{white}}
 \DeclareCaptionFormat{listing}{%
-  \parbox{\textwidth}{\colorbox{darkgray}{\parbox{\textwidth}{#1#2#3}}\vskip -4pt}}
+  \parbox{\textwidth}{\colorbox{darkgray}{\parbox{\textwidth}{#1#2#3}}}}
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 % For adding the titelpage as a pdf
