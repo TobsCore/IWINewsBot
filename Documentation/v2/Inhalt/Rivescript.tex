@@ -8,36 +8,36 @@ Rivescript wird einfach mithilfe eines Texteditors in eine .rive-Datei geschrieb
 
 Rivescript funktioniert nach einem einfachen Trigger-Response-Prinzip. Die Eingabe des Benutzers wird ausgelesen und es wird in festgelegten Ausdrücken gesucht, ob sie mit einem Ausdruck übereinstimmt. Ist dies der Fall, antwortet der Bot mit der entsprechenden Antwort.
 Ein einfaches Rivescript-Programm könnte also lauten:
-\lstinputlisting[firstline=1, lastline=4, caption=Einfaches Rivescript-Programm, label=basicRive]{riveExamples.rive}
+\lstinputlisting[firstline=1, lastline=4, numbers=none, caption=Einfaches Rivescript-Programm, label=basicRive]{riveExamples.rive}
 
 Das ''\textbf{+}''-Symbol stellt dabei die Eingabe des Users, das ''\textbf{-}''-Symbol die Ausgabe des Bots da. So können auf eine Eingabe verschiedene Ausgaben passen, bei denen dann zufällig ausgewählt wird, welche der Bot zurückgibt. Den Ausgaben kann aber auch eine gewisse Gewichtung gegeben werden, die dann eine feste Wahrscheinlichkeit der Antworten vorgibt.
-\lstinputlisting[firstline=3, lastline=5, caption=Gewichtete Ausgaben in Rivescript, label=weight]{riveExamples.rive}
+\lstinputlisting[firstline=3, lastline=5, numbers=none, caption=Gewichtete Ausgaben in Rivescript, label=weight]{riveExamples.rive}
 
 Rivescript bietet die Möglichkeit sprachliche Alternativen bekannt zu machen, sodass bei unterschiedlichen Schreibweisen trotzdem eine passende Eingabe gefunden werden kann.
 Mit dem Schlüsselwort \emph{! sub} können so Abkürzungen bekannt gemacht werden.
-\lstinputlisting[firstline=7, lastline=9, caption=Sprachliche Alternativen in Rivescript, label=subs]{riveExamples.rive}
+\lstinputlisting[firstline=7, lastline=9, numbers=none, caption=Automatischer Austausch von sinngleichen Wörtern in Rivescript, label=subs]{riveExamples.rive}
 
 Man möchte jedoch nicht nur auf komplett festgesetzte Sätze matchen, sondern auch auf ''vagere'' Aussagen. Dafür stellt Rivescript Wildcards bereit.
-\lstinputlisting[firstline=11, lastline=12, caption=Wildcards in Rivescript, label=wildcards]{riveExamples.rive}
+\lstinputlisting[firstline=11, lastline=12, numbers=none, caption=Wildcards in Rivescript, label=wildcards]{riveExamples.rive}
 
 Das \emph{\textbf{*}}-Symbol steht für eine beliebige Anzahl von Wörtern und Zahlen. Dieses kann in der Antwort berücksichtigt werden und damit zum Beispiel, wie hier gezeigt,  als Aufrufparameter einer Methode benutzt werden.
 Weitere Wildcards sind das \emph{\textbf{\_}}- und \#-Symbol. Das \emph{\textbf{\_}}-Symbol fordert ein Wort ohne Zahlen und Leerzeichen, das \#-Symbol eine Zahl.
 Weiterhin gibt Rivescript die Möglichkeiten Arrays anzulegen, die in der Eingabe des Benutzers enthalten sein können, wie zum Beispiel Farben.
-\lstinputlisting[firstline=15, lastline=18, caption=Arrays in Rivescript, label=array]{riveExamples.rive}
+\lstinputlisting[firstline=15, lastline=18, numbers=none, caption=Arrays in Rivescript, label=array]{riveExamples.rive}
 
 In Rivescript erhalten die Klammertypen verschiedene Aufgaben. Bei runden Klammern ist es möglich für die Ausgabe des Bots den Inhalt der Klammern als Parameter zu benutzen oder es wie im zuvor genannten Beispiel direkt auszugeben.
 
 Durch die Worte in eckigen Klammern erhält der Eingabesatz eine bessere Struktur und die Wahrscheinlichkeit eine Übereinstimmung zu finden steigt, aber sie sind nicht als mögliche <star>-Parameter nutzbar. Sie sind optional.
 
 Um mehrere Formulierungen in einem Satz abzudecken, ist es möglich Alternativen durch das Oder-Symbol aneinander zu hängen.
-\lstinputlisting[firstline=21, lastline=22, caption=Mehrere Formulierungen durch Alternativen in einem Ausdruck, label=alternatives]{riveExamples.rive}
+\lstinputlisting[firstline=21, lastline=22, numbers=none, caption=Mehrere Formulierungen durch Alternativen in einem Ausdruck, label=alternatives]{riveExamples.rive}
 
 So sind die Formulierungen ''Wie sieht mein Stundenplan aus?'' und ''Was ist mein Stundenplan?'' beide in einem Fal abgedeckt. Hier gilt ebenfalls, dass der Inhalt von runden Klammern als Match verfügbar gemacht werden kann, eckige Klammern wären wieder nur optional.
 Zu erwähnen gibt es noch, dass Rivescript Satzzeichen in den erwarteten Eingaben des Users automatisch wegoptimiert. Es ist also lediglich notwendig grammatikalisch korrekte Sätze für die Ausgabe des Bots zu schreiben.
 
 \section{Einbindung und Implementierung}
 Die Einbindung in das bestehende Projekt war sehr einfach, da es für Rivescript bereits eine Java Bibliothek gibt, die dem Projekt hinzugefügt werden kann. Die build.sbt Datei muss hierbei um die folgende Zeile erweitert werden:
-\lstinputlisting[language=buildSbt, style=buildSbt, caption=Auszug der build.sbt, label=buildSbt]{build.sbt}
+\lstinputlisting[language=buildSbt, style=buildSbt, numbers=none, caption=Auszug der build.sbt, label=buildSbt]{build.sbt}
 
 \subsection{Reagieren auf Freitext}
 Da der Bot bis zu diesem Zeitpunkt lediglich auf Commands reagiert hat, was durch die onCommand-Methoden umgesetzt wurde, musste der Bot zusätzlich auf normale Texteingaben reagieren, also auf Text-Nachrichten, die nicht mit einem Slash beginnen. Das Telegrambot4s Framework bietet hierfür keine spezielle Methode, aber man kann auf allgemeinen Input reagieren.
