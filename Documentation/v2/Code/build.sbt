@@ -1,3 +1,2 @@
 // Rive Script (Chat Bots)
-libraryDependencies += "com.rivescript" % "rivescript-core" 
-                        % "0.10.0"
+libraryDependencies += "com.rivescript" % "rivescript-core" % "0.10.0"
