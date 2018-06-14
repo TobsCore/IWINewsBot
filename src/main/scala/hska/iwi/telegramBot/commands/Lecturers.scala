@@ -22,7 +22,7 @@ trait Lecturers extends Commands with Callbacks {
 
   onCommand("/profs") { implicit msg =>
     logger.info(s"${msg.from.getOrElse("")} requested lecturers")
-    val content = HTTPGet.get(FeedURL.lecturer)
+    val content = HTTPGet.cacheGet(FeedURL.lecturer)
     if (content.isDefined) {
       //parses the json entries and stores them in a lecturers object
       lecturers = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))

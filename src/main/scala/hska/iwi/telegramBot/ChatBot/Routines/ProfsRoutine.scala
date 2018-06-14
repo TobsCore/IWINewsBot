@@ -16,7 +16,7 @@ class ProfsRoutine extends CustomSubroutine with Instances {
   override def call(rs: RiveScript, args: Array[String]): String = {
     args.headOption match {
       case Some(param) => callProfsWithParam(param, rs)
-      case _ => "Zu welchem Professor möchtest du etwas erfahren?"
+      case _           => "Zu welchem Professor möchtest du etwas erfahren?"
     }
   }
 
@@ -24,7 +24,7 @@ class ProfsRoutine extends CustomSubroutine with Instances {
     //Daten abholen
     logger.info(s"requested lecturers")
     logger.debug(s"param: $param")
-    val content = HTTPGet.get(FeedURL.lecturer)
+    val content = HTTPGet.cacheGet(FeedURL.lecturer)
     if (content.isDefined) {
       //parses the json entries and stores them in a lecturers object
       lecturers = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
@@ -32,12 +32,12 @@ class ProfsRoutine extends CustomSubroutine with Instances {
       logger.debug(s"Received ${lecturers.get.size} Lecturers.")
       //Sequence auf Wert prüfen
       if (lecturers.isDefined) {
-        val selectedLecturer = lecturers.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
+        val selectedLecturer =
+          lecturers.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
         if (selectedLecturer.isDefined) {
           //Ausgabe machen
           s"Hier sind die Informationen: ${selectedLecturer.get.toString}"
-        }
-        else {
+        } else {
           "Diesen Professor/diese Professorin kenne ich nicht. Bitte prüfe die Schreibweise und probiere es erneut."
         }
       } else {

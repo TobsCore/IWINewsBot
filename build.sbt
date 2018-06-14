@@ -32,6 +32,9 @@ libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
 // Rive Script (Chat Bots)
 libraryDependencies += "com.rivescript" % "rivescript-core" % "0.10.0"
 
+// Caching Library
+libraryDependencies += "com.github.blemale" %% "scaffeine" % "2.5.0"
+
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt

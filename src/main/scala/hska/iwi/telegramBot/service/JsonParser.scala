@@ -1,22 +1,25 @@
 package hska.iwi.telegramBot.service
 
+import java.text.SimpleDateFormat
+
+import com.github.blemale.scaffeine.{Cache, Scaffeine}
 import com.typesafe.scalalogging.Logger
 import hska.iwi.telegramBot.rooms.Room
 import hska.iwi.telegramBot.timetable._
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods
-import java.text.SimpleDateFormat
 
 import scala.collection.immutable.ListMap
 import scala.collection.mutable
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 object JsonParser {
 
   val logger = Logger(getClass)
   implicit val jsonDefaultFormats: DefaultFormats.type = org.json4s.DefaultFormats
-  
-  def myDecider(urlName: String): Option[Map[String, Map[String, Seq[Room]]]] = urlName match
-  {
+
+  def myDecider(urlName: String): Option[Map[String, Map[String, Seq[Room]]]] = urlName match {
     case "alltimetables" => myallTimetablesParser(FeedURL.alltimetables)
     case "blockcourses"  => myBlockCoursesParser(FeedURL.blockCourses)
     case _               => None
@@ -25,13 +28,13 @@ object JsonParser {
   def myallTimetablesParser(url: String): Option[Map[String, Map[String, Seq[Room]]]] = {
     //Map anlegen
     val lectureLocationMap: mutable.Map[String, Map[String, Seq[Room]]] = mutable.Map.empty
+
     //URL abholen/bauen
-    val content: Option[String] = HTTPGet.get(url)
+    val content: Option[String] = HTTPGet.cacheGet(url)
     //logger.debug(s"content: $content")
     if (content.isDefined) {
       //Json abholen und extracten
-      val timetableentries = Some(
-        JsonMethods.parse(content.get).extract[Seq[TimetableEntry]])
+      val timetableentries = Some(JsonMethods.parse(content.get).extract[Seq[TimetableEntry]])
       //logger.debug(s"timetableentries: $timetableentries")
 
       if (timetableentries.isDefined) {
@@ -45,8 +48,10 @@ object JsonParser {
                 val lectureName = entry.lectureName
                 val day: String = LocalDateTime.getWeekDay(entry.day).toString
                 //Datum-String bauen
-                val myDate: String = s"${intervalToGermanString(entry.interval)} am $day von ${LocalDateTime.prettyHourIntervall(entry.startTime)}-${LocalDateTime
-                  .prettyHourIntervall(entry.endTime)} Uhr"
+                val myDate: String =
+                  s"${intervalToGermanString(entry.interval)} am $day von ${LocalDateTime
+                    .prettyHourIntervall(entry.startTime)}-${LocalDateTime
+                    .prettyHourIntervall(entry.endTime)} Uhr"
                 dateRoomMap += (myDate -> roomSeq)
                 lectureLocationMap += (lectureName -> dateRoomMap.toMap)
               }
@@ -65,12 +70,11 @@ object JsonParser {
     val lectureLocationMap: mutable.Map[String, Map[String, Seq[Room]]] = mutable.Map.empty
     var singleDateMap: Map[String, Seq[Room]] = Map.empty
     //URL abholen/bauen
-    val content: Option[String] = HTTPGet.get(url)
+    val content: Option[String] = HTTPGet.cacheGet(url)
     //logger.debug(s"content: $content")
     if (content.isDefined) {
       //Json abholen und extracten
-      val blockcourseentry = Some(
-        JsonMethods.parse(content.get).extract[Seq[BlockCourseEntry]])
+      val blockcourseentry = Some(JsonMethods.parse(content.get).extract[Seq[BlockCourseEntry]])
       //logger.debug(s"timetableentries: $timetableentries")
 
       if (blockcourseentry.isDefined) {
@@ -90,7 +94,8 @@ object JsonParser {
     }
   } //end myBlockCoursesParser
 
-  def mapBuilderBlockCourses(blockCourseSingleDate: Seq[BlockCourseSingleDate]): Map[String, Seq[Room]] = {
+  def mapBuilderBlockCourses(
+      blockCourseSingleDate: Seq[BlockCourseSingleDate]): Map[String, Seq[Room]] = {
     val singleDateMap: mutable.Map[String, Seq[Room]] = mutable.Map.empty
     //über die einzelnen SingleDate iterieren und Ausgabe bauen
     for (singleDate <- blockCourseSingleDate) {
@@ -98,12 +103,13 @@ object JsonParser {
       val inputFormat = new SimpleDateFormat("yyyy-MM-dd")
       val outputFormat = new SimpleDateFormat("dd.MM.yyyy")
       val formattedDate = outputFormat.format(inputFormat.parse(singleDate.date))
-      val myDateString: String = s"Am $formattedDate von ${LocalDateTime.prettyHourIntervall(singleDate.startTime)}-${LocalDateTime
-        .prettyHourIntervall(singleDate.endTime)} Uhr"
+      val myDateString: String =
+        s"Am $formattedDate von ${LocalDateTime.prettyHourIntervall(singleDate.startTime)}-${LocalDateTime
+          .prettyHourIntervall(singleDate.endTime)} Uhr"
       singleDateMap += (myDateString -> roomSeq)
     }
     //singleDateMap.toMap
-    ListMap(singleDateMap.toMap.toSeq.sortBy(_._1):_*)
+    ListMap(singleDateMap.toMap.toSeq.sortBy(_._1): _*)
   }
 
   def intervalToGermanString(interval: String): String = interval match {

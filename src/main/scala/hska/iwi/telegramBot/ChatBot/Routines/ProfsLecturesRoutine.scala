@@ -22,15 +22,17 @@ class ProfsLecturesRoutine extends CustomSubroutine with Instances {
     logger.info(s"requested lecturers")
     logger.debug(s"param: $param")
     val stringBuilder = new StringBuilder
-    val content: Option[String] = HTTPGet.get(FeedURL.profslecturesurl)
+    val content: Option[String] = HTTPGet.cacheGet(FeedURL.profslecturesurl)
     logger.debug(s"content: $content")
     if (content.isDefined) {
       //parses the json entries
-      val lecturerData: Option[Seq[Lecturer]] = Some(JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
+      val lecturerData: Option[Seq[Lecturer]] = Some(
+        JsonMethods.parse(content.get).extract[Seq[Lecturer]].sortBy(_.lastname))
       logger.debug(s"Received ${lecturerData.get.size} Lecturers.")
       if (lecturerData.isDefined) {
         //selektiere Dozent
-        val selectedLecturer = lecturerData.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
+        val selectedLecturer =
+          lecturerData.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
         val lectures: Seq[Lecture] = selectedLecturer.get.lectures
         //Vorlesungsstring bauen
         lectures.map(_.longName).distinct.sorted.foreach(stringBuilder.append(_).append("\n"))
@@ -39,7 +41,7 @@ class ProfsLecturesRoutine extends CustomSubroutine with Instances {
         s"""<b>${selectedLecturer.get.shortenedFullname}</b> unterrichtet in folgenden Vorlesungen:
            |$ausgabe
           """.stripMargin
-      }else {
+      } else {
         logger.error("Couldn't parse the Json.")
         "Fehler beim Bereitstellen der Daten"
       }

@@ -3,16 +3,26 @@ package hska.iwi.telegramBot.service
 import java.net.{HttpURLConnection, URL}
 import java.nio.charset.{Charset, CodingErrorAction}
 
+import com.github.blemale.scaffeine.{Cache, Scaffeine}
 import com.typesafe.scalalogging.Logger
+
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 object HTTPGet {
 
   val logger = Logger(getClass)
 
-  def get(address: String,
-          connectTimeout: Int = 5000,
-          readTimeout: Int = 5000,
-          requestMethod: String = "GET"): Option[String] = {
+  private val cache: Cache[String, Option[String]] = Scaffeine()
+    .recordStats()
+    .expireAfterWrite(1 day)
+    .maximumSize(500)
+    .build[String, Option[String]]()
+
+  def getNow(address: String,
+             connectTimeout: Int = 5000,
+             readTimeout: Int = 5000,
+             requestMethod: String = "GET"): Option[String] = {
     try {
       val decoder = Charset.forName("UTF-8").newDecoder()
       decoder.onMalformedInput(CodingErrorAction.IGNORE)
@@ -37,4 +47,17 @@ object HTTPGet {
     }
   }
 
+  def cacheGet(address: String,
+               connectTimeout: Int = 5000,
+               readTimeout: Int = 5000,
+               requestMethod: String = "GET"): Option[String] = cache.getIfPresent(address) match {
+    case Some(e) =>
+      logger.debug(s"Getting data out of cache, for URL: $address")
+      e
+    case None =>
+      logger.debug(s"Getting data from remote, for URL: $address")
+      val remoteContent = getNow(address)
+      cache.put(address, remoteContent)
+      remoteContent
+  }
 }

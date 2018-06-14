@@ -60,7 +60,7 @@ trait Mensa extends Commands with Callbacks with Instances {
     val priceConfig = redis.getPriceConfigForUser(userId)
 
     val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
-    val content = HTTPGet.get(mensaUrl)
+    val content = HTTPGet.cacheGet(mensaUrl)
 
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object

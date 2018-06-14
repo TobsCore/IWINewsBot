@@ -22,7 +22,7 @@ case class FeedReader(address: String) {
     logger.debug(s"Connecting to $address")
     // Receive the feed from the web by http
     //response from bulletin board
-    val content = HTTPGet.get(address)
+    val content = HTTPGet.getNow(address)
 
     if (content.isDefined) {
       //fixes problem which results from type being a scala keyword
@@ -39,7 +39,7 @@ case class FeedReader(address: String) {
   }
 
   def receiveFacultyNews(): Option[List[FacultyNews]] = {
-    val content = HTTPGet.get(address)
+    val content = HTTPGet.getNow(address)
 
     if (content.isDefined) {
       //parses the json entries and stores them in a set of entries

@@ -126,7 +126,7 @@ class MensaRoutine extends CustomSubroutine with Instances {
                    daysInFuture: Int,
                    foodAdditives: Seq[String] = Seq()): Option[String] = {
     val mensaUrl = FeedURL.mensa + LocalDateTime.getDateInFuture(daysInFuture)
-    val content = HTTPGet.get(mensaUrl)
+    val content = HTTPGet.cacheGet(mensaUrl)
 
     if (content.isDefined) {
       //parses the json entries and stores them in a MensaMoltke object
