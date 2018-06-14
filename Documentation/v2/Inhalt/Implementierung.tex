@@ -34,16 +34,45 @@ Zu den Lehrenden wurden zwei verschiedene Abfragemöglichkeiten implementiert. B
 Die erste Abfragemöglichkeit dient dazu, Informationen über den angefragten Professor, im Speziellen zu den Sprechzeiten, bereitzustellen. Zusätzlich werden dann noch die E-Mail-Adresse, falls vorhanden auch ein kleiner Kommentar des Professors und die Raumnummer des Büros mitausgegeben. Diese Routine bildet also die schon vorher vorhandene Funktion ab, die mit /profs aufgerufen wurde. Um so eine Anfrage abzuschicken, eignet sich zum Beispiel ''Wie lautet die E-Mail von Frau Laubenheimer?'' oder ''Wann hat Professor Vogelsang Sprechstunde?'' \\
 Um genügend Spielraum zu geben, wurde für die Anrede ein Platzhalter gewählt, der verschiedene Möglichkeiten abdeckt. Die Ausgabe hierzu kann wie folgt aussehen:
 
-\todo{bild einfügen}
+\begin{figure}[!htb]
+    \centering
+    \caption{Informationen über Lehrende}
+      \includegraphics[width=0.5\linewidth]{Prof.png}
+      \label{img:profuebersicht}
+    \caption*{Quelle: Eigene Abbildung}
+\end{figure}
 
 Die zweite Abfragemöglichkeit wurde komplett neu implementiert und gibt für die angefragten Lehrenden alle Vorlesungen aus, die diese halten. Hierbei wird auf eine erweiterte Abfrage der gleichen REST-Schnittstelle wie bei der Sprechzeitenabfrage zugegriffen. Eine Anfrage im Chatbot kann zum Beispiel sein: ''Welche Vorlesungen hält Professor Henning?'' worauf dann folgende Ausgabe gemacht wird (Vorlesungen mit gleichem Namen, die aber in zwei verschiedenen Studiengängen/Semestern gehalten werden, werden nicht doppelt aufgeführt):
 
-\todo{bild einfügen}
+\begin{figure}[!htb]
+    \centering
+    \caption{Alle Veranstaltungen eines Lehrenden}
+      \includegraphics[width=0.5\linewidth]{Vorlesungsuebersicht.png}
+      \label{img:vorlesungsuebersicht}
+    \caption*{Quelle: Eigene Abbildung}
+\end{figure}
 
 \subsection{Vorlesungen}
 Für die Vorlesungen wurde eine neue Routine entwickelt, die für die angefragte Vorlesung den Raum und die Zeit ausgibt. Hierfür müssen über die REST-API der Hochschule gleich zwei verschiedene Objekte abgefragt werden. Zum einen werden alle Stundenpläne abgeholt und zum anderen werden alle Blockkurse abgeholt, da diese nicht in den eigentlichen Stundenplänen mit enthalten sind. Als Ausgabe bekommt man dann die Zeit und den Raum der Vorlesung, wobei die Ausgaben leicht unterschiedlich aussehen, da zwischen ''normaler'' Vorlesung und Blockkurs unterschieden werden muss.
 
-\todo{bilder einfügen}
+\begin{figure}[!htb]
+    \centering
+    \caption{Ausgabe von Zeit und Raum von Blockkursen und regulären Veranstaltungen}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \caption{Blockkurs}
+          \includegraphics[width=0.9\linewidth]{BlockkursLocation.png}
+          \label{img:blockkurs}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \caption{Reguläre Vorlesung}
+          \includegraphics[width=0.9\linewidth]{VorlesungLocation.png}
+          \label{img:vorlesung}
+    \end{subfigure}
+    \caption*{Quelle: Eigene Abbildung}
+    \label{fig:blockkursUndVorlesung}
+    \end{figure}
 
 \section{Spaßige Bemerkungen}
 Eine weitere Anforderung war es, neben den informativen Anfragen auch auf nicht ernste Anfragen zu antworten. Hierfür wurde eine zusätzliche Datei (fun.rive) angelegt, die neben spitzen Antworten auch einige Informatikerwitze enthält. Neben dem Klassiker ''Was ist der Sinn des Leben?'' antwortet der Bot auf die Anfrage ''Was hast Du an?'' mit ''Das ist ja eine indiskrete Frage''. \\
