@@ -20,3 +20,7 @@
 
 + (wie sieht|was ist) mein stundenplan [aus]
 - <call>timetable</call>
+
+// If no match is found, call no-comprendo routine. It will take care of that.
++ *
+- <call>no-comprendo</call>
