@@ -27,7 +27,7 @@
 + wo habe ich *?
 - <call>spaceandtime <star></call>
 
-+ wo findet * statt?
++ wo findet [die] [@lectures] * statt?
 - <call>spaceandtime <star></call>
 
 + in welchem raum ist *?
@@ -100,7 +100,7 @@
 + was unterrichtet [@nametitles] *?
 - <call>profslectures <star></call>
 
-+ welche [vorlesungen|vorlesung] hält [@nametitles] *?
++ welche [@lectures] hält [@nametitles] *?
 - <call>profslectures <star></call>
 
 
