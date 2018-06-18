@@ -66,7 +66,7 @@ class MensaRoutine extends CustomSubroutine with Instances {
     logger.debug("FoodAdditivies: " + foodAdditives)
 
     args.headOption match {
-      case Some(param) =>
+      case Some(_) =>
         if (day.length > 0) {
           callMensa(day(0), rs, foodAdditives)
         } else {
@@ -257,5 +257,5 @@ object Days {
 }
 
 object DaysAndSynonyms {
-  val AllDays = DaySynonyms.AllDays.union(Days.AllDays)
+  val AllDays: Seq[String] = DaySynonyms.AllDays.union(Days.AllDays)
 }

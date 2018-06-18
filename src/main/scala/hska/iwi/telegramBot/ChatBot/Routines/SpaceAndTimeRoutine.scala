@@ -17,8 +17,8 @@ class SpaceAndTimeRoutine extends CustomSubroutine with Instances {
     val stringArgs: String = args.mkString(" ")
     logger.debug("Parameter bei RoomFinderRoutine: " + stringArgs)
     args.headOption match {
-      case Some(param) => requestLocalisation(stringArgs, rs)
-      case _           => "Für welche Vorlesung möchtest du den Raum wissen?"
+      case Some(_) => requestLocalisation(stringArgs, rs)
+      case _       => "Für welche Vorlesung möchtest du den Raum wissen?"
     }
   }
 

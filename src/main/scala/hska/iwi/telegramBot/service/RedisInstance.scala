@@ -189,7 +189,7 @@ object RedisInstance {
     try {
       new RedisInstance(new RedisClient(Configuration.redisHost, Configuration.redisPort))
     } catch {
-      case e: Throwable =>
+      case _: Throwable =>
         logger.error("Couldn't find running Redis instance. Bot will exit now...")
         System.exit(0)
         null
