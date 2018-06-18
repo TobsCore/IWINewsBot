@@ -25,21 +25,25 @@ class SpaceAndTimeRoutine extends CustomSubroutine with Instances {
   def requestLocalisation(param: String, rs: RiveScript): String = {
     logger.info(s"requested localisation")
     logger.info(s"param: $param")
-    val lectureLocationMap: Option[Map[String, Map[String, Seq[Room]]]] = JsonParser.myDecider("alltimetables")
-    val blockCoursesMap: Option[Map[String, Map[String, Seq[Room]]]] = JsonParser.myDecider("blockcourses")
+    val lectureLocationMap: Option[Map[String, Map[String, Seq[Room]]]] =
+      JsonParser.myDecider("alltimetables")
+    val blockCoursesMap: Option[Map[String, Map[String, Seq[Room]]]] =
+      JsonParser.myDecider("blockcourses")
 
     if (lectureLocationMap.isDefined || blockCoursesMap.isDefined) {
       logger.debug(s"Received $lectureLocationMap")
       //gewünschtes Key-Value-Paar selektieren
-      val selectedLectureTimetable = lectureLocationMap.get.find(_._1.toLowerCase == param.toLowerCase.replace("_", " "))
-      val selectedLectureBlockCourse = blockCoursesMap.get.find(_._1.toLowerCase == param.toLowerCase.replace("_", " "))
+      val selectedLectureTimetable =
+        lectureLocationMap.get.find(_._1.toLowerCase == param.toLowerCase.replace("_", " "))
+      val selectedLectureBlockCourse =
+        blockCoursesMap.get.find(_._1.toLowerCase == param.toLowerCase.replace("_", " "))
       if (selectedLectureTimetable.isDefined) {
         ausgabe(selectedLectureTimetable)
       } else if (selectedLectureBlockCourse.isDefined) {
         ausgabe(selectedLectureBlockCourse)
       } else {
-        logger.error("Couldn't connect to the server.")
-        "Fehler beim Bereitstellen der Daten"
+        logger.error(s"Could not find information about $param.")
+        s"Ich kenne die Veranstaltung $param nicht."
       }
     } else {
       logger.error("Couldn't connect to the server.")
@@ -72,7 +76,6 @@ class SpaceAndTimeRoutine extends CustomSubroutine with Instances {
       mapstringBuilder.append(date + s" $raum: " + locationstringBuilder.toString() + "\n")
     }
     //Unterscheidung ein Raum/mehrere Räume
-
 
     val locationsausgabe = mapstringBuilder.toString
     s"""Hier sind die Infos zur Vorlesung <b>${map.get._1}</b>:

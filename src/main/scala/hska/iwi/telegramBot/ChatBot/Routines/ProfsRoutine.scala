@@ -22,7 +22,6 @@ class ProfsRoutine extends CustomSubroutine with Instances {
 
   private def callProfsWithParam(param: String, rs: RiveScript): String = {
     //Daten abholen
-    logger.info(s"requested lecturers")
     logger.debug(s"param: $param")
     val content = HTTPGet.cacheGet(FeedURL.lecturer)
     if (content.isDefined) {
@@ -41,7 +40,7 @@ class ProfsRoutine extends CustomSubroutine with Instances {
           "Diesen Professor/diese Professorin kenne ich nicht. Bitte prüfe die Schreibweise und probiere es erneut."
         }
       } else {
-        logger.error("Couldn't parse the Json.")
+        logger.error(s"Could not find entry in lecturers.")
         "Fehler beim Bereitstellen der Daten"
       }
     } else {

@@ -19,7 +19,6 @@ class ProfsLecturesRoutine extends CustomSubroutine with Instances {
   }
 
   def requestProfsLectures(param: String, rs: RiveScript): String = {
-    logger.info(s"requested lecturers")
     logger.debug(s"param: $param")
     val stringBuilder = new StringBuilder
     val content: Option[String] = HTTPGet.cacheGet(FeedURL.profslecturesurl)

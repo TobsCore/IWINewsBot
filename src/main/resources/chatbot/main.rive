@@ -103,6 +103,9 @@
 + welche [@lectures] hält [@nametitles] *?
 - <call>profslectures <star></call>
 
++ welche [@lectures] [werden|wurden|sind] von [@nametitles] * gehalten?
+- <call>profslectures <star></call>
+
 
 //If no match is found, call no-comprendo routine. It will take care of that.
 + *
