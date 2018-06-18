@@ -32,14 +32,20 @@ class ProfsLecturesRoutine extends CustomSubroutine with Instances {
         //selektiere Dozent
         val selectedLecturer =
           lecturerData.get.find(lec => lec.lastname.toLowerCase == param.toLowerCase)
-        val lectures: Seq[Lecture] = selectedLecturer.get.lectures
-        //Vorlesungsstring bauen
-        lectures.map(_.longName).distinct.sorted.foreach(stringBuilder.append(_).append("\n"))
-        val ausgabe = stringBuilder.toString()
-        //Ausgabe
-        s"""<b>${selectedLecturer.get.shortenedFullname}</b> unterrichtet in folgenden Vorlesungen:
-           |$ausgabe
+
+        if (selectedLecturer.isEmpty) {
+          "Ich kenne den gesuchten Dozenten nicht."
+        } else {
+          val lectures: Seq[Lecture] = selectedLecturer.get.lectures
+          //Vorlesungsstring bauen
+          lectures.map(_.longName).distinct.sorted.foreach(stringBuilder.append(_).append("\n"))
+          val ausgabe = stringBuilder.toString()
+          //Ausgabe
+          s"""<b>${selectedLecturer.get.shortenedFullname}</b> unterrichtet in folgenden 
+             |Vorlesungen:
+             |$ausgabe
           """.stripMargin
+        }
       } else {
         logger.error("Couldn't parse the Json.")
         "Fehler beim Bereitstellen der Daten"
