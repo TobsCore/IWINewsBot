@@ -23,8 +23,8 @@ class SpaceAndTimeRoutine extends CustomSubroutine with Instances {
   }
 
   def requestLocalisation(param: String, rs: RiveScript): String = {
-    logger.info(s"requested localisation")
-    logger.info(s"param: $param")
+    logger.debug(s"requested localisation")
+    logger.debug(s"param: $param")
     val lectureLocationMap: Option[Map[String, Map[String, Seq[Room]]]] =
       JsonParser.myDecider("alltimetables")
     val blockCoursesMap: Option[Map[String, Map[String, Seq[Room]]]] =
