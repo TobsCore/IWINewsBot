@@ -22,7 +22,12 @@ class MensaRoutine extends CustomSubroutine with Instances {
     val containsAnd = splitExpressions(args, "und")
 
     val foodAdditives = if (containsAnd.isDefined) {
-      getFoodAdditivesUnionWithAnd(containsAnd.get(0), containsAnd.get(1))
+      if (concatStringOhne.isDefined && !concatStringMit.isDefined) {
+        getFoodAdditivesUnionOrInteresectWithAnd(containsAnd.get(0), containsAnd.get(1), "ohne")
+      } else {
+        getFoodAdditivesUnionOrInteresectWithAnd(containsAnd.get(0), containsAnd.get(1))
+      }
+
     } else {
 
       args.length match {
@@ -145,34 +150,49 @@ class MensaRoutine extends CustomSubroutine with Instances {
         FoodAdditives.Vegan
       case "vegetarisch" | "vegetarisches" | "vegetarischen" | "vegetarische" =>
         FoodAdditives.Vegetarian
-      case "ohne fleisch" | "fleischlos" | "ohne tier" | "tierlos" =>
-        FoodAdditives.Vegan.toSet.union(FoodAdditives.Vegetarian.toSet).toSeq
-      case "mit schwein" | "schwein" | "pork"                => FoodAdditives.Pork
+      case "mit schwein" | "schwein" | "pork" => FoodAdditives.Pork
       case "rind" | "kuh" | "beef" | "mit rind" | "mit beef" => FoodAdditives.Beef
-      case "mit fleisch" | "fleisch" | "fleischhaltiges" | "fleischhaltigen" =>
+      case "mit fleisch" | "fleisch" | "fleischhaltiges" | "fleischhaltigen" | "ohne gemüse" =>
         FoodAdditives.Beef.toSet.union(FoodAdditives.Pork.toSet).toSeq
       case "schalentiere" | "weichtiere" | "meeresfrüchte" | "mit schalentieren" |
-          "mit weichtieren" | "mit meeresfrüchten" =>
+           "mit weichtieren" | "mit meeresfrüchten" =>
         FoodAdditives.Molluscs
-      case "fisch" | "mit fisch" => FoodAdditives.Fish
+      case "fisch" | "mit fisch" => FoodAdditives.Fish.union(FoodAdditives.Molluscs)
       case "mit tierischen produkten" =>
-        FoodAdditives.Fish.toSet
-          .union(FoodAdditives.Beef.toSet)
-          .union(FoodAdditives.Molluscs.toSet)
-          .union(FoodAdditives.Pork.toSet)
-          .toSeq
+        FoodAdditives.Fish
+          .union(FoodAdditives.Beef)
+          .union(FoodAdditives.Molluscs)
+          .union(FoodAdditives.Pork)
+      case "ohne fleisch" | "fleischlos" | "fleischloses" | "ohne tier" | "tierlos" | "tierloses"
+           | "gemüse" =>
+        FoodAdditives.Vegan.union(FoodAdditives.Vegetarian)
+      case "ohne fisch" | "fischlos" | "fischloses" => FoodAdditives.All.filterNot(_ ==
+        FoodAdditives.Fish)
+      case "ohne schwein" => FoodAdditives.All.filterNot(FoodAdditives.Pork.contains(_))
+      case "ohne rind" => FoodAdditives.All.filterNot(FoodAdditives.Beef.contains(_))
+      case "ohne vegan" => FoodAdditives.All.filter(FoodAdditives.Vegan.contains(_))
+      case "ohne vegetarisch" => FoodAdditives.All.filter(FoodAdditives.Vegetarian.contains(_))
       case _ => Seq()
 
     }
 
-  def getFoodAdditivesUnionWithAnd(param1: String, param2: String): Seq[String] = {
-    logger.debug("Foodparameter which should be joined")
+  def getFoodAdditivesUnionOrInteresectWithAnd(param1: String, param2: String,
+                                               withOrWithout: String = "")
+  : Seq[String] = {
+    logger.debug("Foodparameter which should be joined or interesected")
     logger.debug("Parameter1 " + param1)
     logger.debug("Parameter2 " + param2)
     val food1 = getFoodAdditivesSeqByName(param1)
     val food2 = getFoodAdditivesSeqByName(param2)
 
-    food1.union(food2)
+    logger.debug("food1 " + food1)
+    logger.debug("food2 " + food2)
+    logger.debug("withOrWithout" + withOrWithout)
+
+    withOrWithout match {
+      case "ohne" => food1.intersect(food2)
+      case _ => food1.union(food2).distinct
+    }
   }
 
   def splitExpressions(expressions: Array[String], searchString: String): Option[Array[String]] = {
@@ -232,6 +252,7 @@ object FoodAdditives {
   val Vegetarian = Seq("96")
   val Vegan = Seq("97")
   val Molluscs = Seq("We")
+  val All: Seq[String] = Beef.union(Fish).union(Pork).union(Vegetarian).union(Vegan).union(Molluscs)
 }
 
 object DaySynonyms {
