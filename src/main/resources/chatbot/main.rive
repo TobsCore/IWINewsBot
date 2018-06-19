@@ -120,6 +120,7 @@
 - Oh, wie schön! Das gibt es dazu in der Mensa: \n
 ^ <call>mensa <star></call>
 
+
 //profs
 + [wie lautet|was ist] die (@mail) von [@nametitles] *
 - <call>profs <star2></call>
@@ -145,13 +146,13 @@
 + was sind die kontaktdaten von [@nametitles] *
 - <call>profs <star></call>
 
-+ wie kann ich [@nametitles] * [kontaktieren|erreichen]
-- <call>profs <star></call>
++ wie kann ich [@nametitles] * (kontaktieren|erreichen)
+- <call>profs <star1></call>
 
-+ was weißt du [zu den|über die] [professoren|dozenten]
++ was weißt du [zu den|über die] (lehrenden|professoren|dozenten)
 - Zu welchem Lehrenden möchtest du etwas wissen? Gib bitte den Namen mit Anrede ein.
 
-+ kannst du mir [etwas|was] zu den professoren sagen
++ kannst du mir [etwas|was] zu den (lehrenden|professoren|dozenten) sagen
 - Zu welchem Lehrenden möchtest du etwas wissen? Gib bitte den Namen mit Anrede ein.
 
 + [@nametitles] *
