@@ -1,13 +1,13 @@
 \chapter{Implementierte Funktionen}
-Wie im Vorherigen Kapitel bereits angesprochen wurde, nutzt Rivescript Routinen, die aus den .rive-Dateien angesprochen werden können. Diese Routinen müssen dem Chatbot bekannt gemacht werden. Im Folgenden sollen die Funktionen, die der Chatbot unterstützt, vorgestellt werden und auf deren Implementierung eingegangen werden.
+Wie im Vorherigen Kapitel bereits angesprochen wurde, nutzt Rivescript Routinen, die aus den \texttt{.rive}-Dateien angesprochen werden können. Diese Routinen müssen dem Chatbot bekannt gemacht werden. Im Folgenden sollen die Funktionen, die der Chatbot unterstützt, vorgestellt werden und auf deren Implementierung eingegangen werden.
 
 \section{Hochschulbezogene Funktionen}
 Der Chatbot hat die Hauptaufgabe mit natürlichen Texteingaben Informationen über die Hochschule bereitzustellen. Diese Informationen enthält der Chatbot über Abfragen der hochschuleigenen REST-API. Der Chatbot deckt die Themengebiete Mensa, Stundenplan, Informationen über Lehrende und Vorlesungen ab.
 
 \subsection{Mensa}
-Die Mensafunktion war bislang bereits vom Bot abgedeckt, indem man /mensa aufruft. Dabei erscheint ein Menü, welches dem Benutzer eine Auswahlmöglichkeit gibt, innerhalb der nächsten fünf Tage inklusive des heutiges Tages, falls es ein ''Arbeitstag'', also ein Tag außer Samstag und Sonntag ist, das Mensaangebot zu einem bestimmten Tag ausgeben zu lassen.
-Der Chatbot ermöglicht nun zunächst diese Funktionalität im normalen Sprachgebrauch zu benutzen. Dabei werden Formulierungen nach konkreten Tagen ''Was gibt es am Montag in der Mensa?'' und vom heutigen Tag ausgehend ''Was gibt es heute/morgen/übermorgen in der Mensa?''. Es gibt auch die Möglichkeit nach vergangenen Tagen zu fragen, dann dementsprechend mit der Vergangenheitsform. Insgesamt wurde definiert, dass wenn der User keinen konkreten Tag angibt, immer der heutige Tag zurückgegeben wird. Das klassische Beispiel wäre ''Was gibt es zu essen?'', bei dem dann das heutige Mensaangebot zurückgegeben wird.
-Dies deckt die Basisfunktionalität von dem bestehenden Telegram-Command /mensa ab.
+Die Mensafunktion war bislang bereits vom Bot abgedeckt, indem man \texttt{/mensa} aufruft. Dabei erscheint ein Menü, welches dem Benutzer eine Auswahlmöglichkeit gibt, innerhalb der nächsten fünf Tage inklusive des heutiges Tages, falls es ein ''Arbeitstag'', also ein Tag außer Samstag und Sonntag ist, das Mensaangebot zu einem bestimmten Tag ausgeben zu lassen. \\
+Der Chatbot ermöglicht nun zunächst diese Funktionalität im normalen Sprachgebrauch zu benutzen. Dabei werden Formulierungen nach konkreten Tagen ''Was gibt es am Montag in der Mensa?'' und vom heutigen Tag ausgehend ''Was gibt es heute/morgen/übermorgen in der Mensa?''. Es gibt auch die Möglichkeit nach vergangenen Tagen zu fragen, dann dementsprechend mit der Vergangenheitsform. Insgesamt wurde definiert, dass wenn der User keinen konkreten Tag angibt, immer der heutige Tag zurückgegeben wird. Das klassische Beispiel wäre ''Was gibt es zu essen?'', bei dem dann das heutige Mensaangebot zurückgegeben wird. \\
+Dies deckt die Basisfunktionalität von dem bestehenden Telegram-Command \texttt{/mensa} ab.
 
 Viel interessanter ist es jedoch für den Benutzer, innerhalb der Gerichte des Mensaangebots filtern zu können. So können die Benutzer zum Beispiel fragen, welche Gerichte vegetarisch und vegan sind. Weitere Fragen im Bezug auf enthaltene Lebensmittel in den Mensaspeisen sind möglich.
 In diesem Zusammenhang haben sich Schwierigkeiten mit der Verwendung von Rivescript ergeben. \\
@@ -21,7 +21,7 @@ Diese beiden Parameter können in beliebiger Reihenfolge auftreten, da sowohl di
 ''Welche vegetarischen Gerichte gibt es morgen zu essen''?
 auftreten können. \\
 Ein Problem ergibt sich dadurch, dass die Reihenfolge dieser beiden Informationen nicht festgelegt ist. So ist nötig, alle übergebenen Parameter nach einer Tagesinformation zu durchsuchen. Man muss also erst den Typ des Parameters herausfinden, um ihn an Methoden weiterzugeben. \\
-Ein weiteres Problem tritt auf, wenn ein der Parameter aus mehreren Wörtern besteht, zum Beispiel “ohne Fleisch”. Rivescript trennt Parameter, die es unter dem *-Wildcard erkennt am Leerzeichen auf. Es ist also nötig, diese wieder nach dem Matchen und vor der Auswertung zusammen zu setzen. \\
+Ein weiteres Problem tritt auf, wenn ein der Parameter aus mehreren Wörtern besteht, zum Beispiel ''ohne Fleisch''. Rivescript trennt Parameter, die es unter dem *-Wildcard erkennt am Leerzeichen auf. Es ist also nötig, diese wieder nach dem Matchen und vor der Auswertung zusammen zu setzen. \\
 Als Strategie wurde eingesetzt, dass man die Parameter nach den Schlüsselwörtern \emph{mit} und \emph{ohne} durchsucht und diese mit den darauf folgenden Wörtern wieder zu einem gemeinsamen String zusammenfügt, bevor man diesen weiter verarbeitet. Dabei ist zu beachten, dass alle Informationen über den gewünschten Tag der Mensaausgabe dort herausgefiltert werden, damit sie nicht im konkatenierten Lebensmittel-String landen. Es sind also viele String-Vergleiche und Konkatenationen notwendig, um die Benutzereingaben sinnvoll auszuwerten. \\
 Wenn kein bestimmter Tag gewünscht wird, wird der heutige Tag ausgegeben. Wenn kein bestimmter Lebensmittelwunsch besteht, werden alle Gerichte ausgegeben.
 
