@@ -75,16 +75,31 @@
 
 
 //profs
-+ wie lautet die email von [@nametitles] *
-- <call>profs <star></call>
++ [wie lautet|was ist] die (@mail) von [@nametitles] *
+- <call>profs <star2></call>
 
-+ in welchem raum [finde ich|ist|sitzt] [@nametitles] *
-- <call>profs <star></call>
++ in welchem (raum|zimmer) [finde ich|ist|sitzt] [@nametitles] *
+- <call>profs <star2></call>
 
 + [wie|wo] finde ich [@nametitles] *
 - <call>profs <star></call>
 
-+ wann hat [@nametitles] * sprechstunde
++ wo ist [@nametitles] *
+- <call>profs <star></call>
+
++ wann hat [@nametitles] * (sprechstunde|zeit)
+- <call>profs <star></call>
+
++ [wann|was] sind die [sprechzeiten|sprechstunden] von [@nametitles] *
+- <call>profs <star></call>
+
++ [wann|was] ist die [sprechzeit|sprechstunde] von [@nametitles] *
+- <call>profs <star></call>
+
++ was sind die kontaktdaten von [@nametitles] *
+- <call>profs <star></call>
+
++ wie kann ich [@nametitles] * [kontaktieren|erreichen]
 - <call>profs <star></call>
 
 + was weißt du [zu den|über die] [professoren|dozenten]
@@ -95,7 +110,7 @@
 
 + [@nametitles] *
 % zu welchem professor möchtest du etwas wissen gib bitte seinen namen mit anrede ein
-- <call>profs <star2></call>
+- <call>profs <star></call>
 
 + was unterrichtet [@nametitles] *?
 - <call>profslectures <star></call>
