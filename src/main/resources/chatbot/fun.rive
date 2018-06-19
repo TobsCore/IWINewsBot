@@ -5,26 +5,53 @@
 + hallo [*]
 - Hallo selber!
 
-+ wie geht es dir [so|heute|denn]?
++ wie geht es dir [so|heute|denn]
 - Es ist in Ordnung, danke der Nachfrage.
 - Meh.
 - Hör mir auf! 🙈
 - Frag nicht!
 - Heute ist nicht mein Tag, aber lieb, dass du fragst.
+- Ganz gut und dir?
 
-+ was hast du an?
++ [*] (gut|nicht schlecht) [*]
+% ganz gut und dir
+- Schön zu hören!
+
++ [*] (nicht gut|schlecht) [*]
+% ganz gut und dir
+- Oh, wie schade! Gute Besserung!
+
++ (erzähle|erzähl|sag) [mir] einen witz
+- Hält ein Polizist einen Vampir auf einem Tandem an, da er Schlangenlinien fährt. Der Polizist fragt: \n
+^ "Haben Sie etwas getrunken?" \n
+^ Der Vampir antwortet: \n
+^ "Ja, zwei Radler!"
+
++ soll ich lieber * oder *
+- Hör auf dein Herz!
+
++ (was machst du|was geht bei dir) *
+- Ich bin ein Bot. Beep bop. Ich erfülle Botaufgaben. Beep bop.
+
++ was hast du an
 - Das ist ja eine indiskrete Frage! 😳
 
-+ [*] (blöd|scheiße|fick|doof|fuck|kacke|fucking) [*]
++ wie alt bist du
+- Ich wurde im Wintersemester 2017/18 geschaffen. Ein Alter habe ich jedoch nicht.
+
++ [*] (blöd|blöder|scheiß|doofes|scheiße|fick|doof|fuck|kacke|fucking|sex|ficken) [*]
 - Mit einer positiveren Einstellung wirst du im Leben weiter kommen!
 
-+ was ist der sinn des lebens?
++ was ist der sinn des lebens
 - 42
 
++ ich bin müde
+- Kopf hoch! Bald hast du es geschafft!
+- Geh doch heute einmal früher ins Bett.
+
 + wie (wird|ist) das wetter [*]?
-- Sehe ich aus wie ein meteorologisches Programm?!
 - Sonnig mit Aussicht auf Fleischbällchen.
-- LMGTFY...Nee, nicht mein Job.
+- Probiere doch mal meine Google-Funktion: google <i>suchwort</i>
 
 + google *
-- Google search: <a href="http://google.com/search?q=<star>">Click Here</a>
+- Google-Suche: <a href="http://google.com/search?q=<star>">Hier klicken</a>

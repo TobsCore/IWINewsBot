@@ -1,78 +1,124 @@
 ! version = 2.0
 
 //timetable
-+ welche (@lectures) habe ich [am] *?
++ welche (@lectures) habe ich [am] *
 - <call>timetable <star2></call>
 
-+ welche (@lectures) habe ich?
++ welche (@lectures) habe ich
 - <call>timetable</call>
 
-+ (wie sieht|was ist) mein stundenplan [aus]?
++ (wie sieht|was ist) mein stundenplan [aus]
 - <call>timetable</call>
 
-+ wie sieht mein tag aus?
++ wie sieht mein tag aus
 - <call>timetable heute</call>
 
-+ was habe ich [am] _ [für @lectures]?
++ was habe ich [am] _ [für @lectures]
 - <call>timetable <star></call>
 
-+ was steht [am] _ an?
++ was steht [am] _ an
 - <call>timetable <star></call>
 
-+ was steht an?
++ was steht an
 - <call>timetable</call>
 
 
 //where
-+ wo habe ich *?
++ wo habe ich *
 - <call>spaceandtime <star></call>
 
-+ wo findet [die] [@lectures] * statt?
++ wo findet [die] [@lectures] * statt
 - <call>spaceandtime <star></call>
 
-+ in welchem raum ist *?
++ in welchem raum ist *
 - <call>spaceandtime <star></call>
 
-+ in welchem raum findet * statt?
++ in welchem raum findet * statt
 - <call>spaceandtime <star></call>
 
 
 //when
-+ wann findet * statt?
++ wann findet * statt
 - <call>spaceandtime <star></call>
 
-+ wann habe ich *?
++ wann habe ich *
 - <call>spaceandtime <star></call>
 
-+ wann ist *?
++ wann ist *
 - <call>spaceandtime <star></call>
 
 
 //mensa
-+ was (gibt|gab) es (in der mensa|zu essen)?
++ was (gibt|gab) es (in der mensa|zu essen)
 - <call>mensa</call>
 
-+ was (gibt|gab) es [am] * [in der mensa|zu essen]?
++ was (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star2></call>
 
-+ welche * gerichte (gibt|gab) es [in der mensa|zu essen]?
++ welche * gerichte (gibt|gab) es [in der mensa|zu essen]
 - <call>mensa <star1></call>
 
-+ welche * gerichte (gibt|gab) es [am] * [in der mensa|zu essen]?
++ welche * gerichte (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star1> <star3></call>
 
-+ welche gerichte * (gibt|gab) es [am] * [in der mensa|zu essen]?
++ welche gerichte * (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star1> <star3></call>
 
-+ welche gerichte * (gibt|gab) es [in der mensa|zu essen]?
++ welche gerichte (ohne|mit) * (gibt|gab) es [am] * [in der mensa|zu essen]
+- <call>mensa <star1> <star2> <star4></call>
+
++ welche gerichte * (gibt|gab) es [in der mensa|zu essen]
 - <call>mensa <star1></call>
 
-+ welche gerichte (sind|waren|enthalten) * [in der mensa|zu essen]?
++ welche gerichte (sind|waren|enthalten) * [in der mensa|zu essen]
 - <call>mensa <star2></call>
 
-+ welche gerichte (gibt|gab) es * [in der mensa|zu essen]?
++ welche gerichte (sind|waren|enthalten) (keine|kein) * [in der mensa|zu essen]
+- <call>mensa ohne <star3></call>
+
++ welche gerichte (sind|waren|enthalten) (keine|kein) * und * [in der mensa|zu essen]
+- <call>mensa ohne <star3> und ohne <star4></call>
+
++ welche gerichte (gibt|gab) es * [in der mensa|zu essen]
 - <call>mensa <star2></call>
 
++ ich habe hunger
+- Vielleicht gibt es ja in der Mensa etwas Gutes? 😉\n
+^ <call>mensa</call>
+
++ ich habe (hunger|schmacht|lust) [auf|nach] *
+- Vielleicht gibt es ja in der Mensa etwas Gutes? 😉\n
+^ <call>mensa <star2></call>
+
++ ich habe (keinen|keine) (hunger|schmacht|lust) [auf|nach] *
+- Vielleicht gibt es ja in der Mensa trotzdem etwas Gutes? 😉\n
+^ <call>mensa ohne <star3></call>
+
++ ich habe (keinen|keine) (hunger|schmacht|lust) [auf|nach] * und *
+- Vielleicht gibt es ja in der Mensa trotzdem etwas Gutes? 😉\n
+^ <call>mensa ohne <star3> und ohne <star4></call>
+
++ ich (will|möchte) essen
+- Vielleicht gibt es ja in der Mensa etwas Gutes? 😉\n
+^ <call>mensa</call>
+
++ ich (will|möchte) * essen
+- <call>mensa <star2></call>
+
++ ich (will|möchte) kein * essen
+- <call>mensa ohne <star2></call>
+
++ ich bin [ein|eine] (vegetarier|vegetarierin)
+- Oh, wie schön! Das gibt es dazu in der Mensa: \n
+^ <call>mensa vegetarisch und vegan</call>
+
++ ich bin [ein|eine] (veganer|veganerin)
+- Oh, wie schön! Das gibt es dazu in der Mensa: \n
+^ <call>mensa vegan</call>
+
++ ich ernähre mich _
+- Oh, wie schön! Das gibt es dazu in der Mensa: \n
+^ <call>mensa <star></call>
 
 //profs
 + [wie lautet|was ist] die (@mail) von [@nametitles] *
@@ -103,14 +149,17 @@
 - <call>profs <star></call>
 
 + was weißt du [zu den|über die] [professoren|dozenten]
-- Zu welchem Professor möchtest du etwas wissen? Gib bitte seinen Namen mit Anrede ein.
+- Zu welchem Lehrenden möchtest du etwas wissen? Gib bitte den Namen mit Anrede ein.
 
 + kannst du mir [etwas|was] zu den professoren sagen
-- Zu welchem Professor möchtest du etwas wissen? Gib bitte seinen Namen mit Anrede ein.
+- Zu welchem Lehrenden möchtest du etwas wissen? Gib bitte den Namen mit Anrede ein.
 
 + [@nametitles] *
-% zu welchem professor möchtest du etwas wissen gib bitte seinen namen mit anrede ein
+% zu welchem lehrenden möchtest du etwas wissen gib bitte den namen mit anrede ein
 - <call>profs <star></call>
+
+% zu welchem lehrenden möchtest du etwas wissen gib bitte den namen mit anrede ein
+- <call>profs <star2></call>
 
 + was unterrichtet [@nametitles] *?
 - <call>profslectures <star></call>
@@ -119,7 +168,7 @@
 - <call>profslectures <star></call>
 
 + welche [@lectures] [werden|wurden|sind] von [@nametitles] * gehalten?
-- <call>profslectures <star></call>
+- <call>profslectures <star2></call>
 
 
 //If no match is found, call no-comprendo routine. It will take care of that.
