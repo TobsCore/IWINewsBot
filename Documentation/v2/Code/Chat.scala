@@ -3,7 +3,7 @@ trait Chat extends Commands {
 
   onMessage { implicit msg =>
     using(_.text) { input =>
-      if (!input.startsWith("/")) { |\label{line:inputSlash}|
+      if (!input.startsWith("/")) { ~\label{line:inputSlash}~
         val user = msg.from.get
         
         // Is a chat message and not a command
