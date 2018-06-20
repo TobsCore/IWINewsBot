@@ -1,7 +1,7 @@
 <appender name="CHATBOT" class="ch.qos.logback.core.FileAppender">
     <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
         <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
-            <marker>Chatbot</marker>
+            <marker>Chatbot</marker> ~\label{line:marker}~
         </evaluator>
         <onMatch>ACCEPT</onMatch>
         <onMismatch>DENY</onMismatch>
