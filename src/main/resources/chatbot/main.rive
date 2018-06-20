@@ -55,31 +55,31 @@
 + was (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star2></call>
 
-+ welche * gerichte (gibt|gab) es [in der mensa|zu essen]
++ [welche|welches] * @gerichte (gibt|gab) es [in der mensa|zu essen]
 - <call>mensa <star1></call>
 
-+ welche * gerichte (gibt|gab) es [am] * [in der mensa|zu essen]
++ [welche|welches] * @gerichte (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star1> <star3></call>
 
-+ welche gerichte * (gibt|gab) es [am] * [in der mensa|zu essen]
++ [welche|welches] @gerichte * (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star1> <star3></call>
 
-+ welche gerichte (ohne|mit) * (gibt|gab) es [am] * [in der mensa|zu essen]
++ [welche|welches] @gerichte (ohne|mit) * (gibt|gab) es [am] * [in der mensa|zu essen]
 - <call>mensa <star1> <star2> <star4></call>
 
-+ welche gerichte * (gibt|gab) es [in der mensa|zu essen]
++ [welche|welches] @gerichte * (gibt|gab) es [in der mensa|zu essen]
 - <call>mensa <star1></call>
 
-+ welche gerichte (sind|waren|enthalten) * [in der mensa|zu essen]
++ [welche|welches] @gerichte (ist|war|enthält|sind|waren|enthalten) * [in der mensa|zu essen]
 - <call>mensa <star2></call>
 
-+ welche gerichte (sind|waren|enthalten) (keine|kein) * [in der mensa|zu essen]
++ [welche|welches] @gerichte (ist|war|enthält|sind|waren|enthalten) (keine|kein) * [in der mensa|zu essen]
 - <call>mensa ohne <star3></call>
 
-+ welche gerichte (sind|waren|enthalten) (keine|kein) * und * [in der mensa|zu essen]
++ [welche|welches] @gerichte (ist|war|enthält|sind|waren|enthalten) (keine|kein) * und * [in der mensa|zu essen]
 - <call>mensa ohne <star3> und ohne <star4></call>
 
-+ welche gerichte (gibt|gab) es * [in der mensa|zu essen]
++ [welche|welches] @gerichte (gibt|gab) es * [in der mensa|zu essen]
 - <call>mensa <star2></call>
 
 + ich habe hunger

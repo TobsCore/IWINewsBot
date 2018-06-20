@@ -3,3 +3,4 @@
 ! array lectures = vorlesung|vorlesungen|veranstaltung|veranstaltungen
 ! array nametitles = herr|frau|prof|professor|professorin|dozent|dozentin
 ! array mail = email|mail|e-mail|mailadresse|mail adresse|email-adresse|e-mail-adresse
+! array gerichte = gerichte|speisen|mahlzeiten|gericht|speise|mahlzeit
