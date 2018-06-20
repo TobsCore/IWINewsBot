@@ -1,11 +1,10 @@
 \chapter{Fazit}
 Im Laufe dieser Projektarbeit konnten ausgiebig Erfahrungen für den Aufbau eines Chatbots mit Rivescript gesammelt werden. Die Vor- und Nachteile werden im Folgenden beschrieben. Außerdem wird aus dem Proof-of-Concept der Sprachnachrichten ein Resümee gezogen. Im letzten Abschnitt wird ein mögliches weiteres Vorgehen beleuchtet.
 
-\section{Bewertung}
+\section{Bewertung des Rivescript-Frameworks}
 Rivescript hat sehr schnell durch seine Einfachheit überzeugt. Das Einbinden der Bibliothek war nicht unnötig kompliziert und das Matchen von Eingabe auf Ausgabe ist sehr intuitiv. Die Einarbeitung gelang somit schnell. Die Routinen sind für etwas komplexere Chatbot-Systeme unbedingt notwendig, es ist aber sinnvoll, dass man simple Anfragen in den \texttt{.rive}-Dateien direkt beantworten kann. Besonders praktisch zur Strukturierung hierbei war, dass man mehrere \texttt{.rive}-Dateien definieren kann.\\
 Ein tolles Konzept in Rivescript ist der Einsatz von Arrays und Ersetzungen (\textit{Substitutions}), die es erlauben, kompaktere Eingaben zu matchen und Komplexität zu eliminieren. Außerdem sind \textit{Kontexte} ein tolles Hilfsmittel um einen \textit{State} zu simulieren.
 
-\subsection{Rivescript}
 Rivescript ist jedoch keine vollständig programmierbare Sprache, es ist häufig notwendig Routinen einzusetzen, um Probleme zu lösen. Dies ist für Personen, die keine tieferen Programmierkenntnisse besitzen, aber einen Chatbot entwickeln möchten, ein Nachteil, der für dieses Projekt jedoch nicht zum Tragen kam. Vielmehr störte, dass die Parameter für die Routinen-Aufrufe nicht einfach waren, da in Rivescript alles ein String ist. Dies führte vor allem bei Parametern, die aus mehreren Wörtern bestehen zu Problemen. Außerdem wäre ein eigenes Rivescript-Logging praktisch, da der Use-Case des Suchens nach fehlenden Formulierungen vermutlich nicht dieses Projekt betrifft. \\
 Rivescript bietet viele Möglichkeiten zu matchen. Daher wären Best-Practices sinnvoll, die aufzeigen, ob der Einsatz von eigenen Routinen oder die Auswertung von Parametern zu bevorzugen ist.\\
 Der Support von UTF-8 sollte in der heutigen Zeit keine Ausnahme mehr sein, sondern Standard, somit war es verwunderlich, dass diese Funktionalität als \emph{experimentell} deklariert wurde. Und tatsächlich wurden Umlaute auf Windows-Systemen nicht korrekt dargestellt, was während der Entwicklung und des Testens zu Verwirrung führte und die Entwicklungsprozess zudem behinderte. Die korrekte Ausgabe des Bots ist nur gewährleistet, da der offizielle IWINewsBot auf einem Linux-Server läuft. \\
@@ -15,7 +14,7 @@ Zuletzt wäre es wünschenswert, nicht nur mehrere Ausgaben auf eine Eingabe zu 
 
 Somit bietet Rivescript zwar als Framework einen einfachen Einstieg in die Entwicklung von funktionalen Chatbots, als System für aufwendige und komplexe Anwendungen eignet es sich jedoch aufgrund der genannten Gründe nicht. Der IWINewsBot liegt in seiner Komplexität nicht mehr im einfachen Bereich und somit stießen wir auch an die Grenzen des Frameworks.
 
-\subsection{Speech-to-Text}
+\section{Bewertung des Speech-to-Text-Konzepts}
 Die Umwandlung von Sprache zu Text ist bekannterweise nicht einfach und somit ist es hilfreich, dass Google diesen Service anbietet. Die Integration war nach einer ersten Einarbeitung nicht schwierig, obwohl sich das Projekt noch im Alpha-Stadium befindet. Der Service versteht die Sprache zuverlässig.
 Dadurch, dass Telegram vor allem im mobilen Umfeld genutzt wird, ist ein solche Feature besonders praktisch, da das Tippen auf mobilen Geräten nicht so genau und einfach ist, wie auf einer gewöhnlichen Tastatur. Ob der Einsatz von Google Services die Kosten sprengen würde, wird in dieser Projektarbeit nicht weiter betrachtet, da von vornherein die Implementierung als Proof-of-Concept gesehen wurde.
 

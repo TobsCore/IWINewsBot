@@ -21,37 +21,72 @@ Diese beiden Parameter können in beliebiger Reihenfolge auftreten, da sowohl di
 ''Welche vegetarischen Gerichte gibt es morgen zu essen''?
 auftreten können. \\
 Ein Problem ergibt sich dadurch, dass die Reihenfolge dieser beiden Informationen nicht festgelegt ist. So ist nötig, alle übergebenen Parameter nach einer Tagesinformation zu durchsuchen. Man muss also erst den Typ des Parameters herausfinden, um ihn an Methoden weiterzugeben. \\
-Ein weiteres Problem tritt auf, wenn ein der Parameter aus mehreren Wörtern besteht, zum Beispiel ''ohne Fleisch''. Rivescript trennt Parameter, die es unter dem *-Wildcard erkennt am Leerzeichen auf. Es ist also nötig, diese wieder nach dem Matchen und vor der Auswertung zusammen zu setzen. \\
+Ein weiteres Problem tritt auf, wenn ein der Parameter aus mehreren Wörtern besteht, zum Beispiel ''ohne Fleisch''. Rivescript trennt Parameter, die es unter dem \textbf{*}-Wildcard erkennt am Leerzeichen auf. Es ist also nötig, diese wieder nach dem Matchen und vor der Auswertung zusammen zu setzen. \\
 Als Strategie wurde eingesetzt, dass man die Parameter nach den Schlüsselwörtern \emph{mit} und \emph{ohne} durchsucht und diese mit den darauf folgenden Wörtern wieder zu einem gemeinsamen String zusammenfügt, bevor man diesen weiter verarbeitet. Dabei ist zu beachten, dass alle Informationen über den gewünschten Tag der Mensaausgabe dort herausgefiltert werden, damit sie nicht im konkatenierten Lebensmittel-String landen. Es sind also viele String-Vergleiche und Konkatenationen notwendig, um die Benutzereingaben sinnvoll auszuwerten. \\
 Wenn kein bestimmter Tag gewünscht wird, wird der heutige Tag ausgegeben. Wenn kein bestimmter Lebensmittelwunsch besteht, werden alle Gerichte ausgegeben.
 
-\todo{bilder einfügen: ich habe hunger, was gibt es morgen vegetarisches in der mensa, welche gerichte am montag enthalten fleisch}
+\begin{figure}[H]
+    \centering
+    \caption{Beispielanfragen und -ausgaben des Mensaangebots}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \caption{Heutiges Mensaangebot}
+          \includegraphics[width=0.8\linewidth]{Hunger.jpg}
+          \label{img:mensa1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \caption{Morgiges, vegetarisch eingeschränktes Mensaangebot}
+          \includegraphics[width=0.8\linewidth]{Vegetarisch.jpg}
+          \label{img:mensa2}
+    \end{subfigure}
+    \caption*{Quelle: Eigene Abbildung}
+    \label{fig:mensa}
+\end{figure}
+
 
 \subsection{Stundenplan}
 Der Stundenplan ist eine Funktionalität, die bis jetzt nicht vom IWINewsBot unterstützt wurde. Die Funktionalität wird ebenfalls über die REST-API der Hochschule bezogen. Für die Abfrage müssen Studiengang, Semester und eine eventuelle Gruppe oder Vertiefungsrichtung angegeben werden. Zu diesem Zweck wurden die Einstellungen komplett überarbeitet und an einem Ort, dem Command \texttt{/settings}, zusammengeführt. Ergänzt wurde die Möglichkeit, den aktuellen Studiengang, sein Semester und eine Vertiefungsrichtung im Master anzugeben, die für die Stundenplanabfrage genutzt wird. \\
 Der Stundenplan kann über den Chatbot entweder komplett oder tageweise abgefragt werden.
 
-\todo{bilder einfügen: dienstags, morgen}
+\begin{figure}[H]
+    \centering
+    \caption{Beispielanfragen und -ausgaben des Stundenplans}
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \caption{Saloppe Anfrage des morgigen Stundenplans}
+          \includegraphics[width=0.8\linewidth]{tagMorgen.jpg}
+          \label{img:stundenplan1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+        \centering
+        \caption{Förmliche Anfrage mit Wochentag}
+          \includegraphics[width=0.8\linewidth]{stundenplanDienstag.jpg}
+          \label{img:stundenplan2}
+    \end{subfigure}
+    \caption*{Quelle: Eigene Abbildung}
+    \label{fig:stundenplan}
+\end{figure}
 
 \subsection{Lehrende}
 Zu den Lehrenden wurden zwei verschiedene Abfragemöglichkeiten implementiert. Beide Varianten beziehen ihre Informationen aus der REST-API der Hochschule und benötigen keine Übergabeparameter. 
-Die erste Abfragemöglichkeit dient dazu, Informationen über den angefragten Professor, im Speziellen zu den Sprechzeiten, bereitzustellen. Zusätzlich werden noch die E-Mail-Adresse, falls vorhanden auch ein kleiner Kommentar des Lehrenden und die Raumnummer des Büros mitausgegeben. Diese Routine bildet also die schon vorher vorhandene Funktion ab, die mit /profs aufgerufen wurde. Um so eine Anfrage abzuschicken, eignet sich zum Beispiel ''Wie lautet die E-Mail von Frau Laubenheimer?'' oder ''Wann hat Professor Vogelsang Sprechstunde?'' \\
+Die erste Abfragemöglichkeit dient dazu, Informationen über den angefragten Professor, im Speziellen zu den Sprechzeiten, bereitzustellen. Zusätzlich werden noch die E-Mail-Adresse, falls vorhanden auch ein kleiner Kommentar des Lehrenden und die Raumnummer des Büros mitausgegeben. Diese Routine bildet also die schon vorher vorhandene Funktion ab, die mit \texttt{/profs} aufgerufen wurde. Um so eine Anfrage abzuschicken, eignet sich zum Beispiel ''Wie lautet die E-Mail von Frau Laubenheimer?'' oder ''Wann hat Professor Vogelsang Sprechstunde?'' \\
 Um genügend Spielraum zu geben, wurde für die Anrede ein Platzhalter gewählt, der verschiedene Möglichkeiten abdeckt. Die Ausgabe hierzu kann wie folgt aussehen:
 
-\begin{figure}[!htb]
+\begin{figure}[H]
     \centering
     \caption{Informationen über Lehrende}
-      \includegraphics[width=0.5\linewidth]{Prof.png}
+      \includegraphics[width=0.4\linewidth]{Prof.png}
       \label{img:profuebersicht}
     \caption*{Quelle: Eigene Abbildung}
 \end{figure}
 
 Die zweite Abfragemöglichkeit gibt für die angefragten Lehrenden alle Vorlesungen aus, die diese halten. Hierbei wird auf eine erweiterte Abfrage der gleichen REST-Schnittstelle wie bei der Sprechzeitenabfrage zugegriffen. Eine Anfrage im Chatbot kann zum Beispiel sein: ''Welche Vorlesungen hält Professor Henning?'' worauf dann folgende Ausgabe gemacht wird. Dabei werden Vorlesungen mit gleichem Namen, die aber in zwei verschiedenen Studiengängen/Semestern gehalten werden, nicht doppelt aufgeführt.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
     \centering
     \caption{Alle Veranstaltungen eines Lehrenden}
-      \includegraphics[width=0.5\linewidth]{Vorlesungsuebersicht.png}
+      \includegraphics[width=0.4\linewidth]{Vorlesungsuebersicht.png}
       \label{img:vorlesungsuebersicht}
     \caption*{Quelle: Eigene Abbildung}
 \end{figure}
@@ -65,18 +100,18 @@ Für die Vorlesungen wurde eine neue Routine entwickelt, die für die angefragte
     \begin{subfigure}{.5\textwidth}
         \centering
         \caption{Blockkurs}
-          \includegraphics[width=0.9\linewidth]{BlockkursLocation.png}
+          \includegraphics[width=0.8\linewidth]{BlockkursLocation.png}
           \label{img:blockkurs}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
         \caption{Reguläre Vorlesung}
-          \includegraphics[width=0.9\linewidth]{VorlesungLocation.png}
+          \includegraphics[width=0.8\linewidth]{VorlesungLocation.png}
           \label{img:vorlesung}
     \end{subfigure}
     \caption*{Quelle: Eigene Abbildung}
     \label{fig:blockkursUndVorlesung}
-    \end{figure}
+\end{figure}
 
 \section{Spaßige Bemerkungen}
 Eine weitere Anforderung war es, neben den informativen Anfragen auch auf nicht ernste Anfragen zu antworten. Hierfür wurde eine zusätzliche Datei \texttt{fun.rive} angelegt, die neben spitzen Antworten auch einige Informatikerwitze enthält. Neben dem Klassiker ''Was ist der Sinn des Leben?'' antwortet der Bot auf die Anfrage ''Was hast Du an?'' mit ''Das ist ja eine indiskrete Frage''. \\
@@ -92,8 +127,9 @@ In dem obigen Beispiel werden zwei Nachrichten mit dem Level \texttt{INFO} gelog
 
 Logback arbeitet mit \texttt{Appendern}, die es ermöglichen, dass Nachrichten auf verschiedenen Ebenen in verschiedene Dateien und Streams geschrieben werden können. Der Chatbot Appender filtert alle Nachrichten nach dem Chatbot-Tag und schreibt diese Nachrichten in die Datei \texttt{chatbot.log}. Alle anderen Log-Nachrichten werden von diesem Appender ignoriert.
 
-Durch diese Logging-Maßnahmen ist es also möglich, alle Anfragen die an den Chatbot gehen zu loggen. Nun sollten aber speziell Anfragen geloggt werden, die der Bot nicht beantworten kann. Hierzu wurde für denn Fall \textbf{*} in der \texttt{.rive}-Datei eine spezielle Routine gestartet, die \texttt{NoComprendoRoutine}:
-\lstinputlisting[numbers=none, caption=Eine Routine wird beim Nichtverstehen aufgerufen, label=matchingStar, firstline=24, lastline=26]{riveExamples.rive}
+Durch diese Logging-Maßnahmen ist es also möglich, alle Anfragen die an den Chatbot gehen zu loggen. Nun sollten aber speziell Anfragen geloggt werden, die der Bot nicht beantworten kann. Hierzu wurde für denn Fall \textbf{*} in der \texttt{.rive}-Datei eine spezielle Routine gestartet, die \texttt{NoComprendoRoutine}.
+\newpage
+\lstinputlisting[numbers=none, caption=Aufrufen einer Routine beim Nichtverstehen, label=matchingStar, firstline=24, lastline=26]{riveExamples.rive}
 
 Das Verhalten dieser Routine ist sehr einfach. Es werden hier einfach programmatisch verschiedene Antworten festgehalten und die Anfrage wird mit dem Logging-Level \texttt{ERROR} geloggt.
 \lstinputlisting[language=scala, style=scala, caption=Ausschnitt aus der Always-Match-Routine, label=noComprendo]{NoComprendoRoutine.scala}

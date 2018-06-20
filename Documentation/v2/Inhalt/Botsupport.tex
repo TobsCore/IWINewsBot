@@ -8,7 +8,8 @@ Diese drei Befehle lauten \texttt{/start}, \texttt{/settings} und \texttt{/help}
 \subsection{Broadcasting}
 Der IWINewsBot hat mittlerweile über 75 Benutzer und am Ende dieser Projektarbeit gilt es, diese über die neuen Funktionen, die durch die Chatbot-Erweiterung hinzukommen, zu informieren. Dazu wurde ein neuer Telegram-Command namens \texttt{/announce} hinzugefügt. Dieser gibt registrierten Administratoren die Möglichkeit per Telegram eine Nachricht an alle Benutzer des Bots zu schicken, um sie schnell über Updates oder mögliche Fehler zu informieren. \\
 Im Bezug auf die neuen Funktionalitäten des Bots wird zu diesem Zwecke ein Telegraph-Blogeintrag verfasst, der die neuen Änderungen mit Beispielen zusammenfasst. So werden sich auch bestehende Benutzer in die neuen Funktionen einfinden. \\
-Telegraph\footnote{\url{http://telegra.ph/)}} bietet ohne Login eine Plattform, um schnell einen Blogeintrag zu verfassen. Es generiert dann eine URL, über den der Eintrag öffentlich verfügbar gemacht wird. Telegram bietet für solche Blogeinträge eine Vorschau innerhalb Telegrams, um ihn direkt in der App lesen zu können.
+Telegraph\footnote{\url{http://telegra.ph/)}} bietet ohne Login eine Plattform, um schnell einen Blogeintrag zu verfassen. Es generiert dann eine URL, über den der Eintrag öffentlich verfügbar gemacht wird. \\
+Telegram bietet für solche Blogeinträge eine Vorschau innerhalb Telegrams, um ihn direkt in der App lesen zu können.
 
 \subsection{Hilfe}
 Der \texttt{/help}-Befehl soll eine kurze Übersicht über die Funktionen des Bots bereitstellen. Er listet alle Bot-Commands auf und gibt den Benutzern Anregungen für mögliche Formulierungen, um den Chatbot zu bedienen.
@@ -37,12 +38,12 @@ Die Abonnement-Einstellung an sich hat sich zu der vorherigen Version nicht geä
 \begin{figure}[H]
     \centering
     \caption{Setzen der Mensapreise}
-      \includegraphics[width=0.5\linewidth]{Mensapreise.png}
+      \includegraphics[width=0.4\linewidth]{Mensapreise.png}
       \label{img:mensapreise}
     \caption*{Quelle: Eigene Abbildung}
 \end{figure}
 
-Die neueste Einstellung ist die Studiumseinstellung, bei der ein User sein aktuelles Semester wählen kann, um seinen Stundenplan abzufragen. Hierbei wird der User durch ein Menü geführt, bei dem er zuerst sein Studium auswählt, dann seine Vertiefungsrichtung. Dies passiert nur bei der Selektion von \texttt{INFM} passiert. Zum Schluss wählt man sein Semester. Mit Auswahl des Semesters gelangt der User zurück zu Hauptseite und die Einstellung wird übernommen. Dies wird zusätzlich durch eine Benachrichtigung kommuniziert. \\
+Die neueste Einstellung ist die Studiumseinstellung, bei der ein User sein aktuelles Semester wählen kann, um seinen Stundenplan abzufragen. Hierbei wird der User durch ein Menü geführt, bei dem er zuerst sein Studium auswählt, dann seine Vertiefungsrichtung. Dies passiert nur bei der Selektion von \texttt{INFM}. Zum Schluss wählt man sein Semester. Mit Auswahl des Semesters gelangt der User zurück zu Hauptseite und die Einstellung wird übernommen. Dies wird zusätzlich durch eine Benachrichtigung kommuniziert. \\
 Das besondere in diesem Fall ist die tiefere Menüführung, da man die bereits selektierten Werte zwischenspeichern muss. Dies wird über Tags gemacht, die in den Buttons gespeichert werden, somit muss der Bot den State nicht speichern, sondern dies geschieht clientseitig. Dies ermöglicht eine flexiblere Handhabung.
 
 Der Befehl \texttt{/settings} wurde nicht nur aufgrund seines guten Namens gewählt, sondern ist ein von Telegram nativ unterstützter Befehl (siehe~\Autoref{sec:commands}). Dies fördert also zusätzlich die User-Experience.
@@ -64,6 +65,7 @@ In der Java-Welt ist eine der größten Caching-Bibliotheken \texttt{Caffeine}\f
 Der Cache liegt direkt im Hauptspeicher und man kann für den gesamten Cache eine Invalidierungszeit angeben, also die Zeit, die Elemente im Cache liegen sollen bis sie invalidiert werden.\\
 Der Cache des IWINews Bots wird direkt in der Klasse, die für die HTTP-Aufrufe zuständig ist, angelegt, um das Caching vor den Aufrufen zu verstecken. In dem Cache wird als Schlüssel die URL gewählt, der Wert ist das Ergebnis der Anfrage, da der Cache generisch gehalten werden muss. Wird eine HTTP-Anfrage verlangt, wird geprüft, ob ein Wert im Cache für die angefragt URL liegt, wenn dies der Fall ist, wird der Wert aus dem Cache geholt. Ist noch kein Wert im Cache, wird die URL aufgerufen, die Antwort wird im Cache gespeichert und zurück gegeben.
 
+\newpage
 Da die Anfragen, ob es neue Nachrichten auf dem schwarzen Brett gibt, jedoch nicht gecacht werden soll, da so Änderungen nicht entdeckt und somit auch nicht verbreitet werden können, ist es notwendig eine spezielle Methode einzuführen, die einen HTTP-Aufruf ohne Cache macht. Dieser Aufruf entspricht dem bisherigen Verfahren und konnte somit einfach übernommen werden, auch wenn dieser Aufruf umbenannt werden musste um sicher zu gehen, dass dies ein Sonderfall ist. Wie das Caching konkret umgesetzt ist, wird in \autoref{caching} gezeigt.
 
 \lstinputlisting[language=scala, style=scala, numbers=none, caption={Erweiterung der HTTP-Anfragen um Caching-Mechanismus}, label=caching]{HTTPGet.scala}
