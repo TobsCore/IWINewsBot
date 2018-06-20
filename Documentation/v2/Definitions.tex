@@ -172,7 +172,7 @@
 \usepackage{gensymb}
 
 % Place caption beneath listing
-\usepackage[skip=12pt]{caption}
+\usepackage{caption}
 
 % Adding the source of a picture beneath it
 \usepackage{subcaption}
@@ -184,7 +184,9 @@
 \DeclareCaptionFont{white}{\color{white}}
 \DeclareCaptionFormat{listing}{%
   \parbox{\textwidth}{\colorbox{darkgray}{\parbox{\textwidth}{#1#2#3}}}}
-\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white, skip=8pt}
+\captionsetup[figure]{skip=0pt}
+\subcaptionsetup[figure]{skip=10pt}
 
 % For adding the titelpage as a pdf
 \usepackage{pdfpages}
