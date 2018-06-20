@@ -11,7 +11,7 @@ Die Interpretation der Sprachnachricht erfolgt durch Rivescript, was Texteingabe
 
 \subsection{Google-Cloud-Speech-API}
 Die Google-Cloud-Speech-to-Text-API ist ein SAAS-Angebot, bei dem man Sprachdateien an den Google-Server senden kann und diese Sprachdateien von dem Service interpretiert und zu Text umgewandelt werden, den man als einfaches JSON-Objekt erhält. Da die Umwandlung von Sprache zu Text auf der Wahrscheinlichkeit beruht, dass etwas korrekt verstanden wurde, wird diese Genauigkeit mitzurückgegeben. Sollte die Eingabesprache nicht eindeutig sein, so werden mehrere Ergebnisse mit der jeweiligen Genauigkeit zurückgegeben.
-Der Cloud-Service wird über HTTP angesprochen, man muss jedoch eine Authentifizierungstoken einreichen. Hierfür muss man sich einen Google-Developer-Account erstellen und muss die API aktivieren. Der Service kostet für gewöhnlich Geld, hierbei werden 0,006\$/15 Sekunden berechnet.\footnote{\url{https://cloud.google.com/speech-to-text/}} \\
+Der Cloud-Service wird über HTTP angesprochen, man muss jedoch eine Authentifizierungstoken einreichen. Hierfür muss man sich einen Google-Developer-Account erstellen und muss die API aktivieren. Der Service kostet für gewöhnlich Geld, hierbei werden 0,006\$/15 Sekunden berechnet.~\footnote{\url{https://cloud.google.com/speech-to-text/}} \\
 Man kann den Service jedoch kostenlos nutzen, wenn man pro Tag weniger als 60 Minuten an Eingabe verarbeitet. Zusätzlich erhält man bei der Eröffnung eines Accounts ein Guthaben in Höhe von 300\$, sodass man die Services ausgiebig testen kann.
 
 Das folgende Schaubild soll einen exemplarischen Ablauf erklären:
@@ -24,7 +24,7 @@ Das folgende Schaubild soll einen exemplarischen Ablauf erklären:
 \end{figure}
 
 \subsubsection{Java-Bibliothek}
-Google bietet eine Java-Bibliothek an, um den Aufruf der API zu abstrahieren und somit zu vereinfachen. Hierbei wird sowohl die Authentifizierung, als auch die Anfrage mit den einzelnen Parametern stark vereinfacht. Diese Bibliothek befindet sich jedoch noch im Alpha-Modus und sollte somit auf keinen Fall in produktiven Umgebungen eingesetzt werden. Auch in diesem Projekt sind Warnungen beim Bauen mit \texttt{sbt} aufgetreten und es wurde ein Issue auf Github eröffnet, sodass dieses Problem für das Release gefixt wird.\footnote{\url{https://github.com/GoogleCloudPlatform/google-cloud-java/issues/3329}} 
+Google bietet eine Java-Bibliothek an, um den Aufruf der API zu abstrahieren und somit zu vereinfachen. Hierbei wird sowohl die Authentifizierung, als auch die Anfrage mit den einzelnen Parametern stark vereinfacht. Diese Bibliothek befindet sich jedoch noch im Alpha-Modus und sollte somit auf keinen Fall in produktiven Umgebungen eingesetzt werden. Auch in diesem Projekt sind Warnungen beim Bauen mit \texttt{sbt} aufgetreten und es wurde ein Issue auf Github eröffnet, sodass dieses Problem für das Release gefixt wird.~\footnote{\url{https://github.com/GoogleCloudPlatform/google-cloud-java/issues/3329}} 
 Die Einbindung der Bibliothek ist jedoch sehr einfach, da sie auf Maven-Central gehostet wird.
 
 \subsubsection{Authentifizierung}
