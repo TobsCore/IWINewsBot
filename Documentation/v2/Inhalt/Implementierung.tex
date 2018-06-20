@@ -25,13 +25,17 @@ Ein weiteres Problem tritt auf, wenn ein der Parameter aus mehreren Wörtern bes
 Als Strategie wurde eingesetzt, dass man die Parameter nach den Schlüsselwörtern \emph{mit} und \emph{ohne} durchsucht und diese mit den darauf folgenden Wörtern wieder zu einem gemeinsamen String zusammenfügt, bevor man diesen weiter verarbeitet. Dabei ist zu beachten, dass alle Informationen über den gewünschten Tag der Mensaausgabe dort herausgefiltert werden, damit sie nicht im konkatenierten Lebensmittel-String landen. Es sind also viele String-Vergleiche und Konkatenationen notwendig, um die Benutzereingaben sinnvoll auszuwerten. \\
 Wenn kein bestimmter Tag gewünscht wird, wird der heutige Tag ausgegeben. Wenn kein bestimmter Lebensmittelwunsch besteht, werden alle Gerichte ausgegeben.
 
+\todo{bilder einfügen: ich habe hunger, was gibt es morgen vegetarisches in der mensa, welche gerichte am montag enthalten fleisch}
+
 \subsection{Stundenplan}
-Der Stundenplan ist eine Funktionalität, die bis jetzt nicht vom IWINewsBot unterstützt wurde. Die Funktionalität wird ebenfalls über die REST-API der Hochschule bezogen. Für die Abfrage müssen Studiengang, Semester und eine eventuelle Gruppe oder Vertiefungsrichtung angegeben werden. Zu diesem Zweck wurden die Einstellungen komplett überarbeitet und an einem Ort, dem Command /settings, zusammengeführt. Ergänzt wurde die Möglichkeit, den aktuellen Studiengang, sein Semester und eine Vertiefungsrichtung im Master anzugeben, die für die Stundenplanabfrage genutzt wird.
+Der Stundenplan ist eine Funktionalität, die bis jetzt nicht vom IWINewsBot unterstützt wurde. Die Funktionalität wird ebenfalls über die REST-API der Hochschule bezogen. Für die Abfrage müssen Studiengang, Semester und eine eventuelle Gruppe oder Vertiefungsrichtung angegeben werden. Zu diesem Zweck wurden die Einstellungen komplett überarbeitet und an einem Ort, dem Command \texttt{/settings}, zusammengeführt. Ergänzt wurde die Möglichkeit, den aktuellen Studiengang, sein Semester und eine Vertiefungsrichtung im Master anzugeben, die für die Stundenplanabfrage genutzt wird. \\
 Der Stundenplan kann über den Chatbot entweder komplett oder tageweise abgefragt werden.
+
+\todo{bilder einfügen: dienstags, morgen}
 
 \subsection{Lehrende}
 Zu den Lehrenden wurden zwei verschiedene Abfragemöglichkeiten implementiert. Beide Varianten beziehen ihre Informationen aus der REST-API der Hochschule und benötigen keine Übergabeparameter. 
-Die erste Abfragemöglichkeit dient dazu, Informationen über den angefragten Professor, im Speziellen zu den Sprechzeiten, bereitzustellen. Zusätzlich werden dann noch die E-Mail-Adresse, falls vorhanden auch ein kleiner Kommentar des Professors und die Raumnummer des Büros mitausgegeben. Diese Routine bildet also die schon vorher vorhandene Funktion ab, die mit /profs aufgerufen wurde. Um so eine Anfrage abzuschicken, eignet sich zum Beispiel ''Wie lautet die E-Mail von Frau Laubenheimer?'' oder ''Wann hat Professor Vogelsang Sprechstunde?'' \\
+Die erste Abfragemöglichkeit dient dazu, Informationen über den angefragten Professor, im Speziellen zu den Sprechzeiten, bereitzustellen. Zusätzlich werden noch die E-Mail-Adresse, falls vorhanden auch ein kleiner Kommentar des Lehrenden und die Raumnummer des Büros mitausgegeben. Diese Routine bildet also die schon vorher vorhandene Funktion ab, die mit /profs aufgerufen wurde. Um so eine Anfrage abzuschicken, eignet sich zum Beispiel ''Wie lautet die E-Mail von Frau Laubenheimer?'' oder ''Wann hat Professor Vogelsang Sprechstunde?'' \\
 Um genügend Spielraum zu geben, wurde für die Anrede ein Platzhalter gewählt, der verschiedene Möglichkeiten abdeckt. Die Ausgabe hierzu kann wie folgt aussehen:
 
 \begin{figure}[!htb]
@@ -42,7 +46,7 @@ Um genügend Spielraum zu geben, wurde für die Anrede ein Platzhalter gewählt,
     \caption*{Quelle: Eigene Abbildung}
 \end{figure}
 
-Die zweite Abfragemöglichkeit wurde komplett neu implementiert und gibt für die angefragten Lehrenden alle Vorlesungen aus, die diese halten. Hierbei wird auf eine erweiterte Abfrage der gleichen REST-Schnittstelle wie bei der Sprechzeitenabfrage zugegriffen. Eine Anfrage im Chatbot kann zum Beispiel sein: ''Welche Vorlesungen hält Professor Henning?'' worauf dann folgende Ausgabe gemacht wird (Vorlesungen mit gleichem Namen, die aber in zwei verschiedenen Studiengängen/Semestern gehalten werden, werden nicht doppelt aufgeführt):
+Die zweite Abfragemöglichkeit gibt für die angefragten Lehrenden alle Vorlesungen aus, die diese halten. Hierbei wird auf eine erweiterte Abfrage der gleichen REST-Schnittstelle wie bei der Sprechzeitenabfrage zugegriffen. Eine Anfrage im Chatbot kann zum Beispiel sein: ''Welche Vorlesungen hält Professor Henning?'' worauf dann folgende Ausgabe gemacht wird. Dabei werden Vorlesungen mit gleichem Namen, die aber in zwei verschiedenen Studiengängen/Semestern gehalten werden, nicht doppelt aufgeführt.
 
 \begin{figure}[!htb]
     \centering
@@ -75,21 +79,21 @@ Für die Vorlesungen wurde eine neue Routine entwickelt, die für die angefragte
     \end{figure}
 
 \section{Spaßige Bemerkungen}
-Eine weitere Anforderung war es, neben den informativen Anfragen auch auf nicht ernste Anfragen zu antworten. Hierfür wurde eine zusätzliche Datei (fun.rive) angelegt, die neben spitzen Antworten auch einige Informatikerwitze enthält. Neben dem Klassiker ''Was ist der Sinn des Leben?'' antwortet der Bot auf die Anfrage ''Was hast Du an?'' mit ''Das ist ja eine indiskrete Frage''. \\
+Eine weitere Anforderung war es, neben den informativen Anfragen auch auf nicht ernste Anfragen zu antworten. Hierfür wurde eine zusätzliche Datei \texttt{fun.rive} angelegt, die neben spitzen Antworten auch einige Informatikerwitze enthält. Neben dem Klassiker ''Was ist der Sinn des Leben?'' antwortet der Bot auf die Anfrage ''Was hast Du an?'' mit ''Das ist ja eine indiskrete Frage''. \\
 Durch diesen Ansatz soll erreicht werden, dass Nutzer den Bot gerne benutzen und neue Funktionen entdecken. Die Handhabung soll spielerisch erfolgen und Spaß machen.
 
 \section{Keine gefundene Übereinstimmung}
-Für den Fall, dass der Chatbot keine passende Antwort parat hat, ist es möglich generelle Antworten zu geben. Um dies zu ermöglichen wird auf * gematcht. Man kann also standardmäßig mit Floskeln wie ''Ich habe das nicht verstanden'' antworten, damit der User weiß, dass er seine Frage umformulieren muss oder die geforderte Funktion nicht implementiert wurde. Um hierdurch potentielle Features zu finden, sollten diese Anfragen gesondert geloggt werden, damit man alle möglichen Anfragen auch später einfach einsehen kann und neue Funktionen erkennen kann. \\
-Der IWINewsBot setzt bereits auf Logback als Logging Framework um Fehler zu finden und aussagekräftige Log-Dateien zu schreiben. Logback hat ein tolles Feature, was es erlaubt auf bestimmte Filter zu reagieren. So kann man bestimmte Log-Nachrichten taggen und diese Tags dann filtern. Das Taggen wird im Code vorgenommen, das Filtern nach Tags geschieht in der logback.xml (Konfigurations-)datei. Hier kann festgelegt werden, dass alle Log-Nachrichten mit einem bestimmten Tag in eine spezielle Datei geschrieben werden.
+Für den Fall, dass der Chatbot keine passende Antwort parat hat, ist es möglich generelle Antworten zu geben. Um dies zu ermöglichen wird auf \textbf{*} gematcht. Man kann also standardmäßig mit Floskeln wie ''Ich habe das nicht verstanden'' antworten, damit der User weiß, dass er seine Frage umformulieren muss oder die geforderte Funktion nicht implementiert wurde. Um hierdurch potentielle Features durch nicht abgedeckte Abfragen zu finden, sollten diese Anfragen gesondert geloggt werden, damit man alle möglichen Anfragen auch später einfach einsehen kann und neue Funktionen erkennen kann. \\
+Der IWINewsBot setzt bereits auf \texttt{Logback} als Logging-Framework, um Fehler zu finden und aussagekräftige Log-Dateien zu schreiben. Logback hat ein tolles Feature, was es erlaubt auf bestimmte Filter zu reagieren. So kann man bestimmte Log-Nachrichten taggen und diese Tags dann filtern. Das Taggen wird im Code vorgenommen, das Filtern nach Tags geschieht in der \texttt{logback.xml}-(Konfigurations-)datei. Hier kann festgelegt werden, dass alle Log-Nachrichten mit einem bestimmten Tag in eine spezielle Datei geschrieben werden.
 \lstinputlisting[language=scala, style=scala, numbers=none, caption=Logging der Usereingaben, label=logging, firstline=39, lastline=41]{Chat.scala}
 
-In dem obigen Beispiel werden zwei Nachrichten mit dem Level INFO geloggt. Diese werden mit dem ChatBotMarker getaggt. Bei dem ChatBotMarker handelt es sich um ein Tag, das alle Log-Nachrichten als Chatbot-Nachrichten taggt. Nach diesem Tag kann dann in der Logback-Konfiguration wie folgt gefiltert werden:
+In dem obigen Beispiel werden zwei Nachrichten mit dem Level \texttt{INFO} geloggt. Diese werden mit dem \texttt{ChatBotMarker} (siehe~\Autoref{line:marker}) getaggt. Bei dem ChatBotMarker handelt es sich um ein Tag, das alle Log-Nachrichten als Chatbot-Nachrichten taggt. Nach diesem Tag kann dann in der Logback-Konfiguration wie folgt gefiltert werden:
 \lstinputlisting[language=buildSbt, style=buildSbt, caption=Ausschnitt der logback.xml, label=logback]{logback.xml}
 
-Logback arbeitet mit Appendern, die es ermöglichen, dass Nachrichten auf verschiedenen Ebenen in verschiedene Dateien und Streams geschrieben werden können. Der Chatbot Appender filtert alle Nachrichten nach dem Chatbot-Tag und schreibt diese Nachrichten in die Datei chatbot.log. Alle anderen Log-Nachrichten werden von diesem Appender ignoriert.
+Logback arbeitet mit \texttt{Appendern}, die es ermöglichen, dass Nachrichten auf verschiedenen Ebenen in verschiedene Dateien und Streams geschrieben werden können. Der Chatbot Appender filtert alle Nachrichten nach dem Chatbot-Tag und schreibt diese Nachrichten in die Datei \texttt{chatbot.log}. Alle anderen Log-Nachrichten werden von diesem Appender ignoriert.
 
-Durch diese Logging-Maßnahmen ist es also möglich, alle Anfragen die an den Chatbot gehen zu loggen. Nun sollten aber speziell Anfragen geloggt werden, die der Bot nicht beantworten kann. Hierzu wurde für denn Fall * in der .rive-Datei eine spezielle Routine gestartet, die NoComprendoRoutine:
-\lstinputlisting[numbers=none, caption=Eine Routine wird beim Nicht-Verstehen aufgerufen, label=matchingStar, firstline=24, lastline=26]{riveExamples.rive}
+Durch diese Logging-Maßnahmen ist es also möglich, alle Anfragen die an den Chatbot gehen zu loggen. Nun sollten aber speziell Anfragen geloggt werden, die der Bot nicht beantworten kann. Hierzu wurde für denn Fall \textbf{*} in der \texttt{.rive}-Datei eine spezielle Routine gestartet, die \texttt{NoComprendoRoutine}:
+\lstinputlisting[numbers=none, caption=Eine Routine wird beim Nichtverstehen aufgerufen, label=matchingStar, firstline=24, lastline=26]{riveExamples.rive}
 
-Das Verhalten dieser Routine ist sehr einfach. Es werden hier einfach programmatisch verschiedene Antworten festgehalten und die Anfrage wird mit dem Logging-Level ERROR geloggt.
+Das Verhalten dieser Routine ist sehr einfach. Es werden hier einfach programmatisch verschiedene Antworten festgehalten und die Anfrage wird mit dem Logging-Level \texttt{ERROR} geloggt.
 \lstinputlisting[language=scala, style=scala, caption=Ausschnitt aus der Always-Match-Routine, label=noComprendo]{NoComprendoRoutine.scala}
