@@ -42,7 +42,7 @@ class SpaceAndTimeRoutine extends CustomSubroutine with Instances {
       } else if (selectedLectureBlockCourse.isDefined) {
         ausgabe(selectedLectureBlockCourse)
       } else {
-        logger.error(s"Could not find information about $param.")
+        logger.debug(s"Could not find information about $param.")
         s"Ich kenne die Veranstaltung $param nicht."
       }
     } else {

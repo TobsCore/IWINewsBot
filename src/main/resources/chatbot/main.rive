@@ -36,6 +36,9 @@
 + wo findet [die] [@lectures] * statt
 - <call>spaceandtime <star></call>
 
++ in welchem raum findet [die] [@lectures] * statt
+- <call>spaceandtime <star></call>
+
 + in welchem raum ist *
 - <call>spaceandtime <star></call>
 
@@ -44,7 +47,7 @@
 
 
 //when
-+ wann findet * statt
++ wann findet [die] [@lectures] * statt
 - <call>spaceandtime <star></call>
 
 + wann habe ich *
@@ -131,11 +134,11 @@
 + [wie lautet|was ist] die (@mail) von [@nametitles] *
 - <call>profs <star2></call>
 
-+ in welchem (raum|zimmer) [finde ich|ist|sitzt] [@nametitles] *
-- <call>profs <star2></call>
++ in welchem (raum|zimmer) (finde ich|ist|sitzt) [@nametitles] *
+- <call>profs <star3></call>
 
-+ [wie|wo] finde ich [@nametitles] *
-- <call>profs <star></call>
++ (wie|wo) finde ich [@nametitles] *
+- <call>profs <star2></call>
 
 + wo ist [@nametitles] *
 - <call>profs <star></call>
@@ -143,11 +146,11 @@
 + wann hat [@nametitles] * (sprechstunde|zeit)
 - <call>profs <star></call>
 
-+ [wann|was] sind die [sprechzeiten|sprechstunden] von [@nametitles] *
-- <call>profs <star></call>
++ [wann|was] sind die (sprechzeiten|sprechstunden) von [@nametitles] *
+- <call>profs <star2></call>
 
-+ [wann|was] ist die [sprechzeit|sprechstunde] von [@nametitles] *
-- <call>profs <star></call>
++ [wann|was] ist die (sprechzeit|sprechstunde) von [@nametitles] *
+- <call>profs <star2></call>
 
 + was sind die kontaktdaten von [@nametitles] *
 - <call>profs <star></call>
@@ -155,7 +158,7 @@
 + wie kann ich [@nametitles] * (kontaktieren|erreichen)
 - <call>profs <star1></call>
 
-+ was weißt du [zu den|über die] (lehrenden|professoren|dozenten)
++ was weißt du (zu den|über die) (lehrenden|professoren|dozenten)
 - Zu welchem Lehrenden möchtest du etwas wissen? Gib bitte den Namen mit Anrede ein.
 
 + kannst du mir [etwas|was] zu den (lehrenden|professoren|dozenten) sagen
@@ -174,8 +177,8 @@
 + welche [@lectures] hält [@nametitles] *?
 - <call>profslectures <star></call>
 
-+ welche [@lectures] [werden|wurden|sind] von [@nametitles] * gehalten?
-- <call>profslectures <star2></call>
++ welche [@lectures] (werden|wurden|sind) von [@nametitles] * gehalten?
+- <call>profslectures <star3></call>
 
 
 //If no match is found, call no-comprendo routine. It will take care of that.
