@@ -36,20 +36,20 @@ Nachdem nun die relevanten Technologien und deren Zusammenspiel beschrieben wurd
 \subsubsection{Beispiel}
 Bevor auf die Implementierungsdetails eingegangen wird, soll die Funktionsweise vorgestellt und erläutert werden.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
     \centering
     \caption{Beispiel der Verwendung von Speech-to-Text}
-      \includegraphics[width=0.5\linewidth]{Sprachnachrichten_Beispiel.png}
+      \includegraphics[width=0.4\linewidth]{Sprachnachrichten_Beispiel.png}
       \label{img:speekExample}
     \caption*{Quelle: Eigene Abbildung}
 \end{figure}
 
-Wie man an dem Beispiel bereits erkennt, gibt es eine Quota, die speichert, wie viel von dem Kontingent für Sprachnachrichten bereits verbraucht wurde. Außerdem werden zu lange Nachrichten, also Nachrichten die Länger als sieben Sekunden dauern, abgewiesen. Durch diese Mechanismen wird vermieden, dass die Sprachnachrichten missbraucht werden und die Ressourcen des Google-Cloud-Service zu sehr beansprucht werden.
+Wie man an dem Beispiel bereits erkennt, gibt es eine Quota, die speichert, wie viel von dem Kontingent für Sprachnachrichten bereits verbraucht wurde. Außerdem werden zu lange Nachrichten, also Nachrichten die länger als sieben Sekunden dauern, abgewiesen. Durch diese Mechanismen wird vermieden, dass die Sprachnachrichten missbraucht werden und die Ressourcen des Google-Cloud-Service zu sehr beansprucht werden.
 Neben den Einschränkungen erkennt man aber an dem Beispiel zusätzlich, dass die Sprachnachricht von dem Bot korrekt erkannt wird und anschließend vom Chatbot beantwortet wird.
 
 \subsection{Empfangen von Sprachnachrichten}
 So wie bereits für die Chat-Nachrichten, muss der Bot so erweitert werden, dass er Sprachnachrichten empfangen kann. Dies geschieht über das Reagieren auf eingehende Nachrichten und das Überprüfen, ob es sich um eine Sprachnachricht handelt. Ist dies der Fall, so können bereits Eigenschaften der Sprachnachricht abgefragt werden, beispielsweise die Dauer. Dies ist sinnvoll, da über die Dauer entschieden wird, ob die Nachricht verarbeitet wird, oder nicht.
-
+\newpage
 \lstinputlisting[language=scala, style=scala, caption={Empfangen von Sprachnachrichten}, label=speech1, firstline=1, lastline=13]{ChatSpeech.scala}
 
 Wie man in~\Autoref{line:quotaRedis} bereits erkennt, wird die Quota in der Redis-Datenbank gespeichert, sodass diese persistiert wird. Der User wird in dem Fall, dass die Quota für den Tag überschritten wird, mit einer Fehlermeldung über den Umstand informiert, zusätzlich wird der Vorfall geloggt. \\
@@ -73,6 +73,6 @@ Nachdem das Problem lokalisiert wurde, war die Lösung verhältnismäßig einfac
 
 Da die Bibliothek für Java-Programme geschrieben wurde, gilt es, das Ergebnis in eine Scala-Collection umzuwandeln, um die Ergebnisliste einfacher traversieren zu können.
 
-Das erste Ergebnis ist für gewöhnlich das beste Ergebnis, dies wird an die Rivescript-Instanz übergeben und dort weiter verarbeitet. Dies geschieht wie bereits mit den Textnachrichten. \\
+Das erste Ergebnis ist für gewöhnlich das beste Ergebnis, dies wird an die Rivescript-Instanz übergeben und dort weiter verarbeitet. Dies geschieht wie bereits mit den Textnachrichten. 
 Kann eine Sprachnachricht nicht verstanden werden, etwa weil die Umgebungsgeräusche zu laut sind oder der Sprecher zu undeutlich spricht, wird entsprechend eine Fehlermeldung ausgegeben. \\
 Bei jeder Anfrage an den Google-Cloud-Service wird die Dauer der Sprachnachricht der Quota hinzugefügt.
