@@ -13,6 +13,12 @@
 + wie sieht mein tag aus
 - <call>timetable heute</call>
 
++ wie sieht mein tag morgen aus
+- <call>timetable morgen</call>
+
++ wie sieht mein morgiger tag aus
+- <call>timetable morgen</call>
+
 + was habe ich [am] _ [für @lectures]
 - <call>timetable <star></call>
 
