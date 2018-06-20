@@ -47,19 +47,19 @@ Bevor auf die Implementierungsdetails eingegangen wird, soll die Funktionsweise 
 Wie man an dem Beispiel bereits erkennt, gibt es eine Quota, die speichert, wie viel von dem Kontingent für Sprachnachrichten bereits verbraucht wurde. Außerdem werden zu lange Nachrichten, also Nachrichten die Länger als sieben Sekunden dauern, abgewiesen. Durch diese Mechanismen wird vermieden, dass die Sprachnachrichten missbraucht werden und die Ressourcen des Google-Cloud-Service zu sehr beansprucht werden.
 Neben den Einschränkungen erkennt man aber an dem Beispiel zusätzlich, dass die Sprachnachricht von dem Bot korrekt erkannt wird und anschließend vom Chatbot beantwortet wird.
 
-\subsection{Empfang von Sprachnachrichten}
+\subsection{Empfangen von Sprachnachrichten}
 So wie bereits für die Chat-Nachrichten, muss der Bot so erweitert werden, dass er Sprachnachrichten empfangen kann. Dies geschieht über das Reagieren auf eingehende Nachrichten und das Überprüfen, ob es sich um eine Sprachnachricht handelt. Ist dies der Fall, so können bereits Eigenschaften der Sprachnachricht abgefragt werden, beispielsweise die Dauer. Dies ist sinnvoll, da über die Dauer entschieden wird, ob die Nachricht verarbeitet wird, oder nicht.
 
-\todo{add code}
+\lstinputlisting[language=scala, style=scala, caption={Empfangen von Sprachnachrichten}, label=speech1, firstline=1, lastline=13]{ChatSpeech.scala}
 
-Wie man an diesem Code bereits erkennt, wird die Quota in der Redis-Datenbank gespeichert, sodass diese persistiert wird. Der User wird in dem Fall, dass die Quota für den Tag überschritten wird, mit einer Fehlermeldung über den Umstand informiert, zusätzlich wird der Vorfall geloggt. \\
+Wie man in~\Autoref{line:quotaRedis} bereits erkennt, wird die Quota in der Redis-Datenbank gespeichert, sodass diese persistiert wird. Der User wird in dem Fall, dass die Quota für den Tag überschritten wird, mit einer Fehlermeldung über den Umstand informiert, zusätzlich wird der Vorfall geloggt. \\
 Sollte die Quota noch nicht erschöpft sein und die Sprachnachricht ist kurz genug, wird die Datei geladen. Telegram sieht hierbei vor, dass ein Link generiert werden muss, über den die Sprachdatei dann geladen werden kann. Der Link folgt der folgenden Struktur:
 
 \url{https://api.telegram.org/file/botBottoken/Filetoken}
 
-Das Bot-Token ist dabei das Token, das zu Identifizierung des Telegram-Bots genutzt wird und in der Datei \texttt{bot.token} gespeichert ist. Das File-Token muss erst generiert werden. Für die Generierung dieses File-Tokens bietet das \texttt{Telegrambot4s}-Framework einen eigenen \texttt{request}-Aufruf an, der dieses Token als \texttt{filePath} zurückgibt. Dies geschieht wie folgt:
+Das \texttt{Bottoken} ist dabei das Token, das zu Identifizierung des Telegram-Bots genutzt wird und in der Datei \texttt{bot.token} gespeichert ist. Das \texttt{Filetoken} muss erst generiert werden. Für die Generierung dieses Filetokens bietet das \texttt{Telegrambot4s}-Framework einen eigenen \texttt{request}-Aufruf an, der dieses Token als \texttt{filePath} zurückgibt. Dies geschieht wie folgt:
 
-\todo{add code}
+\lstinputlisting[language=scala, style=scala, caption=Generierung des Filetokens, label=filetoken, firstline=15, lastline=22]{ChatSpeech.scala}
 
 Über die URL kann dann die Sprachdatei heruntergeladen werden. Diese wird lokal in dem Ordner \texttt{voices/} abgelegt, dabei wird das Datum und die Uhrzeit, sowie die \texttt{userID} im Dateinamen gespeichert.
 Diese Datei wird benötigt, um die darin enthaltene Sprache in Text umzuwandeln. Hier kommt also der Google-Cloud-Service ins Spiel.
@@ -69,7 +69,7 @@ Die Google-Cloud-API bietet eine Klasse des Typs \texttt{SpeechClient} an, über
 Die Sprachdateien liegen im \texttt{OGG}-Dateiformat vor. Ein Großes Problem bei der Entwicklung war dabei die Frequenz, da diese dem SpeechClient mitgeteilt werden muss. Hier wurde davon ausgegangen, dass alle Telegram-Clients auf das selbe Dateiformat mit derselben Frequenz setzen, was aber nicht der Fall ist. Gibt man die falsche Frequenz einer Sprachdatei an, kann Google den Inhalt nicht verstehen und gibt ein leeres Ergebnis zurück. Der Fehler fiel beim Testen mit verschiedenen Geräten auf und die Behebung erfolgte durch reines Herumprobieren bei den Frequenzen. \\
 Nachdem das Problem lokalisiert wurde, war die Lösung verhältnismäßig einfach. Die Frequenz der lokalen Datei wird aus der Datei gelesen und dem SpeechClient mitgeteilt. Hierzu wird eine zusätzliche Bibliothek benötigt, die diese Funktion bereitstellt. Außerdem muss dem SpeechClient mitgeteilt werden, um welche Sprache es sich bei der Eingabe handelt, diese Erkennung erfolgt nicht automatisch. Die vollständige Konfiguration wird im Folgenden gezeigt.
 
-\todo{add code}
+\lstinputlisting[language=scala, style=scala, caption=Erstellen des Requests zur Spracherkennung, label=request, firstline=24, lastline=32]{ChatSpeech.scala}
 
 Da die Bibliothek für Java-Programme geschrieben wurde, gilt es, das Ergebnis in eine Scala-Collection umzuwandeln, um die Ergebnisliste einfacher traversieren zu können.
 

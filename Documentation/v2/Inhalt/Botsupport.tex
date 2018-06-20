@@ -66,4 +66,4 @@ Der Cache des IWINews Bots wird direkt in der Klasse, die für die HTTP-Aufrufe 
 
 Da die Anfragen, ob es neue Nachrichten auf dem schwarzen Brett gibt, jedoch nicht gecacht werden soll, da so Änderungen nicht entdeckt und somit auch nicht verbreitet werden können, ist es notwendig eine spezielle Methode einzuführen, die einen HTTP-Aufruf ohne Cache macht. Dieser Aufruf entspricht dem bisherigen Verfahren und konnte somit einfach übernommen werden, auch wenn dieser Aufruf umbenannt werden musste um sicher zu gehen, dass dies ein Sonderfall ist. Wie das Caching konkret umgesetzt ist, wird in \autoref{caching} gezeigt.
 
-\lstinputlisting[language=scala, style=scala, numbers=none, caption={Erweiterung der HTTP-Anfragen um Caching-Mechanismus}, label=caching, firstline=5, lastline=52]{HTTPGet.scala}
+\lstinputlisting[language=scala, style=scala, numbers=none, caption={Erweiterung der HTTP-Anfragen um Caching-Mechanismus}, label=caching]{HTTPGet.scala}
