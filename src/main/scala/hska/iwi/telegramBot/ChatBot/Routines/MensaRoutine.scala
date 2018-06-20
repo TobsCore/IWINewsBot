@@ -17,7 +17,6 @@ class MensaRoutine extends CustomSubroutine with Instances {
     val day = args.filter(arg => DaysAndSynonyms.AllDays.contains(arg))
 
     day.foreach(d => logger.debug("Days: " + d))
-    args.foreach(arg => logger.debug("Args: " + arg))
 
     val containsAnd = splitExpressions(args, "und")
 
@@ -83,45 +82,46 @@ class MensaRoutine extends CustomSubroutine with Instances {
   }
 
   def callMensa(param: String, rs: RiveScript, foodAdditives: Seq[String] = Seq()): String = {
+    val errorString = "Es gab ein Problem beim Holen der Daten. Probiere es doch noch einmal."
     param.toLowerCase() match {
       case DaySynonyms.Today =>
-        mensaRequest(rs, 0, foodAdditives).getOrElse("Keine Daten vorhanden.")
+        mensaRequest(rs, 0, foodAdditives).getOrElse(errorString)
       case DaySynonyms.Tomorrow =>
-        mensaRequest(rs, 1, foodAdditives).getOrElse("Keine Daten vorhanden.")
+        mensaRequest(rs, 1, foodAdditives).getOrElse(errorString)
       case DaySynonyms.TheDayAfterTomorrow =>
-        mensaRequest(rs, 2, foodAdditives).getOrElse("Keine Daten vorhanden.")
+        mensaRequest(rs, 2, foodAdditives).getOrElse(errorString)
       case DaySynonyms.Yesterday =>
-        mensaRequest(rs, -1, foodAdditives).getOrElse("Keine Daten vorhanden.")
+        mensaRequest(rs, -1, foodAdditives).getOrElse(errorString)
       case DaySynonyms.TheDayBeforeYesterday =>
-        mensaRequest(rs, -2, foodAdditives).getOrElse("Keine Daten vorhanden.")
+        mensaRequest(rs, -2, foodAdditives).getOrElse(errorString)
       case Days.Mon =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(1), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case Days.Tue =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(2), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case Days.Wed =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(3), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case Days.Thu =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(4), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case Days.Fri =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(5), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case Days.Sat =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(6), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case Days.Sun =>
         mensaRequest(rs, LocalDateTime.getDaysInfutureWithWantedWeekDay(7), foodAdditives)
-          .getOrElse("Keine Daten vorhanden.")
+          .getOrElse(errorString)
       case _ =>
         val foodOutput = getFoodAdditivesSeqByName(param)
         if (foodOutput.isEmpty) {
           "Das habe ich leider nicht verstanden. Möchtest du wissen, was es heute, morgen oder " +
             "übermorgen in der Mensa gibt? Für weitere Tage rufe /mensa auf."
         } else {
-          mensaRequest(rs, 0, foodOutput).getOrElse("Keine Daten vorhanden.")
+          mensaRequest(rs, 0, foodOutput).getOrElse(errorString)
         }
 
     }
@@ -148,8 +148,6 @@ class MensaRoutine extends CustomSubroutine with Instances {
     param.toLowerCase match {
       case "vegan" | "veganes" | "vegane" | "veganen" | "ohne tierische produkte" =>
         FoodAdditives.Vegan
-      case "vegetarisch" | "vegetarisches" | "vegetarischen" | "vegetarische" =>
-        FoodAdditives.Vegetarian
       case "mit schwein" | "schwein" | "pork" => FoodAdditives.Pork
       case "rind" | "kuh" | "beef" | "mit rind" | "mit beef" => FoodAdditives.Beef
       case "mit fleisch" | "fleisch" | "fleischhaltiges" | "fleischhaltigen" | "ohne gemüse" =>
@@ -164,7 +162,7 @@ class MensaRoutine extends CustomSubroutine with Instances {
           .union(FoodAdditives.Molluscs)
           .union(FoodAdditives.Pork)
       case "ohne fleisch" | "fleischlos" | "fleischloses" | "ohne tier" | "tierlos" | "tierloses"
-           | "gemüse" =>
+           | "gemüse" | "vegetarisch" | "vegetarisches" | "vegetarischen" | "vegetarische" =>
         FoodAdditives.Vegan.union(FoodAdditives.Vegetarian)
       case "ohne fisch" | "fischlos" | "fischloses" => FoodAdditives.All.filterNot(_ ==
         FoodAdditives.Fish)
