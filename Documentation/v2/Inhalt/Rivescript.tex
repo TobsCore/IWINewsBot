@@ -41,7 +41,7 @@ Die Einbindung in das bestehende Projekt war sehr einfach, da es für Rivescript
 
 \subsection{Reagieren auf Freitext}
 Da der Bot bis zu diesem Zeitpunkt lediglich auf Commands reagiert hat, was durch die \texttt{onCommand}-Methoden umgesetzt wurde, musste der Bot zusätzlich auf normale Texteingaben reagieren, also auf Textnachrichten, die nicht mit einem Slash beginnen. Das \texttt{Telegrambot4s}-Framework bietet hierfür keine spezielle Methode, aber man kann auf allgemeinen Input reagieren.
-Es wurde hierfür also eine neue Klasse erstellt, die zu den Commands gehört und auf Chat-Nachrichten reagiert. 
+Es wurde hierfür also eine neue Klasse erstellt, die zu den Commands gehört und auf Chat-Nachrichten reagiert.
 \lstinputlisting[language=scala, style=scala, caption=Abfangen der Freitextnachrichten in Chat.scala, label=chatScala1, firstline=1, lastline=15]{Chat.scala}
 
 Wie man in \Autoref{line:inputSlash} erkennt, wird auf jede beliebige Nachricht reagiert und geprüft, ob die Nachricht mit einem Slash beginnt. Beginnt die Eingabe mit einem Slash, soll nicht weiter gearbeitet werden, da es hierfür optimierte Klassen und Methoden gibt. Beginnt die Eingabe jedoch nicht mit einem Slash, so handelt es sich also um Freitext. An dieser Stelle wird nun Rivescript eingesetzt um die Eingabe zu interpretieren.
