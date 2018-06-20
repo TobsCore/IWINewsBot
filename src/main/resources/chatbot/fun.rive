@@ -11,16 +11,49 @@
 - Hör mir auf! 🙈
 - Frag nicht!
 - Heute ist nicht mein Tag, aber lieb, dass du fragst.
-- Ganz gut und dir?
+- Ganz gut und dir? {weight=50}
 
-+ [*] (gut|nicht schlecht) [*]
++ [*] (nicht schlecht|auch) [*]
 % ganz gut und dir
 - Schön zu hören!
 
-+ [*] (nicht gut|schlecht) [*]
++ [*] (nicht gut|nicht so gut|schlecht) [*]
 % ganz gut und dir
 - Oh, wie schade! Gute Besserung!
 
++ [*] (gut) [*]
+% ganz gut und dir
+- Schön zu hören!
+
++ [*] (nicht gut|nicht so gut|schlecht) [*]
+% ganz gut und dir
+- Oh, wie schade! Gute Besserung!
+
++ (erzähle|erzähl|sag) [mir] einen witz
+- Hält ein Polizist einen Vampir auf einem Tandem an, da er Schlangenlinien fährt. Der Polizist fragt: \n
+^ "Haben Sie etwas getrunken?" \n
+^ Der Vampir antwortet: \n
+^ "Ja, zwei Radler!"
+
++ soll ich lieber * oder *
+- Hör auf dein Herz!
+
++ (was machst du|was geht bei dir) *
+- Ich bin ein Bot. Beep bop. Ich erfülle Botaufgaben. Beep bop.
+
++ was hast du an
+- Das ist ja eine indiskrete Frage! 😳
+
++ wie alt bist du
+- Ich wurde im Wintersemester 2017/18 geschaffen. Ein Alter habe ich jedoch nicht.
+
++ [*] (blöd|blöder|scheiß|doofes|scheiße|fick|doof|fuck|kacke|fucking|sex|ficken) [*]
+- Mit einer positiveren Einstellung wirst du im Leben weiter kommen!
+
++ was ist der sinn des lebens
+- 42
+
++ ich bin müde
 + (erzähle|erzähl|sag) [mir] einen witz
 - Hält ein Polizist einen Vampir auf einem Tandem an, da er Schlangenlinien fährt. Der Polizist fragt: \n
 ^ "Haben Sie etwas getrunken?" \n
