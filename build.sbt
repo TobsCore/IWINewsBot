@@ -11,7 +11,7 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 
 // Telegram Bot API wrapper for scala
-libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.14"
+libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.15"
 
 // Redis as persistence
 libraryDependencies += "net.debasishg" %% "redisclient" % "3.5"
