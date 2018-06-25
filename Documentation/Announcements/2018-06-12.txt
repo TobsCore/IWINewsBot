@@ -1,0 +1,5 @@
+<b>Mitteilung: Der IWINewsBot kann jetzt chatten</b>
+
+Wir haben in diesem Semester hinter den Kulissen am @IWINewsBot weiter gearbeitet und haben heute das erste große Update live geschaltet. Der Bot reagiert jetzt nicht mehr ausschließlich auf Befehle (die mit einem <b>/</b> beginnen), sondern kann nun auch über normale Chat-Nachrichten angesprochen werden. Somit sind Fragen wie <i>Was gibt es heute in der Mensa?</i> möglich. Eine kleine Einführung findet ihr auf http://telegra.ph/Der-IWINewsBot-kann-jetzt-chatten-06-20
+
+Probiert es doch einfach mal aus!
