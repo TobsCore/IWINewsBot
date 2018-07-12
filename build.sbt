@@ -8,23 +8,23 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 // Logback logging engine
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
-libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 
 // Telegram Bot API wrapper for scala
 libraryDependencies += "info.mukel" %% "telegrambot4s" % "3.0.15"
 
 // Redis as persistence
-libraryDependencies += "net.debasishg" %% "redisclient" % "3.5"
+libraryDependencies += "net.debasishg" %% "redisclient" % "3.7"
 
 // ScalaJ-HTTP for accessing remotes
-libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.3.0"
+libraryDependencies += "org.scalaj" %% "scalaj-http" % "2.4.0"
 
 // Serialization and Deserialization
 val json4sNative = "org.json4s" %% "json4s-native" % "3.6.0-M1"
 val json4sJackson = "org.json4s" %% "json4s-jackson" % "3.6.0-M1"
 
 // Date Formatter
-libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.18.0"
+libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.20.0"
 
 // For hashing
 libraryDependencies ++= Seq("com.roundeights" %% "hasher" % "1.2.0")
