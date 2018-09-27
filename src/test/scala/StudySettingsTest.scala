@@ -14,7 +14,7 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
   val studySettingsINFBDefault = Study(INFB, None, 2)
   val studySettingsMKIBDefault = Study(MKIB, None, 5)
   val studySettingsINFMSWEDefault = Study(INFM, Some(SoftwareEngineering), 3)
-  val studySettingsINFMInteractiveDefault = Study(INFM, Some(InteractiveSystems), 1)
+  val studySettingsINFMInteractiveDefault = Study(INFM, Some(Medieninformatik), 1)
 
   test("INFB") {
     val user = UserID(22)
@@ -154,7 +154,7 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
 
     val receivedStudyInfo = Study.infoByID(receivedByObject.get)
     assert(receivedStudyInfo.isSuccess)
-    assertResult((INFM, Some(InteractiveSystems)))(receivedStudyInfo.get)
+    assertResult((INFM, Some(Medieninformatik)))(receivedStudyInfo.get)
   }
 
   test("Study ID for INFB with set specialisation") {

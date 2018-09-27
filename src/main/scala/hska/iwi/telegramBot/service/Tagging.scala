@@ -19,8 +19,9 @@ object Tagging {
   val FACULTYNEWS = "Faculty"
 
   // Specialisation Settings
-  val INTERACTIVE_SYSTEMS = "InteractiveSystems"
+  val INTERACTIVE_SYSTEMS = "Medieninformatik"
   val SOFTWARE_ENGINEERING = "SoftwareEngineering"
+  val MACHINE_LEARNING = "MaschinellesLernen"
 
   // Price Settings
   val STUDENT = "Student"

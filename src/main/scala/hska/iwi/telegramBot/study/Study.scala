@@ -25,7 +25,8 @@ object Study {
     case Study(INFB, None, _)                      => Try(0)
     case Study(MKIB, None, _)                      => Try(1)
     case Study(INFM, Some(SoftwareEngineering), _) => Try(2)
-    case Study(INFM, Some(InteractiveSystems), _)  => Try(3)
+    case Study(INFM, Some(Medieninformatik), _)    => Try(3)
+    case Study(INFM, Some(MachineLearning), _)     => Try(4)
     case _ =>
       Failure(
         new IllegalArgumentException(s"$study is not a valid study object. Cannot pattern match"))
@@ -58,7 +59,8 @@ object Study {
       case 0 => Try((INFB, None))
       case 1 => Try((MKIB, None))
       case 2 => Try((INFM, Some(SoftwareEngineering)))
-      case 3 => Try((INFM, Some(InteractiveSystems)))
+      case 3 => Try((INFM, Some(Medieninformatik)))
+      case 4 => Try((INFM, Some(MachineLearning)))
       case _ => Failure(new IllegalArgumentException(s"$id is not a valid identifier."))
     }
 }

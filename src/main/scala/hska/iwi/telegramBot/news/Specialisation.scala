@@ -6,9 +6,11 @@ trait Specialisation {
     specialisationName.toLowerCase() match {
       case "softwareengineering" | "software engineering" | "software-engineering" | "swe" =>
         Some(SoftwareEngineering)
-      case "interactive systems" | "interaktive systeme" | "interactive-systems" |
-          "interaktive-systeme" =>
-        Some(InteractiveSystems)
+      case "medieninformatik"=>
+        Some(Medieninformatik)
+      case "machine learning" | "maschinelles lernen" | "maschinelles-lernen" |
+          "machine-learning" =>
+        Some(MachineLearning)
       case _ => None
     }
 
@@ -17,8 +19,10 @@ trait Specialisation {
       specialisation.get match {
         case SoftwareEngineering =>
           1
-        case InteractiveSystems =>
+        case Medieninformatik =>
           2
+        case MachineLearning =>
+          3
         case _ => 0
       }
     } else { 0 }
@@ -31,6 +35,10 @@ object SoftwareEngineering extends Specialisation {
   override def toString: String = "Software-Engineering"
 }
 
-object InteractiveSystems extends Specialisation {
-  override def toString: String = "Interaktive Systeme"
+object Medieninformatik extends Specialisation {
+  override def toString: String = "Medieninformatik"
+}
+
+object MachineLearning extends Specialisation {
+  override def toString: String = "Maschinelles Lernen"
 }

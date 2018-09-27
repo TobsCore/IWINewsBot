@@ -13,14 +13,13 @@ trait Settings extends Commands with Callbacks with Instances {
   _: TelegramBot =>
 
   onCommand("/settings") { implicit msg =>
-    using(_.from) { user =>
-      {
-        logger.info(s"User $user selected /settings")
+    using(_.from) { user => {
+      logger.info(s"User $user selected /settings")
 
-        reply(mainSettingsText(UserID(user.id)),
-              replyMarkup = Some(mainSettingMarkup()),
-              parseMode = Some(ParseMode.HTML))
-      }
+      reply(mainSettingsText(UserID(user.id)),
+            replyMarkup = Some(mainSettingMarkup()),
+            parseMode = Some(ParseMode.HTML))
+    }
     }
   }
 
@@ -188,11 +187,15 @@ trait Settings extends Commands with Callbacks with Instances {
       val response: (String, Option[InlineKeyboardMarkup]) = buttonData.get match {
         case Tagging.INTERACTIVE_SYSTEMS =>
           ackCallback(Some("Interaktive Systeme ausgewählt"))
-          val studyID = Study.getID(INFM, Some(InteractiveSystems))
+          val studyID = Study.getID(INFM, Some(Medieninformatik))
           ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
         case Tagging.SOFTWARE_ENGINEERING =>
           ackCallback(Some("Software-Engineering ausgewählt"))
           val studyID = Study.getID(INFM, Some(SoftwareEngineering))
+          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
+        case Tagging.MACHINE_LEARNING =>
+          ackCallback(Some("Maschinelles Lernen ausgewählt"))
+          val studyID = Study.getID(INFM, Some(MachineLearning))
           ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
         case Tagging.BACK =>
           ackCallback()
@@ -284,7 +287,8 @@ trait Settings extends Commands with Callbacks with Instances {
       createButtons(
         Seq(
           ("Software-Engineering", Tagging.SOFTWARE_ENGINEERING),
-          ("Interaktive Systeme", Tagging.INTERACTIVE_SYSTEMS),
+          ("Medieninformatik", Tagging.INTERACTIVE_SYSTEMS),
+          ("Maschinelles Lernen", Tagging.MACHINE_LEARNING),
           ("« Zurück zu Settings", Tagging.BACK)
         ),
         Tagging.SPECIALILISATION_PREFIX
