@@ -108,10 +108,13 @@ case class TimetableEntry(courseOfStudies: String,
   def getSpecializationName(entry: LectureEntry): String = {
     if (isMasterLecture(entry)) {
       val resultString = entry.specialization match {
-        case 3 => "SWE"
-        case 4 => "MI"
-        case 5 => "ML"
-        case _ => "P"
+        case 0     => "P"
+        case 1 | 3 => "SWE"
+        case 2 | 4 => "MI"
+        case 5     => "ML"
+        case _ =>
+          logger.error(s"Unknown specialization number: ${entry.specialization}")
+          ""
       }
       s"| $resultString"
     } else {
