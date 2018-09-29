@@ -18,11 +18,11 @@ trait Specialisation {
     if (specialisation.isDefined) {
       specialisation.get match {
         case SoftwareEngineering =>
-          1
-        case Medieninformatik =>
-          2
-        case MachineLearning =>
           3
+        case Medieninformatik =>
+          4
+        case MachineLearning =>
+          5
         case _ => 0
       }
     } else { 0 }

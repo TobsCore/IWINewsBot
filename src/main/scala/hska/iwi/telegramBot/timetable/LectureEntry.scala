@@ -24,5 +24,7 @@ case class LectureEntry(cancellation: String,
                         lecturerNames: Seq[String],
                         locations: Seq[Room],
                         semester: Int,
+                        specialization: Int,
+                        specializationName: String,
                         startTime: Int,
                         title: String) {}

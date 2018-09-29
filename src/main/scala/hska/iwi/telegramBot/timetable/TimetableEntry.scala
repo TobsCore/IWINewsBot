@@ -33,6 +33,13 @@ case class TimetableEntry(courseOfStudies: String,
     for (timetable <- timetables) {
       stringbuilder.append(lectureEntries(timetable))
     }
+    val firstElement = timetables.head.entries.headOption
+    if (firstElement.isDefined) {
+      if (isMasterLecture(firstElement.get)) {
+        stringbuilder.append(s"""|
+           |$getLegendDescription""".stripMargin)
+      }
+    }
     stringbuilder.toString
   }
 
@@ -54,7 +61,7 @@ case class TimetableEntry(courseOfStudies: String,
         stringBuilder.append(s" (${intervalToGermanString(entry.interval)})")
       }
       stringBuilder.append(s"""
-           |${entry.lectureName}
+           |${entry.lectureName} ${getSpecializationName(entry)}
            |""".stripMargin)
       if (!entry.group.isEmpty) {
         stringBuilder.append(s"Gruppe ${entry.group}\n")
@@ -84,15 +91,41 @@ case class TimetableEntry(courseOfStudies: String,
     val stringBuilder = new StringBuilder
     val lectureNames = entry.lecturerNames.filterNot(_.isEmpty)
     var size = lectureNames.size
-    for (lecturer <- lectureNames) {
-      stringBuilder.append(lecturer)
-      if (size > 1) {
-        stringBuilder.append(" / ")
-        size -= 1
+    if (size == 0) {
+      stringBuilder.append("---")
+    } else {
+      for (lecturer <- lectureNames) {
+        stringBuilder.append(lecturer)
+        if (size > 1) {
+          stringBuilder.append(" / ")
+          size -= 1
+        }
       }
     }
     stringBuilder.toString
   }
+
+  def getSpecializationName(entry: LectureEntry): String = {
+    if (isMasterLecture(entry)) {
+      val resultString = entry.specialization match {
+        case 3 => "SWE"
+        case 4 => "MI"
+        case 5 => "ML"
+        case _ => "P"
+      }
+      s"| $resultString"
+    } else {
+      ""
+    }
+  }
+
+  def isMasterLecture(entry: LectureEntry): Boolean = {
+    entry.idCourseOfStudiesType == "INFM"
+  }
+
+  def getLegendDescription(): String =
+    "<i>MI = Medieninformatik, ML = Maschinelles Lernen, P = " +
+      "Pflicht, SWE = Software-Engineering</i>"
 
   def intervalToGermanString(interval: String): String = interval match {
     case "SINGLE"      => "einmalig"
