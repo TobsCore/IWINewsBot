@@ -11,10 +11,10 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
   private val redisClient = new RedisClient(Configuration.redisHost, Configuration.redisTestPort)
   val redis = new RedisInstance(redisClient)
 
-  val studySettingsINFBDefault = Study(INFB, None, 2)
-  val studySettingsMKIBDefault = Study(MKIB, None, 5)
-  val studySettingsINFMSWEDefault = Study(INFM, Some(SoftwareEngineering), 3)
-  val studySettingsINFMInteractiveDefault = Study(INFM, Some(Medieninformatik), 1)
+  val studySettingsINFBDefault = Study(INFB, 2)
+  val studySettingsMKIBDefault = Study(MKIB, 5)
+  val studySettingsINFMSWEDefault = Study(INFM, 3)
+  val studySettingsINFMInteractiveDefault = Study(INFM, 1)
 
   test("INFB") {
     val user = UserID(22)
@@ -27,9 +27,6 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
     }
     assertResult(studySettingsINFBDefault.semester) {
       receivedStudySettings.get.semester
-    }
-    assertResult(studySettingsINFBDefault.specialisation) {
-      receivedStudySettings.get.specialisation
     }
   }
 
@@ -45,9 +42,6 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
     assertResult(studySettingsMKIBDefault.semester) {
       receivedStudySettings.get.semester
     }
-    assertResult(studySettingsMKIBDefault.specialisation) {
-      receivedStudySettings.get.specialisation
-    }
   }
 
   test("INFM - Software-Engineering") {
@@ -61,9 +55,6 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
     }
     assertResult(studySettingsINFMSWEDefault.semester) {
       receivedStudySettings.get.semester
-    }
-    assertResult(studySettingsINFMSWEDefault.specialisation) {
-      receivedStudySettings.get.specialisation
     }
   }
 
@@ -79,9 +70,6 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
     assertResult(studySettingsINFMInteractiveDefault.semester) {
       receivedStudySettings.get.semester
     }
-    assertResult(studySettingsINFMInteractiveDefault.specialisation) {
-      receivedStudySettings.get.specialisation
-    }
   }
 
   test("Set MKIB after INFM") {
@@ -96,9 +84,6 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
     }
     assertResult(studySettingsMKIBDefault.semester) {
       receivedStudySettings.get.semester
-    }
-    assertResult(studySettingsMKIBDefault.specialisation) {
-      receivedStudySettings.get.specialisation
     }
   }
 
@@ -160,7 +145,7 @@ class StudySettingsTest extends FunSuite with BeforeAndAfterAll {
   test("Study ID for INFB with set specialisation") {
 
     // This study is erroneous, since infb doesn't have a specialisation called Software Engineering
-    val study = Study(INFB, Some(SoftwareEngineering), 3)
+    val study = Study(INFB, 3)
     val receivedByObject: Try[Int] = Study.getID(study)
 
     assert(receivedByObject.isFailure)

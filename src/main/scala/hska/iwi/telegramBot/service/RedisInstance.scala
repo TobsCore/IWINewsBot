@@ -156,7 +156,6 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
 
   override def setStudySettingsForUser(user: UserID, study: Study): Boolean = {
     val settingsStore = Map("course" -> Some(study.course),
-                            "specialisation" -> study.specialisation,
                             "semester" -> Some(study.semester)).collect {
       case (key, Some(value)) => key -> value
     }
@@ -171,11 +170,10 @@ class RedisInstance(val redis: RedisClient) extends DBConnection with ObjectSeri
 
   override def getStudySettingsForUser(user: UserID): Option[Study] = {
     val course = redis.hget[Course](s"config:study:${user.id}", "course")
-    val specialisation = redis.hget[Specialisation](s"config:study:${user.id}", "specialisation")
     val semester = redis.hget[Int](s"config:study:${user.id}", "semester")
 
     if (course.isDefined && semester.isDefined) {
-      Some(Study(course.get, specialisation, semester.get))
+      Some(Study(course.get, semester.get))
     } else {
       None
     }

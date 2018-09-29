@@ -95,7 +95,8 @@ trait Settings extends Commands with Callbacks with Instances {
           ("Semester auswählen:", Some(semesterSettingsMarkup(7, studyID.get)))
         case Tagging.INFM =>
           ackCallback(Some("INFM ausgewählt"))
-          ("Vertiefungsrichtung auswählen:", Some(studiumSpecialisationSettingsMarkup()))
+          val studyID = Study.getID(INFM)
+          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
         case Tagging.BACK =>
           ackCallback()
           (mainSettingsText(user), Some(mainSettingMarkup()))
@@ -161,7 +162,10 @@ trait Settings extends Commands with Callbacks with Instances {
           case Int(semester) =>
             val studyID = Integer.parseInt(tags(1))
             val studyData = Study.infoByID(studyID)
-            val study = Study(studyData.get._1, studyData.get._2, semester)
+            if (studyData.isFailure) {
+              logger.error("Couldn't receive study data in settings. Probably a programming error")
+            }
+            val study = Study(studyData.get, semester)
 
             ackCallback(Some(s"Speichere Studiendaten: $study"))
             logger.info(s"Saving $user study data: $study")
@@ -173,37 +177,6 @@ trait Settings extends Commands with Callbacks with Instances {
               s"Unknown tag (${buttonData.get}) received in callback for semester settings.")
             ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
         }
-      }
-
-      requestEditMessage(msg.chat.id, msg.messageId, response._1, response._2)
-    }
-  }
-  onCallbackWithTag(Tagging.SPECIALILISATION_PREFIX) { implicit cbq: CallbackQuery =>
-    val buttonData = cbq.data
-    implicit val user: UserID = UserID(cbq.from.id)
-    if (buttonData.isDefined) {
-      logger.debug(s"$user is changing semester settings")
-      val msg = cbq.message.get
-      val response: (String, Option[InlineKeyboardMarkup]) = buttonData.get match {
-        case Tagging.INTERACTIVE_SYSTEMS =>
-          ackCallback(Some("Interaktive Systeme ausgewählt"))
-          val studyID = Study.getID(INFM, Some(Medieninformatik))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
-        case Tagging.SOFTWARE_ENGINEERING =>
-          ackCallback(Some("Software-Engineering ausgewählt"))
-          val studyID = Study.getID(INFM, Some(SoftwareEngineering))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
-        case Tagging.MACHINE_LEARNING =>
-          ackCallback(Some("Maschinelles Lernen ausgewählt"))
-          val studyID = Study.getID(INFM, Some(MachineLearning))
-          ("Semester auswählen:", Some(semesterSettingsMarkup(3, studyID.get)))
-        case Tagging.BACK =>
-          ackCallback()
-          (mainSettingsText(user), Some(mainSettingMarkup()))
-        case _ =>
-          ackCallback()
-          logger.error("Unknown tag received in callback for Abo settings.")
-          ("Es tut uns leid, aber es ist ein Fehler aufgetreten \uD83D\uDE48.", None)
       }
 
       requestEditMessage(msg.chat.id, msg.messageId, response._1, response._2)

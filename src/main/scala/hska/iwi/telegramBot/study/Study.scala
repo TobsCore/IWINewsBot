@@ -4,10 +4,9 @@ import hska.iwi.telegramBot.news._
 
 import scala.util.{Failure, Try}
 
-case class Study(course: Course, specialisation: Option[Specialisation] = None, semester: Int) {
+case class Study(course: Course, semester: Int) {
   override def toString: String = {
-    val append = if (specialisation.isEmpty) "" else s" (${specialisation.get})"
-    s"$semester. Semester $course" + append
+    s"$semester. Semester $course"
   }
 }
 
@@ -22,11 +21,9 @@ object Study {
     *         be returned.
     */
   def getID(study: Study): Try[Int] = study match {
-    case Study(INFB, None, _)                      => Try(0)
-    case Study(MKIB, None, _)                      => Try(1)
-    case Study(INFM, Some(SoftwareEngineering), _) => Try(2)
-    case Study(INFM, Some(Medieninformatik), _)    => Try(3)
-    case Study(INFM, Some(MachineLearning), _)     => Try(4)
+    case Study(INFB, _)                      => Try(0)
+    case Study(MKIB, _)                      => Try(1)
+    case Study(INFM, _) => Try(2)
     case _ =>
       Failure(
         new IllegalArgumentException(s"$study is not a valid study object. Cannot pattern match"))
@@ -36,12 +33,11 @@ object Study {
     * Just a wrapper method for the other getID method.
     *
     * @param course         The course of the study
-    * @param specialisation The specialisation of the study. Can be {{{None}}}
     * @return The id for the given study. If no matching study can be found, {{{Failure}}} will
     *         be returned.
     */
-  def getID(course: Course, specialisation: Option[Specialisation] = None): Try[Int] =
-    getID(Study(course, specialisation, 0))
+  def getID(course: Course): Try[Int] =
+    getID(Study(course, 0))
 
   /**
     * For a given id returns the combination of course (i.e INFB) and specialisation (i.e.
@@ -49,18 +45,14 @@ object Study {
     * currently has a specialisation), {{{None}}} ist returned.
     *
     * @param id A valid id, must be => 0.
-    * @return A tuple which constist of the course and the specialisation. The specialisation is
-    *         wrappen in an Option for cases where no specialisation exists. The whole result is
-    *         wrappen in an either, for when the given id is not valid (i.e. doesn't match an
-    *         output).
+    * @return The Course for the corresponding course-identifier. If the course-identifier cannot
+    *         be mapped to a correct Course, a failure is returned.
     */
-  def infoByID(id: Int): Try[(Course, Option[Specialisation])] =
+  def infoByID(id: Int): Try[Course] =
     id match {
-      case 0 => Try((INFB, None))
-      case 1 => Try((MKIB, None))
-      case 2 => Try((INFM, Some(SoftwareEngineering)))
-      case 3 => Try((INFM, Some(Medieninformatik)))
-      case 4 => Try((INFM, Some(MachineLearning)))
+      case 0 => Try(INFB)
+      case 1 => Try(MKIB)
+      case 2 => Try(INFM)
       case _ => Failure(new IllegalArgumentException(s"$id is not a valid identifier."))
     }
 }
