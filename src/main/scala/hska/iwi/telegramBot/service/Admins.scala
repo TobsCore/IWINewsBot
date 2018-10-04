@@ -6,7 +6,7 @@ import info.mukel.telegrambot4s.methods.{ParseMode, SendMessage}
 import info.mukel.telegrambot4s.models.{ChatId, User}
 
 trait Admins extends TelegramBot with Commands {
-  val allowed = List(UserID(24154869), UserID(83972768), UserID(242027891))
+  val allowed = List(UserID(24154869), UserID(83972768))
 
   def isAllowed(user: User): Boolean = allowed.contains(UserID(user.id))
 
