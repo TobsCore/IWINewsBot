@@ -112,10 +112,12 @@ case class MensaMoltke(name: String, mealGroups: Seq[MealGroup], status: String,
           if (!emojiString.toString.contains("\ud83d\udc04")) {
             emojiString.append("\ud83d\udc04 ")
           } //beef
-        case "95" => emojiString.append("\ud83d\udc16 ") //pork
+        case "95" | "100" => emojiString.append("\ud83d\udc16 ") //pork
+        case "14" => emojiString.append("(Fleisch)")
         case "96" => emojiString.append("(veget.) ") //vegetarian
         case "97" => emojiString.append("(vegan) ") //vegan
-        case "We" => emojiString.append("\uD83E\uDD91 ") //molluscs
+        case "Kr" => emojiString.append("\uD83E\uDD80 ") //crab-like animals
+        case "Wt" => emojiString.append("\uD83D\uDC1A ") //molluscs
         case _    => emojiString.append("")
       }
     }
