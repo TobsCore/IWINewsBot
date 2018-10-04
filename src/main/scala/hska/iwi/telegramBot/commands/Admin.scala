@@ -49,20 +49,26 @@ trait Admin
                 parseMode = ParseMode.Markdown)
 
           val s: StringBuilder = new StringBuilder()
+          var counter = 1
           redis.getAllUserIDs
             .getOrElse(Set())
             .map(userID => redis.getUserData(userID))
             .foreach(userOption =>
               userOption.foreach(user => {
                 s.append(
-                  "%s %s | Username: %s | [%d]".format(
+                  "%d. %s %s | Username: %s | [%d]".format(
+                    counter,
                     user.firstName,
                     user.lastName.getOrElse(""),
                     user.username.getOrElse("<i>not defined</i>"),
                     user.get.id))
                 s.append("\n")
+                counter += 1
               }))
-          reply(s.toString, parseMode = ParseMode.HTML)
+          val splitted = s.toString().split("40.|80.|120.|160.")
+          for (s <- splitted) {
+            reply(s.toString, parseMode = ParseMode.HTML)
+          }
         } else {
           reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
