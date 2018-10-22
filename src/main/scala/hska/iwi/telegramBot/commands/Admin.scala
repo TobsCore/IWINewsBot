@@ -44,31 +44,42 @@ trait Admin
     {
       using(_.from) { user =>
         if (isAllowed(user)) {
-          reply(s"Total of ${redis.getAllUserIDs.getOrElse(Set()).size.toString.bold} users are " +
-                  s"subscribed",
-                parseMode = ParseMode.Markdown)
+          trySendMessage(
+            ChatId(user.id),
+            s"Total of <b>${redis.getAllUserIDs.getOrElse(Set()).size.toString}</b> users are " +
+              s"subscribed")
 
+          var setOfString: Set[String] = Set()
           val s: StringBuilder = new StringBuilder()
-          var counter = 1
           redis.getAllUserIDs
             .getOrElse(Set())
             .map(userID => redis.getUserData(userID))
-            .foreach(userOption =>
-              userOption.foreach(user => {
-                s.append(
-                  "%d. %s %s | Username: %s | [%d]".format(
-                    counter,
-                    user.firstName,
-                    user.lastName.getOrElse(""),
-                    user.username.getOrElse("<i>not defined</i>"),
-                    user.get.id))
-                s.append("\n")
-                counter += 1
-              }))
-          val splitted = s.toString().split("40.|80.|120.|160.")
-          for (s <- splitted) {
-            reply(s.toString, parseMode = ParseMode.HTML)
+            .zipWithIndex
+            .foreach {
+              case (userOption, index) =>
+                userOption.foreach(
+                  user => {
+                    if (index % 40 != 0 || index == 0) {
+                      s.append(
+                        "%d. %s %s | Username: %s | [%d]".format(
+                          index + 1,
+                          user.firstName,
+                          user.lastName.getOrElse(""),
+                          user.username.getOrElse("<i>not defined</i>"),
+                          user.get.id))
+                      s.append("\n")
+                    } else {
+                      setOfString += s.toString()
+                      s.clear()
+                    }
+                  }
+                )
+            }
+          // If a package message consists of less than 40 members
+          if (!s.isEmpty) {
+            setOfString += s.toString()
           }
+          setOfString.foreach(elem => trySendMessage(ChatId(user.id), elem))
         } else {
           reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
