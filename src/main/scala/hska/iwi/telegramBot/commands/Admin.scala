@@ -9,7 +9,6 @@ import info.mukel.telegrambot4s.api.declarative.Commands
 import info.mukel.telegrambot4s.methods.ParseMode
 import info.mukel.telegrambot4s.models.{ChatId, User}
 
-import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
@@ -51,35 +50,25 @@ trait Admin
             s"Total of <b>${redis.getAllUserIDs.getOrElse(Set()).size.toString}</b> users are " +
               s"subscribed")
 
-          var messageBlobs: ListBuffer[String] = ListBuffer.empty
-          val s: StringBuilder = new StringBuilder()
           redis.getAllUserIDs
             .getOrElse(Set())
             .map(userID => redis.getUserData(userID))
-            .zipWithIndex
-            .foreach {
-              case (userOption, index) =>
-                userOption.foreach(
-                  user => {
-                    if (index % 40 == 39) {
-                      messageBlobs += s.toString()
-                      s.clear()
-                    }
-                    s.append(
-                      "%s %s | Username: %s | [%d]".format(
-                        user.firstName,
-                        user.lastName.getOrElse(""),
-                        user.username.getOrElse("<i>not defined</i>"),
-                        user.get.id))
-                    s.append("\n")
-                  }
-                )
+            .sliding(40, 40)
+            .foreach { blob: Set[Option[User]] =>
+              val s = StringBuilder.newBuilder
+              blob.foreach((userOption: Option[User]) =>
+                if (userOption.isDefined) {
+                  val user = userOption.get
+                  s.append(
+                    "%s %s | Username: %s | [%d]".format(
+                      user.firstName,
+                      user.lastName.getOrElse(""),
+                      user.username.getOrElse("<i>not defined</i>"),
+                      user.get.id))
+                  s.append("\n")
+              })
+            trySendMessage(ChatId(user.id), s.toString())
             }
-          // If a package message consists of less than 40 members
-          if (s.nonEmpty) {
-            messageBlobs += s.toString()
-          }
-          messageBlobs.foreach(elem => trySendMessage(ChatId(user.id), elem))
         } else {
           reply("Cannot list users - This is an admin feature")
           logger.warn(s"User $user tried to list all users")
