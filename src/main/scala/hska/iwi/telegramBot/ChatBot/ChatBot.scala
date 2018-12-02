@@ -18,16 +18,12 @@ class ChatBot extends RiveScript(Config.utf8()) {
     * method.
     */
   private val folder = "chatbot"
-  private val mainStream = getClass.getClassLoader.getResourceAsStream(s"$folder/main.rive")
-  private val funnyAnswersStream = getClass.getClassLoader.getResourceAsStream(s"$folder/fun.rive")
-  private val synonymsStream = getClass.getClassLoader.getResourceAsStream(s"$folder/synonyms.rive")
-  private val arraysStream = getClass.getClassLoader.getResourceAsStream(s"$folder/arrays.rive")
-  private val lecturesStream = getClass.getClassLoader.getResourceAsStream(s"$folder/lectures.rive")
-  stream(Source.fromInputStream(mainStream).getLines.toArray)
-  stream(Source.fromInputStream(funnyAnswersStream).getLines.toArray)
-  stream(Source.fromInputStream(synonymsStream).getLines.toArray)
-  stream(Source.fromInputStream(arraysStream).getLines.toArray)
-  stream(Source.fromInputStream(lecturesStream).getLines.toArray)
+  private val files = List("main.rive", "fun.rive", "synonyms.rive", "arrays.rive", "lectures.rive")
+
+  for (file <- files) {
+    val streamedFile = getClass.getClassLoader.getResourceAsStream(s"$folder/$file")
+    stream(Source.fromInputStream(streamedFile).getLines.toArray)
+  }
   sortReplies()
 
   // Add Subroutines here
