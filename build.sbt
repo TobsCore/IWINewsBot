@@ -35,6 +35,9 @@ libraryDependencies += "com.rivescript" % "rivescript-core" % "0.10.0"
 // Caching Library
 libraryDependencies += "com.github.blemale" %% "scaffeine" % "2.5.0"
 
+// Command line argument parser
+libraryDependencies += "com.github.scopt" %% "scopt" % "3.7.0"
+
 mainClass in Compile := Some("hska.iwi.telegramBot.IWINewsBot")
 
 // In order to run the application multiple times in sbt

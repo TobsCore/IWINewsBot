@@ -4,6 +4,7 @@ package hska.iwi.telegramBot
 // during compilation.
 import hska.iwi.telegramBot.commands._
 import hska.iwi.telegramBot.service.Configuration
+import hska.iwi.telegramBot.service.Params
 import info.mukel.telegrambot4s.api.declarative.{Callbacks, Commands}
 import info.mukel.telegrambot4s.api.{Polling, TelegramBot}
 import org.json4s.DefaultFormats
@@ -31,15 +32,19 @@ class IWINewsBot()
 
   // Put the token in file 'bot.token' in the root directly of this project. This will prevent
   // the token from leaking
-  lazy val token: String = scala.util.Properties
-    .envOrNone("BOT_TOKEN")
-    .getOrElse(Source.fromFile(Configuration.tokenFileName).getLines().mkString)
+  lazy val token: String = Source.fromFile(Configuration.tokenFile()).getLines().mkString
 
   // Start the background feed reader.
   BackgroundFeedSync(token).start()
 }
 
 object IWINewsBot extends App {
+
+  Configuration.params = Configuration.parser.parse(args, Params())
+  if (!Configuration.paramsAreValid()) {
+    System.exit(1)
+  }
+
   val bot = new IWINewsBot()
   bot.run()
 }
