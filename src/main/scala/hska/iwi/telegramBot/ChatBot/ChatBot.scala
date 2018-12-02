@@ -3,10 +3,11 @@ package hska.iwi.telegramBot.ChatBot
 import com.rivescript.{Config, RiveScript}
 import com.typesafe.scalalogging.Logger
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 
 class ChatBot extends RiveScript(Config.utf8()) {
   val logger = Logger(getClass)
+  implicit val codec = Codec("UTF-8")
 
   /**
     * The rive files need to be read from the resources folder, since it is included in the jar
