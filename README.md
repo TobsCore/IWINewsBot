@@ -2,7 +2,7 @@
 
 The [IWINewsBot](http://t.me/IWINewsBot) has been developed by [Tobias Kerst](https://github.com/TobsCore) and [Anna-Lena Schwarzkopf](https://github.com/zckrbrt) as a project at HS Karlsruhe. The bot informs about news posted to the black board of the IWI (Computer Science) faculty.
 
-![IWINewsBot Example Post](/Documentation/Images/Basic_Window.png)
+![IWINewsBot Example Post](/Documentation/v1/Images/Basic_Window.png)
 
 ## Features
 Users can subscribe to messages by starting a conversation with the bot (`/start`) or by pressing the `Start`-Button. They can then configure what messages they want to receive by the `/settings` command. The bot then sends them messages posted to the board, but only to those topics that the user subscribed to.
